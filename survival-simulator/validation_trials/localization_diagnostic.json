@@ -1,0 +1,122 @@
+[
+  {
+    "seed": 4,
+    "policy": "survival",
+    "population_target": 12,
+    "share_maps": true,
+    "predictive_escape": true,
+    "camping": true,
+    "world_memory": false,
+    "tuning": {
+      "maneuvers": true,
+      "tracking": true,
+      "ripen": 20,
+      "reserve": 180,
+      "goal_steering": true,
+      "food_planning": true,
+      "patient": true
+    },
+    "time": 250.1,
+    "score": 257.578,
+    "alive": 11,
+    "peak_population": 14,
+    "births": 40,
+    "harvest_count": 539,
+    "mean_fruit_energy": 38.58,
+    "rest_fraction": 0.314,
+    "localization_mean_error": 0.135,
+    "localization_max_error": 24.487,
+    "positive_score_delta": 20.716,
+    "negative_score_delta": 13.238,
+    "decision_ms_mean": 9.26,
+    "decision_ms_max": 48.096,
+    "decision_seconds": 23.159,
+    "wall_seconds": 79.7,
+    "deaths": {
+      "starvation": 23,
+      "predation": 11
+    },
+    "last_deaths": [
+      {
+        "id": 20,
+        "cause": "starvation",
+        "time": 230.7,
+        "age": 116.0,
+        "speed": 10,
+        "hearing": 29.4,
+        "vision": 200,
+        "nearest_food": 116.7,
+        "memory": {
+          "fruits": 4,
+          "trees": 18,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 33,
+        "cause": "predation",
+        "time": 241.5,
+        "age": 35.2,
+        "speed": 10,
+        "hearing": 50,
+        "vision": 200,
+        "nearest_food": 274.2,
+        "memory": {
+          "fruits": 7,
+          "trees": 16,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 39,
+        "cause": "starvation",
+        "time": 242.1,
+        "age": 11.4,
+        "speed": 10,
+        "hearing": 50,
+        "vision": 160.8,
+        "nearest_food": 76.9,
+        "memory": {
+          "fruits": 7,
+          "trees": 25,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 35,
+        "cause": "predation",
+        "time": 242.2,
+        "age": 31.3,
+        "speed": 10,
+        "hearing": 55.8,
+        "vision": 200,
+        "nearest_food": 160.7,
+        "memory": {
+          "fruits": 8,
+          "trees": 10,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 27,
+        "cause": "starvation",
+        "time": 248.1,
+        "age": 69.1,
+        "speed": 10,
+        "hearing": 50,
+        "vision": 200,
+        "nearest_food": 105.9,
+        "memory": {
+          "fruits": 7,
+          "trees": 19,
+          "retired": false,
+          "stuck": 0
+        }
+      }
+    ]
+  }
+]

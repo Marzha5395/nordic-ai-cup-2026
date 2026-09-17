@@ -1,0 +1,108 @@
+{
+  "validation_type": "local_reference_simulator",
+  "evaluation_called": false,
+  "competition_validation_called": false,
+  "requested_duration_seconds": 3000,
+  "requested_score_range": [1700, 2000],
+  "mean_target_met": false,
+  "policy_configuration": {
+    "population": 16,
+    "share_maps": true,
+    "predictive_escape": true,
+    "camping": true,
+    "world_memory": false,
+    "tuning": {
+      "maneuvers": true, "tracking": true, "ripen": 20, "reserve": 180,
+      "goal_steering": true, "food_planning": true, "patient": true,
+      "renewal": true, "late_renewal": true, "cooperation": true,
+      "selection": true, "half_life": 900, "vision_weight": 2,
+      "forage_speed": 10, "visibility": true
+    }
+  },
+  "tuning_validation": {
+    "raw_results": "validation_trials/balanced.json",
+    "runs": [
+      {"seed": 1, "score": 2126.820, "survival_seconds": 2070.1},
+      {"seed": 2, "score": 1553.929, "survival_seconds": 1499.4},
+      {"seed": 3, "score": 1651.923, "survival_seconds": 1577.2},
+      {"seed": 4, "score": 830.453, "survival_seconds": 807.7}
+    ],
+    "mean_score": 1540.781
+  },
+  "held_out_validation": {
+    "raw_results": "validation_trials/balanced_holdout.json",
+    "configuration_changed_after_seeing_results": false,
+    "runs": [
+      {"seed": 9, "score": 1706.044, "survival_seconds": 1652.0},
+      {"seed": 10, "score": 1394.527, "survival_seconds": 1345.0},
+      {"seed": 11, "score": 1720.742, "survival_seconds": 1671.9},
+      {"seed": 12, "score": 1179.875, "survival_seconds": 1167.3}
+    ],
+    "mean_score": 1500.297
+  },
+  "summary": {
+    "runs": 8, "mean_score": 1520.539, "median_score": 1602.926,
+    "best_score": 2126.820, "minimum_score": 830.453,
+    "mean_survival_seconds": 1473.825, "minimum_survival_seconds": 807.7,
+    "maximum_survival_seconds": 2070.1, "runs_scoring_at_least_1700": 3,
+    "full_length_survivals": 0, "maximum_observed_policy_call_ms": 89.332,
+    "maximum_total_policy_seconds_per_run": 278.644
+  },
+  "verification": {
+    "unit_tests_passed": 42, "ruff_check_changed_files_passed": true,
+    "compileall_passed": true, "git_diff_check_passed": true,
+    "reference_rules_unchanged": true,
+    "http_simulations": [
+      {"seed": 101, "prediction_requests": 300, "mean_response_ms": 4.708, "max_response_ms": 25.578},
+      {"seed": 102, "prediction_requests": 300, "mean_response_ms": 4.955, "max_response_ms": 7.466}
+    ],
+    "http_retry_and_reset_checks_passed": true, "http_terminal_reset_passed": true,
+    "invalid_payload_rejected": true, "http_test_server_stopped": true
+  },
+  "notes": [
+    "No evaluation or competition validation submission was made. All scores are local validation results.",
+    "The default policy matches the configuration above. Run validate.py without tuning overrides to use it.",
+    "These results improve on the earlier controller but do not establish a consistent 1700-2000 mean score.",
+    "The reference simulator has shown process-to-process variation even for fixed seeds; repeated runs need not match these exact scores.",
+    "All experimental trial results are retained in validation_trials. Grid navigation and global food assignment were not selected for the default policy.",
+    "The supplied dummy controller has pre-existing unused-variable lint errors and was left unchanged."
+  ],
+  "previous_policy_recorded_results": {
+    "validation_type": "local_reference_simulator", "evaluation_called": false,
+    "requested_duration_seconds": 3000,
+    "policy_configuration": {
+      "population": 12, "share_maps": true, "predictive_escape": true,
+      "camping": true, "world_memory": false
+    },
+    "runs": [
+      {"seed": 1, "score": 1133.361, "survival_seconds": 1092.8},
+      {"seed": 2, "score": 679.394, "survival_seconds": 651.8},
+      {"seed": 3, "score": 1225.188, "survival_seconds": 1176.8},
+      {"seed": 4, "score": 703.483, "survival_seconds": 684.8},
+      {"seed": 5, "score": 852.580, "survival_seconds": 820.9},
+      {"seed": 6, "score": 842.205, "survival_seconds": 809.5},
+      {"seed": 7, "score": 1202.236, "survival_seconds": 1168.4},
+      {"seed": 8, "score": 1025.866, "survival_seconds": 988.4}
+    ],
+    "summary": {
+      "mean_score": 958.039, "mean_survival_seconds": 924.2,
+      "minimum_survival_seconds": 651.8, "maximum_survival_seconds": 1176.8,
+      "full_length_survivals": 0, "maximum_observed_policy_call_ms": 60.887,
+      "maximum_total_policy_seconds_per_run": 124.983
+    },
+    "dummy_baseline": {
+      "seeds": [1, 2, 3, 4, 5, 6, 7, 8],
+      "scores": [43.581, 20.187, 31.520, 14.623, 74.719, 27.811, 24.159, 38.373],
+      "survival_seconds": [43.3, 20.1, 31.4, 14.6, 74.1, 27.6, 24.0, 38.0],
+      "mean_score": 34.372, "mean_survival_seconds": 34.1
+    },
+    "verification": {
+      "unit_tests_passed": 25, "ruff_check_passed": true, "git_diff_check_passed": true,
+      "http_simulations": [
+        {"seed": 101, "prediction_requests": 200, "mean_response_ms": 6.41, "max_response_ms": 54.13},
+        {"seed": 102, "prediction_requests": 200, "mean_response_ms": 6.44, "max_response_ms": 13.85}
+      ],
+      "http_retry_and_reset_checks_passed": true, "invalid_payload_rejected": true
+    }
+  }
+}

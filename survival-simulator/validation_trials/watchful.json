@@ -1,0 +1,506 @@
+[
+  {
+    "seed": 1,
+    "policy": "survival",
+    "population_target": 12,
+    "share_maps": true,
+    "predictive_escape": true,
+    "camping": true,
+    "world_memory": false,
+    "tuning": {
+      "maneuvers": true,
+      "tracking": true,
+      "ripen": 20,
+      "reserve": 180,
+      "goal_steering": true,
+      "food_planning": true,
+      "patient": true,
+      "renewal": true,
+      "late_renewal": true,
+      "cooperation": true,
+      "selection": true,
+      "decay": 300,
+      "look_bias": 0.3
+    },
+    "time": 1417.6,
+    "score": 1432.512,
+    "alive": 0,
+    "peak_population": 18,
+    "births": 165,
+    "harvest_count": 1675,
+    "mean_fruit_energy": 46.0,
+    "rest_fraction": 0.505,
+    "localization_mean_error": 0.17,
+    "localization_max_error": 64.771,
+    "positive_score_delta": 77.1,
+    "negative_score_delta": 62.188,
+    "decision_ms_mean": 14.394,
+    "decision_ms_max": 66.711,
+    "decision_seconds": 204.051,
+    "wall_seconds": 466.57,
+    "deaths": {
+      "starvation": 138,
+      "predation": 32
+    },
+    "last_deaths": [
+      {
+        "id": 161,
+        "cause": "starvation",
+        "time": 1385.2,
+        "age": 77.1,
+        "speed": 20,
+        "hearing": 50,
+        "vision": 368.9,
+        "nearest_food": 589.9,
+        "memory": {
+          "fruits": 0,
+          "trees": 13,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 162,
+        "cause": "starvation",
+        "time": 1396.0,
+        "age": 87.9,
+        "speed": 20,
+        "hearing": 50,
+        "vision": 368.9,
+        "nearest_food": 732.4,
+        "memory": {
+          "fruits": 0,
+          "trees": 8,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 159,
+        "cause": "starvation",
+        "time": 1397.7,
+        "age": 93.7,
+        "speed": 20,
+        "hearing": 50,
+        "vision": 368.9,
+        "nearest_food": 590.9,
+        "memory": {
+          "fruits": 0,
+          "trees": 10,
+          "retired": true,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 168,
+        "cause": "starvation",
+        "time": 1402.8,
+        "age": 23.4,
+        "speed": 16.13,
+        "hearing": 50,
+        "vision": 368.9,
+        "nearest_food": 135.2,
+        "memory": {
+          "fruits": 1,
+          "trees": 11,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 169,
+        "cause": "starvation",
+        "time": 1417.6,
+        "age": 30.2,
+        "speed": 20,
+        "hearing": 66.0,
+        "vision": 368.9,
+        "nearest_food": 152.0,
+        "memory": {
+          "fruits": 0,
+          "trees": 8,
+          "retired": false,
+          "stuck": 0
+        }
+      }
+    ]
+  },
+  {
+    "seed": 2,
+    "policy": "survival",
+    "population_target": 12,
+    "share_maps": true,
+    "predictive_escape": true,
+    "camping": true,
+    "world_memory": false,
+    "tuning": {
+      "maneuvers": true,
+      "tracking": true,
+      "ripen": 20,
+      "reserve": 180,
+      "goal_steering": true,
+      "food_planning": true,
+      "patient": true,
+      "renewal": true,
+      "late_renewal": true,
+      "cooperation": true,
+      "selection": true,
+      "decay": 300,
+      "look_bias": 0.3
+    },
+    "time": 1423.8,
+    "score": 1476.957,
+    "alive": 0,
+    "peak_population": 18,
+    "births": 173,
+    "harvest_count": 1723,
+    "mean_fruit_energy": 43.03,
+    "rest_fraction": 0.445,
+    "localization_mean_error": 0.013,
+    "localization_max_error": 31.247,
+    "positive_score_delta": 74.132,
+    "negative_score_delta": 20.975,
+    "decision_ms_mean": 15.915,
+    "decision_ms_max": 71.221,
+    "decision_seconds": 226.592,
+    "wall_seconds": 510.99,
+    "deaths": {
+      "starvation": 154,
+      "predation": 24
+    },
+    "last_deaths": [
+      {
+        "id": 175,
+        "cause": "starvation",
+        "time": 1376.8,
+        "age": 10.5,
+        "speed": 16.09,
+        "hearing": 90.2,
+        "vision": 400,
+        "nearest_food": 686.5,
+        "memory": {
+          "fruits": 0,
+          "trees": 17,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 177,
+        "cause": "starvation",
+        "time": 1381.3,
+        "age": 10.9,
+        "speed": 16.09,
+        "hearing": 90.2,
+        "vision": 400,
+        "nearest_food": 704.9,
+        "memory": {
+          "fruits": 1,
+          "trees": 16,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 176,
+        "cause": "starvation",
+        "time": 1384.1,
+        "age": 13.9,
+        "speed": 16.09,
+        "hearing": 90.2,
+        "vision": 400,
+        "nearest_food": 534.9,
+        "memory": {
+          "fruits": 0,
+          "trees": 17,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 172,
+        "cause": "starvation",
+        "time": 1406.7,
+        "age": 70.4,
+        "speed": 16.09,
+        "hearing": 90.2,
+        "vision": 400,
+        "nearest_food": 294.3,
+        "memory": {
+          "fruits": 3,
+          "trees": 15,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 173,
+        "cause": "predation",
+        "time": 1423.8,
+        "age": 76.0,
+        "speed": 16.09,
+        "hearing": 90.2,
+        "vision": 400,
+        "nearest_food": 269.8,
+        "memory": {
+          "fruits": 3,
+          "trees": 14,
+          "retired": false,
+          "stuck": 0
+        }
+      }
+    ]
+  },
+  {
+    "seed": 3,
+    "policy": "survival",
+    "population_target": 12,
+    "share_maps": true,
+    "predictive_escape": true,
+    "camping": true,
+    "world_memory": false,
+    "tuning": {
+      "maneuvers": true,
+      "tracking": true,
+      "ripen": 20,
+      "reserve": 180,
+      "goal_steering": true,
+      "food_planning": true,
+      "patient": true,
+      "renewal": true,
+      "late_renewal": true,
+      "cooperation": true,
+      "selection": true,
+      "decay": 300,
+      "look_bias": 0.3
+    },
+    "time": 1628.2,
+    "score": 1644.285,
+    "alive": 0,
+    "peak_population": 16,
+    "births": 218,
+    "harvest_count": 1994,
+    "mean_fruit_energy": 45.88,
+    "rest_fraction": 0.43,
+    "localization_mean_error": 1.002,
+    "localization_max_error": 80.779,
+    "positive_score_delta": 91.283,
+    "negative_score_delta": 75.198,
+    "decision_ms_mean": 16.207,
+    "decision_ms_max": 88.175,
+    "decision_seconds": 263.874,
+    "wall_seconds": 585.89,
+    "deaths": {
+      "starvation": 154,
+      "predation": 69
+    },
+    "last_deaths": [
+      {
+        "id": 221,
+        "cause": "starvation",
+        "time": 1542.6,
+        "age": 10.3,
+        "speed": 19.73,
+        "hearing": 53.6,
+        "vision": 400,
+        "nearest_food": 275.3,
+        "memory": {
+          "fruits": 1,
+          "trees": 7,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 219,
+        "cause": "starvation",
+        "time": 1545.6,
+        "age": 22.1,
+        "speed": 20,
+        "hearing": 53.6,
+        "vision": 400,
+        "nearest_food": 118.9,
+        "memory": {
+          "fruits": 9,
+          "trees": 11,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 214,
+        "cause": "starvation",
+        "time": 1560.5,
+        "age": 61.2,
+        "speed": 19.73,
+        "hearing": 53.6,
+        "vision": 400,
+        "nearest_food": 250.2,
+        "memory": {
+          "fruits": 1,
+          "trees": 4,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 222,
+        "cause": "starvation",
+        "time": 1583.8,
+        "age": 9.7,
+        "speed": 19.73,
+        "hearing": 53.6,
+        "vision": 400,
+        "nearest_food": 238.2,
+        "memory": {
+          "fruits": 0,
+          "trees": 3,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 218,
+        "cause": "starvation",
+        "time": 1628.2,
+        "age": 109.3,
+        "speed": 19.73,
+        "hearing": 53.6,
+        "vision": 400,
+        "nearest_food": 40.9,
+        "memory": {
+          "fruits": 1,
+          "trees": 5,
+          "retired": false,
+          "stuck": 0
+        }
+      }
+    ]
+  },
+  {
+    "seed": 4,
+    "policy": "survival",
+    "population_target": 12,
+    "share_maps": true,
+    "predictive_escape": true,
+    "camping": true,
+    "world_memory": false,
+    "tuning": {
+      "maneuvers": true,
+      "tracking": true,
+      "ripen": 20,
+      "reserve": 180,
+      "goal_steering": true,
+      "food_planning": true,
+      "patient": true,
+      "renewal": true,
+      "late_renewal": true,
+      "cooperation": true,
+      "selection": true,
+      "decay": 300,
+      "look_bias": 0.3
+    },
+    "time": 733.6,
+    "score": 743.231,
+    "alive": 0,
+    "peak_population": 16,
+    "births": 88,
+    "harvest_count": 802,
+    "mean_fruit_energy": 40.11,
+    "rest_fraction": 0.529,
+    "localization_mean_error": 0.915,
+    "localization_max_error": 42.599,
+    "positive_score_delta": 32.168,
+    "negative_score_delta": 22.537,
+    "decision_ms_mean": 7.109,
+    "decision_ms_max": 143.636,
+    "decision_seconds": 52.149,
+    "wall_seconds": 165.81,
+    "deaths": {
+      "starvation": 75,
+      "predation": 18
+    },
+    "last_deaths": [
+      {
+        "id": 88,
+        "cause": "starvation",
+        "time": 666.9,
+        "age": 26.4,
+        "speed": 12.9,
+        "hearing": 41.6,
+        "vision": 214.5,
+        "nearest_food": 194.1,
+        "memory": {
+          "fruits": 0,
+          "trees": 2,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 86,
+        "cause": "starvation",
+        "time": 682.0,
+        "age": 71.4,
+        "speed": 12.9,
+        "hearing": 41.6,
+        "vision": 214.5,
+        "nearest_food": 16.6,
+        "memory": {
+          "fruits": 1,
+          "trees": 2,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 91,
+        "cause": "predation",
+        "time": 695.6,
+        "age": 5.4,
+        "speed": 10,
+        "hearing": 54.6,
+        "vision": 100.1,
+        "nearest_food": 181.8,
+        "memory": {
+          "fruits": 0,
+          "trees": 7,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 90,
+        "cause": "starvation",
+        "time": 731.9,
+        "age": 84.5,
+        "speed": 10,
+        "hearing": 54.6,
+        "vision": 200,
+        "nearest_food": 168.4,
+        "memory": {
+          "fruits": 1,
+          "trees": 10,
+          "retired": false,
+          "stuck": 0
+        }
+      },
+      {
+        "id": 92,
+        "cause": "predation",
+        "time": 733.6,
+        "age": 39.3,
+        "speed": 10,
+        "hearing": 54.6,
+        "vision": 200,
+        "nearest_food": 90.3,
+        "memory": {
+          "fruits": 1,
+          "trees": 11,
+          "retired": false,
+          "stuck": 0
+        }
+      }
+    ]
+  }
+]

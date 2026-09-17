@@ -1,0 +1,156 @@
+[
+  {
+    "seed": 1,
+    "policy": "survival",
+    "population_target": 8,
+    "share_maps": true,
+    "predictive_escape": true,
+    "camping": true,
+    "world_memory": false,
+    "tuning": {
+      "ripen": 20,
+      "reserve": 220,
+      "renewal": true,
+      "navigation": true
+    },
+    "time": 1228.1,
+    "score": 1211.708,
+    "alive": 0,
+    "peak_population": 13,
+    "births": 78,
+    "positive_score_delta": 41.662,
+    "negative_score_delta": 58.053,
+    "decision_ms_mean": 16.057,
+    "decision_ms_max": 202.331,
+    "decision_seconds": 197.192,
+    "wall_seconds": 321.65,
+    "deaths": {
+      "starvation": 47,
+      "predation": 36
+    },
+    "last_deaths": [
+      {
+        "id": 79,
+        "cause": "starvation",
+        "time": 1201.8,
+        "age": 14.4,
+        "speed": 18.24,
+        "hearing": 100.0,
+        "vision": 241.3
+      },
+      {
+        "id": 81,
+        "cause": "starvation",
+        "time": 1208.5,
+        "age": 6.6,
+        "speed": 18.24,
+        "hearing": 100.0,
+        "vision": 259.7
+      },
+      {
+        "id": 82,
+        "cause": "starvation",
+        "time": 1217.6,
+        "age": 9.1,
+        "speed": 13.42,
+        "hearing": 100.0,
+        "vision": 241.3
+      },
+      {
+        "id": 80,
+        "cause": "starvation",
+        "time": 1220.4,
+        "age": 27.7,
+        "speed": 18.24,
+        "hearing": 100.0,
+        "vision": 241.3
+      },
+      {
+        "id": 78,
+        "cause": "predation",
+        "time": 1228.1,
+        "age": 61.7,
+        "speed": 18.24,
+        "hearing": 100.0,
+        "vision": 241.3
+      }
+    ]
+  },
+  {
+    "seed": 2,
+    "policy": "survival",
+    "population_target": 8,
+    "share_maps": true,
+    "predictive_escape": true,
+    "camping": true,
+    "world_memory": false,
+    "tuning": {
+      "ripen": 20,
+      "reserve": 220,
+      "renewal": true,
+      "navigation": true
+    },
+    "time": 552.9,
+    "score": 555.685,
+    "alive": 0,
+    "peak_population": 11,
+    "births": 51,
+    "positive_score_delta": 18.748,
+    "negative_score_delta": 15.963,
+    "decision_ms_mean": 16.435,
+    "decision_ms_max": 116.651,
+    "decision_seconds": 90.868,
+    "wall_seconds": 140.05,
+    "deaths": {
+      "starvation": 42,
+      "predation": 14
+    },
+    "last_deaths": [
+      {
+        "id": 53,
+        "cause": "starvation",
+        "time": 535.7,
+        "age": 9.1,
+        "speed": 8.09,
+        "hearing": 52.8,
+        "vision": 200
+      },
+      {
+        "id": 54,
+        "cause": "starvation",
+        "time": 536.7,
+        "age": 9.7,
+        "speed": 8.09,
+        "hearing": 52.8,
+        "vision": 200
+      },
+      {
+        "id": 55,
+        "cause": "starvation",
+        "time": 542.0,
+        "age": 8.9,
+        "speed": 8.09,
+        "hearing": 52.8,
+        "vision": 200
+      },
+      {
+        "id": 51,
+        "cause": "starvation",
+        "time": 551.6,
+        "age": 83.6,
+        "speed": 8.09,
+        "hearing": 52.8,
+        "vision": 200
+      },
+      {
+        "id": 48,
+        "cause": "starvation",
+        "time": 552.9,
+        "age": 116.4,
+        "speed": 8.09,
+        "hearing": 52.8,
+        "vision": 200
+      }
+    ]
+  }
+]

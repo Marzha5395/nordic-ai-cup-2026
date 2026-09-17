@@ -1,0 +1,23 @@
+# Survival simulator project notes
+
+- Use validation only. Do not call or queue the competition's one-shot evaluation without explicit user permission.
+- The simulator and scoring code under `src/elements/`, `src/core.py`, and `src/utils/simulation.py` are the reference rules; do not change them to improve policy scores.
+- The policy must use only the supplied observations/statuses, not live simulator internals or cloud inference APIs.
+- The local Python 3.12 environment is `.venv-sim/`, with dependencies from `requirements.txt`. `.venv/` contains the `uv` bootstrap tool. Both environments are ignored by Git.
+- Run unit/contract tests from this directory with `.venv-sim/bin/python -m unittest -v test_survival_policy`.
+- Run full headless local validation with `.venv-sim/bin/python validate.py --seeds 1 2 3 4 --workers 4`. Use `--policy dummy` for the supplied baseline, and `--progress 500` for periodic diagnostics. No network submission is made by this script.
+- Policy defaults are `DEFAULT_POPULATION` and `DEFAULT_TUNING` in `survival_policy.py`; both the endpoint and validation runner use them. `--tuning '{...}'` replaces the entire tuning dictionary; `--override-tuning '{...}'` changes only the specified settings. `--population` overrides the population target. `--population 12 --tuning '{}'` selects the earlier controller behavior, with correctness fixes still applied.
+- The validation runner exposes optional policy ablations. `--world-memory` enables experimental global food assignment; it and grid navigation are disabled in the default policy. Keep validation defaults consistent with `SurvivalPolicy()` used by the endpoint.
+- Start the endpoint with `.venv-sim/bin/python agent_server.py` (port 9052), or use `python -m uvicorn agent_server:app --host 0.0.0.0 --port 9052 --no-access-log` in the activated environment.
+- Use one server worker: the controller keeps per-simulation state. It resets on a rewound clock, an empty initial request, or `game_over`. Duplicate requests must not advance its state twice.
+- `move_direction` is relative to the agent's current heading, and movement is applied before turning. The README's absolute-angle description is inaccurate.
+- Predator positions in observations precede that tick's predator movement. An unchanged agent age indicates stale observations caused by the reference simulator skipping a list element after removing a dead agent.
+- Offspring can spawn exactly on their parent. At zero observed distance, compute the neighbor heading from `memory.heading + observation.angle - observation.rel_dir`, without adding pi or recovering the bearing from the zero-length position vector. Use the shared `neighbor_heading` helper for map alignment.
+- Camp within hearing range of a tree so its disappearance is detectable without relying on a stale visual memory.
+- Experimental world localization assumes the reference simulator's default 1600-by-1200 world and 30-unit boundary walls.
+- Save validation metrics with `--output validation_trials/<unique-name>.json`; existing files are not overwritten. Use multiple seeds and distinguish tuning results from untouched validation seeds. Fixed-seed runs have shown process-to-process variation, so report aggregates rather than just the best run.
+- The validation runner reads simulator positions for localization diagnostics only; those values must never be passed to the policy. `trace_validation.py --seed 4 --output validation_trials/<unique-name>.jsonl` captures a near-food starvation trace; add `--orientations --duration 500` to check inherited map orientations instead.
+- A stationary agent cannot move when fruit appears or disappears. During movement, use multiple static observations to resolve ambiguous parallel-wall matches rather than trusting the closest single edge.
+- When an observation is skipped, its energy still reflects the applied action. Advance the energy forecast even if the agent age is unchanged, or healthy agents can be falsely classified as senescent.
+- Reproduction needs more than 100 energy remaining after movement and turning; validate that budget before recording a birth or retiring a parent.
+- Lint the changed Python files with `.venv/bin/uv tool run --offline ruff check agent_server.py validate.py trace_validation.py test_survival_policy.py src/utils/controllers/{survival_policy,predator_avoidance,navigation,world_memory}.py`. The supplied dummy controller has pre-existing unused-variable lint errors and is intentionally unchanged.

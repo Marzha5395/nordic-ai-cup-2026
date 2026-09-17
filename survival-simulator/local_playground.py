@@ -2,9 +2,13 @@ import pygame
 import random
 from src.core import SimulationCore
 from src.utils.controllers.dummy_agent_policy import action_decision
+from src.utils.controllers.survival_policy import SurvivalPolicy
+from src.utils.DTOs import ActionRequest
 
-def local_simulation(verbose=True):
-    seed = None
+def local_simulation(verbose=True, seed=None, policy_name="survival"):
+    if policy_name not in ("survival", "dummy"):
+        raise ValueError("policy_name must be survival or dummy")
+    policy = SurvivalPolicy()
     if seed is None: # If no seed is provided, generate a random one
         seed = random.randint(0, 2**32 - 1)
 
@@ -35,9 +39,13 @@ def local_simulation(verbose=True):
         state = sim.step(actions)
         
         actions = []
-        for agent, agent_state in zip(sim.env.agents, state["observations"]):
-            action = action_decision(agent_state, action_rng)
-            actions.append((agent.agent_id, action))
+        if policy_name == "dummy":
+            for agent, agent_state in zip(sim.env.agents, state["observations"]):
+                action = action_decision(agent_state, action_rng)
+                actions.append((agent.agent_id, action))
+        else:
+            actions = [(action["agent_id"], ActionRequest(**action))
+                       for action in policy.decide(state["observations"], state["sim_time"])]
 
         if verbose:
             sim.env.draw(screen)
@@ -47,7 +55,8 @@ def local_simulation(verbose=True):
             pygame.display.flip()
             clock.tick(60) # Control max FPS
 
-        print(f'Score: {state["score"]:.2f} | Agents alive: {state["num_agents"]:.0f} | Time: {sim.env.time:.2f}')
+        if verbose or round(sim.env.time * 10) % 1000 == 0:
+            print(f'Score: {state["score"]:.2f} | Agents alive: {state["num_agents"]:.0f} | Time: {sim.env.time:.2f}')
 
         if state["num_agents"] == 0 or sim.env.time > 3000:
             print(f"Game over! Final Score: {state['score']}")
