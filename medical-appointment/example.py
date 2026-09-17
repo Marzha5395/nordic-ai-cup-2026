@@ -120,4 +120,4 @@ def answer_question(
     anything that answers from topical overlap alone stays at the floor no
     matter how good the transcript is.
     """
-    return True, None
+    return True, (10, 60)
