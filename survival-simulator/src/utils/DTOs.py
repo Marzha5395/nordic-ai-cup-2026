@@ -37,6 +37,6 @@ class StepResponse(BaseModel):
     """
     game_status: str
     score: float
-    sim_time: [Optional]float = None
-    n_agents: [Optional]int = None
+    sim_time: Optional[float] = None
+    n_agents: Optional[int] = None
     agent_status: List[ObservationResponse] = []
