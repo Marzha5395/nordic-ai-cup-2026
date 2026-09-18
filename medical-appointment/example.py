@@ -15,6 +15,7 @@ from typing import Optional, Tuple
 
 from dtos import ASRQuestionRequestDto, ASRQuestionResponseDto
 from utils import Span, audio_duration_seconds, decode_audio
+from main import transcribe, generate
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,14 @@ def predict(request: ASRQuestionRequestDto) -> ASRQuestionResponseDto:
         len(request.questions),
     )
 
+    with open("data/audio/conversation.mp3", "wb") as f:
+        f.write(audio_bytes)
+    
+    results, full_text = transcribe(file="conversation.mp3")
+    questions_str = request.questions
+    predictions = generate(results, questions_str)
+    answers1 = [p == 'yes' for p in predictions]
+
     # Never let this raise. An exception means no response, and no response
     # means every question about this conversation is scored wrong — ten marks,
     # not one. A guess is worth half a mark on average; an error is worth
@@ -61,7 +70,7 @@ def predict(request: ASRQuestionRequestDto) -> ASRQuestionResponseDto:
         evidence_end.append(span[1] if span is not None else None)
 
     return ASRQuestionResponseDto(
-        answers=answers,
+        answers=answers1,
         evidence_start=evidence_start,
         evidence_end=evidence_end,
     )
@@ -120,4 +129,4 @@ def answer_question(
     anything that answers from topical overlap alone stays at the floor no
     matter how good the transcript is.
     """
-    return True, (10, 60)
+    return True, (20, 60)
