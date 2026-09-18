@@ -1,9 +1,11 @@
-"""Try configuration variants against the reference scene, in-process.
+"""Try configuration variants against one or more scenes, in-process.
 
-The reference scene is 25 frames with one instance of each class, so a
-difference of a few hundredths here is noise. Use this to find settings that
-sit on a wide plateau, not to pick the single best number -- the evaluation
-flight is over different ground.
+The reference scene is 25 frames with one instance of each class, and the
+detector was trained on it, so a difference of a few hundredths there is noise
+and a gain there may be memory. Tune on the held-out synthetic flights
+(``training/synthetic_flight.py``), several at once with ``--scene
+synth_0,synth_1,...``, and confirm on a second set that was not tuned on.
+Look for settings that sit on a wide plateau, not for the single best number.
 """
 
 import argparse
@@ -102,12 +104,20 @@ VARIANTS = {
     'minconf-010': {'MINIMUM_OUTPUT_CONFIDENCE': 0.10},
     'minconf-020': {'MINIMUM_OUTPUT_CONFIDENCE': 0.20},
     'purity-off': {'SECOND_CLASS_MINIMUM_SHARE': 1.01, 'MINIMUM_OUTPUT_CONFIDENCE': 0.05},
+    'support-off': {'SUPPORT_FLOOR': 1.0},
+    'support-floor-060': {'SUPPORT_FLOOR': 0.60},
+    'support-floor-015': {'SUPPORT_FLOOR': 0.15},
+    'hit-rate-off': {'MINIMUM_HIT_RATE': 0.0},
+    'hit-rate-050': {'MINIMUM_HIT_RATE': 0.50},
+    'strength-best': {'STRENGTH_SAMPLES': 1},
+    'strength-6': {'STRENGTH_SAMPLES': 6},
 }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--scene', default='helsinki')
+    parser.add_argument('--scene', default='helsinki',
+                        help='Scene under src/, or several separated by commas.')
     parser.add_argument('--only', default=None, help='Comma-separated variant names.')
     parser.add_argument('--weights', default=None,
                         help='Detector checkpoint to score, instead of the '
@@ -117,7 +127,8 @@ def main() -> int:
                              'policy is chaotic, so one run says very little.')
     arguments = parser.parse_args()
 
-    cache_frames(arguments.scene)
+    scenes = arguments.scene.split(',')
+    cache_frames(scenes[0])
 
     from solution import config
     if arguments.weights:
@@ -142,14 +153,13 @@ def main() -> int:
                 runtime.reset(drop_detector=True)
                 reload_model = True
             values, refused, durations = [], 0, []
-            for seed in range(arguments.seeds):
-                config.COVERAGE_TIE_BREAK_SEED = seed
-                predictions, _, seed_refused, seed_durations = offline_eval.replay(
-                    arguments.scene
-                )
-                values.append(score(arguments.scene, predictions)[0])
-                refused += seed_refused
-                durations.extend(seed_durations)
+            for scene in scenes:
+                for seed in range(arguments.seeds):
+                    config.COVERAGE_TIE_BREAK_SEED = seed
+                    predictions, _, seed_refused, seed_durations = offline_eval.replay(scene)
+                    values.append(score(scene, predictions)[0])
+                    refused += seed_refused
+                    durations.extend(seed_durations)
             value = sum(values) / len(values)
             spread = max(values) - min(values)
         finally:

@@ -17,6 +17,7 @@ from fastapi import FastAPI
 
 from dtos import DroneFlybyPredictRequestDto, DroneFlybyPredictResponseDto
 from example import predict
+from solution.runtime import detector_status
 from utils import validate_response
 
 HOST = '0.0.0.0'
@@ -55,6 +56,8 @@ def hello():
     return {
         'service': 'drone-flyby-usecase',
         'uptime': '{}'.format(datetime.timedelta(seconds=time.time() - start_time)),
+        # 'ready' before an attempt, or every frame is answered empty.
+        'detector': detector_status(),
     }
 
 
@@ -64,4 +67,7 @@ def index():
 
 
 if __name__ == '__main__':
+    status = detector_status()
+    if status != 'ready':
+        logger.error('detector is %s -- every frame will be answered empty', status)
     uvicorn.run('api:app', host=HOST, port=PORT)

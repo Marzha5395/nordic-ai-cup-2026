@@ -89,7 +89,13 @@ training/*
 dataset/
 dataset2/
 dataset3/
+dataset4/
+external/
 runs/
+# Recorded attempts (solution/recorder.py).
+recordings/
+# Synthetic flights written by training/synthetic_flight.py.
+src/synth*/
 
 # Ultralytics drops COCO checkpoints next to whatever it is run from.
 yolo*.pt

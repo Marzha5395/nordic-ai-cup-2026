@@ -8,11 +8,14 @@ to confirm.
 """
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parent.parent
+# In-process replays are not attempts; keep them out of recordings/.
+os.environ.setdefault('DRONE_RECORD', '0')
 sys.path.insert(0, str(PROJECT))
 
 from dtos import DroneFlybyPredictRequestDto                    # noqa: E402
@@ -92,7 +95,12 @@ def main() -> int:
     parser.add_argument('--scene', default='helsinki')
     parser.add_argument('--verbose', action='store_true')
     parser.add_argument('--frame-step', type=int, default=1)
+    parser.add_argument('--weights', default=None,
+                        help='Detector checkpoint to use instead of config.WEIGHTS_PATH.')
     arguments = parser.parse_args()
+    if arguments.weights:
+        from solution import config
+        config.WEIGHTS_PATH = Path(arguments.weights)
 
     predictions, applied, refused, durations = replay(
         arguments.scene, arguments.verbose, arguments.frame_step

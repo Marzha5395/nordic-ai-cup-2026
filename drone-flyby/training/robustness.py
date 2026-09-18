@@ -5,11 +5,14 @@ accuracy but that nothing raises, nothing grows without bound, no camera
 command is refused and no answer is late.
 """
 
+import os
 import sys
 import time
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parent.parent
+# In-process replays are not attempts; keep them out of recordings/.
+os.environ.setdefault('DRONE_RECORD', '0')
 sys.path.insert(0, str(PROJECT))
 
 from dtos import DroneFlybyPredictRequestDto                     # noqa: E402

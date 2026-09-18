@@ -12,9 +12,16 @@ Two problems the reference scene creates, and how this module answers them:
   the object. So objects are cut out with a mask, rotated, and pasted back,
   and the box that comes with them is derived from an oriented-rectangle model
   rather than the loose hull of a rotated box.
-* **One terrain.** Objects are pasted onto backgrounds taken from anywhere in
-  the scene, with the real objects inpainted away first so that nothing in a
-  composed image is an unlabelled instance.
+* **One terrain.** Twenty-five frames of one place near Helsinki is not a
+  distribution of terrain, it is a single sample from one. A detector trained
+  on it alone reported twenty objects on the first frames of the validation
+  flight and eighty on the last -- false tracks piling up on ground it had
+  never seen. So most backgrounds come from ``external/``: public-domain USGS
+  aerial imagery over deserts, farmland, forest, mountains, coast and city,
+  downloaded by ``training/fetch_backgrounds.py`` and split so that a third of
+  the locations are never trained on. The reference frames stay in the mix,
+  with the real objects painted out, because they are the only *rendered*
+  terrain available and the flight being scored is rendered.
 """
 
 import json
@@ -398,6 +405,25 @@ def _photometric(image: np.ndarray, rng: np.random.Generator) -> np.ndarray:
 
 
 LEVEL_WEIGHTS = {0: 0.08, 1: 0.70, 2: 0.22}
+# How often the background comes from outside the reference scene. High,
+# because one terrain is what produced a detector that fired on everything the
+# validation flight showed it -- but not all, because the reference frames are
+# the only rendered terrain there is and the scored flight is rendered.
+EXTERNAL_BACKGROUND_PROBABILITY = 0.62
+# Every background is resampled by a random factor before cropping. Without it
+# the outside mosaics, which are smaller than a level-1 region and have to be
+# enlarged, would be systematically softer than the reference frames -- and
+# softness would become a reliable cue for "no object here".
+BACKGROUND_RESCALE = (0.75, 1.55)
+# Every labelled object in a composed image arrived by being cut out of one
+# place and blended into another. If that is the only kind of blended patch in
+# the training set, "blended patch" is a perfect predictor of "object", and a
+# detector is entitled to learn it -- then anything unusual on unfamiliar
+# terrain looks like an object. So some patches are blended in that are just
+# more terrain, carry no label, and have to be answered with silence.
+DISTRACTOR_PROBABILITY = 0.65
+DISTRACTOR_COUNT = (1, 6)
+EMPTY_SAMPLE_PROBABILITY = 0.10
 # How often a sample keeps the real frame, objects and all, instead of the
 # inpainted one. Pasted objects carry the orientation variety, but they also
 # carry paste artefacts, and a detector that only ever sees pasted objects can
@@ -409,17 +435,65 @@ REAL_FRAME_PROBABILITY = 0.28
 ROTATED_BACKGROUND_PROBABILITY = 0.55
 
 
-class SceneAssets:
-    """Everything the sampler needs from one reference scene."""
+class ExternalBackgrounds:
+    """Aerial mosaics, read from disk on demand and kept in a small cache.
 
-    def __init__(self, originals, annotations, backgrounds, sprites_by_class):
+    There are a couple of hundred of them at 2304x2304, which is more than a
+    worker process wants resident, and each sample needs exactly one.
+    """
+
+    def __init__(self, directories: Sequence[Path], cache_size: int = 10):
+        self.paths: List[Path] = []
+        for directory in directories:
+            if directory is None:
+                continue
+            directory = Path(directory)
+            if not directory.is_dir():
+                continue
+            self.paths.extend(
+                sorted(
+                    path for path in directory.iterdir()
+                    if path.suffix.lower() in {'.jpg', '.jpeg', '.png', '.webp'}
+                )
+            )
+        self.cache_size = cache_size
+        self._cache: Dict[Path, np.ndarray] = {}
+
+    def __len__(self) -> int:
+        return len(self.paths)
+
+    def sample(self, rng: np.random.Generator) -> Optional[np.ndarray]:
+        if not self.paths:
+            return None
+        path = self.paths[int(rng.integers(len(self.paths)))]
+        image = self._cache.get(path)
+        if image is None:
+            image = cv2.imread(str(path), cv2.IMREAD_COLOR)
+            if image is None:
+                return None
+            if len(self._cache) >= self.cache_size:
+                self._cache.pop(next(iter(self._cache)))
+            self._cache[path] = image
+        return image
+
+
+class SceneAssets:
+    """Everything the sampler needs: reference scene plus outside terrain."""
+
+    def __init__(self, originals, annotations, backgrounds, sprites_by_class,
+                 external=None):
         self.originals = originals
         self.annotations = annotations
         self.backgrounds = backgrounds
         self.sprites_by_class = sprites_by_class
+        self.external = external or ExternalBackgrounds([])
 
 
-def load_scene_assets(scene_directory: Path, cache_directory: Path) -> SceneAssets:
+def load_scene_assets(
+    scene_directory: Path,
+    cache_directory: Path,
+    external_directories: Sequence[Path] = (),
+) -> SceneAssets:
     from masks import load_instances
 
     background_paths = build_backgrounds(scene_directory, cache_directory)
@@ -447,42 +521,128 @@ def load_scene_assets(scene_directory: Path, cache_directory: Path) -> SceneAsse
         )
 
     instances = load_instances(scene_directory.name)
-    return SceneAssets(originals, annotations, backgrounds, build_sprites(instances))
+    return SceneAssets(
+        originals, annotations, backgrounds, build_sprites(instances),
+        ExternalBackgrounds(external_directories),
+    )
 
 
-def _rotated_crop(
+def paste_distractor(
+    canvas: np.ndarray,
+    donor: np.ndarray,
+    rng: np.random.Generator,
+    occupied: Sequence[Tuple[float, float, float, float]],
+) -> bool:
+    """Blend a patch of terrain into the canvas, with no label attached.
+
+    Built the same way a sprite is -- an irregular soft-edged mask, a random
+    rotation, its own exposure -- so that nothing but the contents tells it
+    apart from a real object.
+    """
+    height, width = donor.shape[:2]
+    size = int(rng.integers(18, 190))
+    canvas_height, canvas_width = canvas.shape[:2]
+    if width <= size + 2 or height <= size + 2:
+        return False
+    if canvas_width <= size + 2 or canvas_height <= size + 2:
+        return False
+
+    left = int(rng.integers(0, canvas_width - size))
+    top = int(rng.integers(0, canvas_height - size))
+    box = (float(left), float(top), float(left + size), float(top + size))
+    if any(_intersection_over_area(box, other) > 0.0
+           or _intersection_over_area(other, box) > 0.0 for other in occupied):
+        return False
+
+    x = int(rng.integers(0, width - size))
+    y = int(rng.integers(0, height - size))
+    patch = donor[y:y + size, x:x + size].copy()
+
+    # An irregular blob rather than a disc: a few overlapping ellipses.
+    mask = np.zeros((size, size), np.uint8)
+    for _ in range(int(rng.integers(1, 4))):
+        centre = (int(rng.integers(size // 4, 3 * size // 4)),
+                  int(rng.integers(size // 4, 3 * size // 4)))
+        axes = (max(2, int(rng.integers(size // 6, size // 2))),
+                max(2, int(rng.integers(size // 6, size // 2))))
+        cv2.ellipse(mask, centre, axes, float(rng.uniform(0, 180)), 0, 360, 255, -1)
+    if not mask.any():
+        return False
+    distance = cv2.distanceTransform((mask > 127).astype(np.uint8), cv2.DIST_L2, 3)
+    alpha = np.clip(distance / 2.0, 0.0, 1.0)
+    alpha = cv2.GaussianBlur(alpha, (3, 3), 0)[..., None]
+
+    gain = float(rng.uniform(0.70, 1.35))
+    bias = float(rng.uniform(-28.0, 28.0))
+    patch = np.clip(patch.astype(np.float32) * gain + bias, 0, 255)
+
+    right, bottom = left + size, top + size
+    region = canvas[top:bottom, left:right].astype(np.float32)
+    canvas[top:bottom, left:right] = (
+        region * (1.0 - alpha) + patch * alpha
+    ).astype(np.uint8)
+    return True
+
+
+def _scaled_crop(
     source: np.ndarray,
     rng: np.random.Generator,
     region_width: int,
     region_height: int,
+    rotate: bool,
 ) -> np.ndarray:
-    """Take a crop of the frame at an arbitrary angle.
+    """Take a region out of a background, at a random zoom and angle.
 
-    Rotating the terrain rather than the objects costs nothing in label
-    accuracy -- there is no label on terrain -- and it turns one sun direction
-    into all of them.
+    Cropping ``region / factor`` pixels and resizing to ``region`` is the same
+    as rescaling the whole background and cropping, without allocating a
+    resampled copy of a 4K frame for every sample. The factor is clamped so the
+    crop always fits: the outside mosaics are 2304 square and a level-1 region
+    is 1920x1080, so they are enlarged slightly and the reference frames can go
+    either way -- which is the point. If every outside background were softer
+    than every reference one, softness would be a reliable cue for "no object
+    here", and the detector would learn it instead of the objects.
     """
     height, width = source.shape[:2]
-    margin = int(0.5 * math.hypot(region_width, region_height)) + 1
-    centre_x = float(rng.uniform(min(margin, width * 0.5), max(margin, width - margin)))
-    centre_y = float(rng.uniform(min(margin, height * 0.5), max(margin, height - margin)))
-    angle = float(rng.uniform(0.0, 360.0))
-    matrix = cv2.getRotationMatrix2D((centre_x, centre_y), angle, 1.0)
-    matrix[0, 2] += region_width / 2.0 - centre_x
-    matrix[1, 2] += region_height / 2.0 - centre_y
-    return cv2.warpAffine(
-        source,
-        matrix,
-        (region_width, region_height),
-        flags=cv2.INTER_LINEAR,
-        borderMode=cv2.BORDER_REFLECT_101,
-    )
+    low, high = BACKGROUND_RESCALE
+    lowest = max(region_width / width, region_height / height)
+    if rotate:
+        # A rotated crop reaches into the corners of its own bounding square.
+        lowest = math.hypot(region_width, region_height) / min(width, height)
+    factor = float(rng.uniform(max(low, lowest * 1.02), max(high, lowest * 1.25)))
+    crop_width = min(width, max(8, int(round(region_width / factor))))
+    crop_height = min(height, max(8, int(round(region_height / factor))))
+
+    if rotate:
+        margin = int(0.5 * math.hypot(crop_width, crop_height)) + 1
+        centre_x = float(rng.uniform(min(margin, width * 0.5), max(margin, width - margin)))
+        centre_y = float(rng.uniform(min(margin, height * 0.5), max(margin, height - margin)))
+        matrix = cv2.getRotationMatrix2D(
+            (centre_x, centre_y), float(rng.uniform(0.0, 360.0)), 1.0
+        )
+        matrix[0, 2] += crop_width / 2.0 - centre_x
+        matrix[1, 2] += crop_height / 2.0 - centre_y
+        crop = cv2.warpAffine(
+            source, matrix, (crop_width, crop_height),
+            flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT_101,
+        )
+    else:
+        origin_x = int(rng.integers(0, width - crop_width + 1))
+        origin_y = int(rng.integers(0, height - crop_height + 1))
+        crop = source[origin_y:origin_y + crop_height, origin_x:origin_x + crop_width]
+
+    if (crop.shape[1], crop.shape[0]) != (region_width, region_height):
+        interpolation = (
+            cv2.INTER_AREA if crop.shape[1] > region_width else cv2.INTER_LINEAR
+        )
+        crop = cv2.resize(crop, (region_width, region_height), interpolation=interpolation)
+    return np.ascontiguousarray(crop)
 
 
 def render_sample(
     rng: np.random.Generator,
     assets: SceneAssets,
     level: Optional[int] = None,
+    external_probability: Optional[float] = None,
 ) -> Tuple[np.ndarray, List[Tuple[int, float, float, float, float]]]:
     """Build one 960x540 view and its YOLO labels.
 
@@ -495,22 +655,28 @@ def render_sample(
     region_width, region_height = SOURCE_REGION_SIZES[level]
 
     frame_index = int(rng.integers(len(assets.backgrounds)))
-    origin_x = int(rng.integers(0, SOURCE_WIDTH - region_width + 1))
-    origin_y = int(rng.integers(0, SOURCE_HEIGHT - region_height + 1))
 
-    keep_real = rng.random() < REAL_FRAME_PROBABILITY
-    source = assets.originals[frame_index] if keep_real else assets.backgrounds[frame_index]
-    rotate_background = (
-        not keep_real
-        and level > 0
-        and rng.random() < ROTATED_BACKGROUND_PROBABILITY
-    )
-    if rotate_background:
-        canvas = _rotated_crop(source, rng, region_width, region_height)
-    else:
+    if external_probability is None:
+        external_probability = EXTERNAL_BACKGROUND_PROBABILITY
+    external = None
+    if len(assets.external) and rng.random() < external_probability:
+        external = assets.external.sample(rng)
+
+    # A "real" sample keeps a reference frame exactly as it was rendered,
+    # objects included, and is the only path that carries annotations.
+    keep_real = external is None and rng.random() < REAL_FRAME_PROBABILITY
+    origin_x = origin_y = 0
+    if keep_real:
+        source = assets.originals[frame_index]
+        origin_x = int(rng.integers(0, SOURCE_WIDTH - region_width + 1))
+        origin_y = int(rng.integers(0, SOURCE_HEIGHT - region_height + 1))
         canvas = source[
             origin_y:origin_y + region_height, origin_x:origin_x + region_width
         ].copy()
+    else:
+        source = external if external is not None else assets.backgrounds[frame_index]
+        rotate = level > 0 and rng.random() < ROTATED_BACKGROUND_PROBABILITY
+        canvas = _scaled_crop(source, rng, region_width, region_height, rotate)
 
     # Boxes are collected in canvas (source-pixel) coordinates and converted
     # once at the end.
@@ -524,7 +690,7 @@ def render_sample(
             placed.append(box)
             entries.append((class_index, box))
 
-    if rng.random() < 0.05 and not keep_real:
+    if rng.random() < EMPTY_SAMPLE_PROBABILITY and not keep_real:
         count = 0                                  # pure background, no objects
     else:
         count = int(rng.integers(2, 11))
@@ -563,6 +729,18 @@ def render_sample(
         placed.append(box)
         entries.append((sprite.class_index, box))
         added += 1
+
+    # Unlabelled blended patches, placed clear of everything that is labelled.
+    if rng.random() < DISTRACTOR_PROBABILITY:
+        donor = assets.external.sample(rng)
+        if donor is None:
+            donor = assets.backgrounds[int(rng.integers(len(assets.backgrounds)))]
+        wanted = int(rng.integers(*DISTRACTOR_COUNT))
+        for _ in range(wanted * 3):
+            if wanted <= 0:
+                break
+            if paste_distractor(canvas, donor, rng, placed):
+                wanted -= 1
 
     scale_x = VIEW_WIDTH / float(region_width)
     scale_y = VIEW_HEIGHT / float(region_height)

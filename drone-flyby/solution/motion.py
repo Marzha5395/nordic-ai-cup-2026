@@ -168,7 +168,15 @@ def flow_samples(
         drift_y = shift_y * scale_y
         if not all(math.isfinite(value) for value in (drift_x, drift_y)):
             continue
-        if math.hypot(drift_x, drift_y) > config.MAXIMUM_DRIFT_PER_FRAME:
+        magnitude = math.hypot(drift_x, drift_y)
+        if magnitude > config.MAXIMUM_DRIFT_PER_FRAME:
+            continue
+        # The Hanning window does not move with the ground, so a tile with
+        # little texture along the flight line -- crop rows, a road parallel
+        # to the track -- correlates best with itself at zero shift, and says
+        # so with a high response. The drone never hovers, so a shift of
+        # nothing is always that and never the ground.
+        if magnitude < config.MINIMUM_DRIFT_PER_FRAME:
             continue
         samples.append(
             (

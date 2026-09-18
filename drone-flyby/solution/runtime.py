@@ -30,6 +30,7 @@ from . import config
 from .detector import Detector
 from .motion import FlowModel, flow_samples
 from .planner import CameraPlanner
+from .recorder import record
 from .tracking import World
 
 logger = logging.getLogger(__name__)
@@ -37,22 +38,82 @@ logger = logging.getLogger(__name__)
 _detector: Optional[Detector] = None
 _detector_error: Optional[BaseException] = None
 _detector_lock = threading.Lock()
+# When the last load failed, when to try again, whether a retry is running, and
+# which reset() the retry belongs to.
+_detector_retry_at = 0.0
+_detector_loading = False
+_detector_generation = 0
+
+
+def _load_detector(generation: int) -> None:
+    """Load the model and publish it, unless a reset happened meanwhile."""
+    global _detector, _detector_error, _detector_retry_at, _detector_loading
+    try:
+        detector = Detector()
+        error = None
+    except BaseException as caught:                  # noqa: BLE001 - never fatal
+        detector, error = None, caught
+    with _detector_lock:
+        if generation != _detector_generation:
+            return                                   # reset() since; stale
+        _detector_loading = False
+        if detector is not None:
+            _detector, _detector_error = detector, None
+            logger.info('detector ready on device %s', detector.device)
+        else:
+            _detector_error = error
+            _detector_retry_at = time.monotonic() + config.DETECTOR_RETRY_SECONDS
+            logger.error(
+                'DETECTOR UNAVAILABLE, answering with no detections, retrying in '
+                '%.0f s: %r', config.DETECTOR_RETRY_SECONDS, error,
+                exc_info=(type(error), error, error.__traceback__),
+            )
 
 
 def get_detector() -> Optional[Detector]:
-    """Load the model once. A failure here must not take the server down."""
-    global _detector, _detector_error
-    if _detector is not None or _detector_error is not None:
+    """The model, or None while it is unavailable. Never raises.
+
+    The first load happens here, synchronously, during warm-up. A failure used
+    to be final for the life of the process: a server started a moment before
+    torch finished installing answered every frame of an attempt with nothing,
+    while the camera kept moving as if all was well. So a failure is retried,
+    every ``DETECTOR_RETRY_SECONDS``, on a background thread -- a load takes
+    seconds, and a frame waiting on it would be late.
+    """
+    global _detector_loading
+    if _detector is not None:
         return _detector
     with _detector_lock:
-        if _detector is None and _detector_error is None:
-            try:
-                _detector = Detector()
-                logger.info('detector ready on device %s', _detector.device)
-            except BaseException as error:           # noqa: BLE001 - never fatal
-                _detector_error = error
-                logger.exception('detector unavailable, answering with no detections')
+        if _detector is not None or _detector_loading:
+            return _detector
+        generation = _detector_generation
+        if _detector_error is None:
+            _detector_loading = True
+            first = True
+        elif time.monotonic() >= _detector_retry_at:
+            _detector_loading = True
+            first = False
+        else:
+            return None
+    if first:
+        _load_detector(generation)
+    else:
+        threading.Thread(
+            target=_load_detector, args=(generation,),
+            name='drone-detector-retry', daemon=True,
+        ).start()
     return _detector
+
+
+def detector_status() -> str:
+    """For the health endpoint: 'ready', 'loading' or the last load error."""
+    if _detector is not None:
+        return 'ready'
+    if _detector_loading:
+        return 'loading'
+    if _detector_error is not None:
+        return f'unavailable: {_detector_error!r}'[:300]
+    return 'not loaded'
 
 
 class SequenceState:
@@ -169,13 +230,17 @@ def reset(drop_detector: bool = False) -> None:
     ``drop_detector`` also unloads the model, which is only useful to a sweep
     that changes the detector's own settings between runs.
     """
-    global _detector, _detector_error
+    global _detector, _detector_error, _detector_loading, _detector_generation
+    global _detector_retry_at
     with _state_lock:
         _states.clear()
     if drop_detector:
         with _detector_lock:
             _detector = None
             _detector_error = None
+            _detector_loading = False
+            _detector_retry_at = 0.0
+            _detector_generation += 1
 
 
 def predict(request: DroneFlybyPredictRequestDto) -> DroneFlybyPredictResponseDto:
@@ -202,12 +267,14 @@ def predict(request: DroneFlybyPredictRequestDto) -> DroneFlybyPredictResponseDt
         1000.0 * (time.perf_counter() - started),
         len(annotations),
     )
-    return DroneFlybyPredictResponseDto(
+    response = DroneFlybyPredictResponseDto(
         request_id=request.request_id,
         frame=request.frame,
         annotations=annotations,
         requested_view=requested_view,
     )
+    record(request, response)
+    return response
 
 
 def _answer(request: DroneFlybyPredictRequestDto):

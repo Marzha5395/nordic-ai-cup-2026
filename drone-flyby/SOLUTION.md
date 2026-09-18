@@ -36,6 +36,17 @@ reference scene the drift at the frame centre climbs from 62.8 to 69.7 px per
 frame as the ground falls away beneath the drone — so it is re-measured from
 the last few frames only. `solution/motion.py`.
 
+One failure the reference scene never showed. Over crop rows or a road
+running along the flight line, a tile has almost no texture in the direction
+of travel. The Hanning window does not move with the ground, so such a tile
+correlates best with itself at zero shift, with a confident response. On the
+held-out flights, every flow sample under 5 px was one of these and no correct
+sample was. They dragged the fitted y-gradient to the wrong sign for the
+first forty frames, which put tracked boxes 30% of an object's height off. The
+drone never hovers, so shifts under 8 px are now discarded (see
+`MINIMUM_DRIFT_PER_FRAME`). That cut the flow error on those flights from 5.0
+to 0.16 px per frame.
+
 ## 2. The world model is what answers the frame
 
 `solution/tracking.py` keeps every object seen so far in source coordinates,
@@ -116,20 +127,75 @@ builds every training image from scratch:
 * composition happens at source resolution and is then downsampled by the
   level's exact integer factor with `INTER_AREA`, which is what the evaluator
   does, at a mix of levels 0, 1 and 2.
+* most backgrounds (62%) come from the outside terrain in `external/train`,
+  resampled by a random factor so that sharpness does not give away which
+  source a background came from;
+* unlabelled patches of terrain are blended in with the same soft masks as the
+  objects. Otherwise "blended patch" would perfectly predict "object", and on
+  new terrain anything unusual would look like one.
 
-## 5. What there is no way to measure
+The current detector (v4) was fine-tuned from v3 on `dataset4` for 18 epochs.
+Its class head was re-learned rather than carried over, because the checkpoint
+is loaded into an 80-class model before the trainer re-heads it.
 
-There is one scene, 25 frames, one instance of each class, one terrain. Every
-local number is therefore optimistic, and the settings were chosen from wide
-plateaus rather than from peaks. Two things stand in for a held-out set:
+## 5. Overfitting, and how it is measured now
 
-* `training/sweep.py` averages over several camera trajectories, because a
-  greedy policy's score on 25 frames is mostly luck (before the move cost, the
-  same settings scored 0.60 to 0.87 across six tie-breaking seeds);
-* `training/eval_levels.py --shift` recolours the frames before rendering:
-  the same objects and geometry over a scene that does not look the same. The
-  detector scores 0.90 on the frames as they are and 0.75 under a colour shift
-  well outside its training range.
+The first submission scored about 0.83 on the reference scene and **0.22 on
+validation**. The server log showed why: about 20 answered boxes per frame at
+the start of the validation flight and about 80 at the end. The detector had
+learned Helsinki. On Helsinki terrain with the objects painted out it raised
+0.01 false alarms per view; on real aerial terrain it had never seen, 4.4 per
+view (score >= 0.2). The tracker kept every one of them.
+
+The reference scene cannot measure this, because the detector is trained on
+it. So there are now three held-out measurements, none of which touch the
+training data:
+
+* **Unseen terrain.** `training/fetch_backgrounds.py` downloads public-domain
+  USGS aerial imagery over twenty kinds of ground (desert, farmland, forest,
+  mountains, coast, city). The locations are split by place. `external/train`
+  is composed into training images; `external/test` is never trained on.
+* **A detector val split over that terrain.** `dataset4`'s val split pastes
+  the objects only onto `external/test`, and it is what picks the best
+  checkpoint.
+* **Whole flights over it.** `training/synthetic_flight.py` builds 60-frame
+  flights from `external/test`: a drifting, slowly zooming camera over tiled
+  ground with objects pasted in. They are written in the reference scene's
+  layout, so `local_evaluator.py --scene synth_0` replays them unchanged.
+  `synth_*` is the tuning set. `synthB_*` (another seed, higher density) was
+  used for nothing but the final check. `training/diagnose_flight.py` splits
+  a flight's losses into hits, loose boxes, wrong classes, phantoms and misses.
+
+The flights still use the reference scene's own object cut-outs, so recall on
+them is optimistic. But every false alarm on them is real, and false alarms
+are what failed validation.
+
+| | v3 (validation 0.22) | v4 |
+|---|---|---|
+| false alarms / view, unseen terrain, level 1, score >= 0.2 | 4.41 | 0.12 |
+| detector mAP50, objects on unseen terrain (`dataset4` val) | 0.797 | 0.969 |
+| flights `synth_0..3`, end to end, before the flow fix | 0.487 | -- |
+| flights `synth_0..3`, end to end | 0.578 | 0.810 |
+| flights `synthB_0..3` (untouched), end to end | 0.693 | 0.858 |
+| reference scene, end to end | 0.828 | 0.777 |
+
+The reference scene falls a little. The detector alone does better on it
+(0.965 against 0.947 at level 1); the end-to-end loss is `hangar` and
+`medium_plane`, which enter at the top-left corner in the last five of its 25
+frames, before the camera gets there. On a scene that short that is
+trajectory luck, and the planner was not re-tuned to chase it.
+
+Rules applied to every change: tune on `synth_*`, keep a change only if it
+also holds on `synthB_*`, and ignore gains that show up only on the reference
+scene. For example, retiring tracks after two misses instead of four scored
++0.011 on the tuning flights and -0.001 on the untouched ones, so it was not
+adopted.
+
+**Recording.** `solution/recorder.py` writes every request's image, request
+and response to `recordings/<sequence_id>/` on a background thread (turn it
+off with `DRONE_RECORD=0`). The rules allow keeping the validation sequence,
+and it is the only rendered terrain besides Helsinki, so the next validation
+attempt should be kept and looked at.
 
 ## 6. Latency
 
@@ -163,6 +229,11 @@ first request: 66 ms.
 | `training/eval_levels.py` | Detector-only score per resolution level. |
 | `training/sweep.py` | Configuration variants, averaged over trajectories. |
 | `training/robustness.py` | The failures that cost an attempt rather than points. |
+| `solution/recorder.py` | Keeps every attempt's views and answers under `recordings/`. |
+| `training/fetch_backgrounds.py` | Downloads held-out and training terrain (USGS NAIP). |
+| `training/synthetic_flight.py` | Whole flights over held-out terrain, in scene layout. |
+| `training/diagnose_flight.py` | Where a replayed scene loses its points. |
+| `training/false_positives.py` | Detector false alarms per view on object-free terrain. |
 
 ## Reproducing
 
@@ -171,9 +242,16 @@ python -m venv .venv && . .venv/bin/activate
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
 
-python training/build_dataset.py --output dataset --train 24000 --val 1000
-python training/train.py --data dataset/drone.yaml --scale s --epochs 45 --batch 16
-cp runs/p2s/weights/best.pt weights/detector.pt
+python training/fetch_backgrounds.py --pixels 2304          # external/train, external/test
+python training/build_dataset.py --output dataset4 --cache dataset4/backgrounds \
+    --train 30000 --val 1500 --seed 909090 --workers 20
+python training/train.py --data dataset4/drone.yaml --scale s \
+    --weights runs/p2s_v3/weights/best.pt --epochs 18 --batch 16 --workers 16 --name p2s_v4
+cp runs/p2s_v4/weights/best.pt weights/detector.pt
+
+python training/synthetic_flight.py                                   # synth_0..3
+python training/synthetic_flight.py --seed 777 --prefix synthB --density 1.6
+python training/sweep.py --scene synth_0,synth_1,synth_2,synth_3 --seeds 1 --only baseline
 
 python api.py                       # in one terminal
 python local_evaluator.py --realtime  # in another

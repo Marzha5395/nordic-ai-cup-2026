@@ -54,8 +54,8 @@ class Track:
 
     __slots__ = (
         'track_id', 'x1', 'y1', 'x2', 'y2', 'bias_x', 'bias_y', 'class_scores',
-        'miss_probability', 'observations', 'last_seen_frame', 'created_frame',
-        'misses', 'best_score',
+        'scores', 'observations', 'last_seen_frame', 'created_frame',
+        'misses', 'looks',
     )
 
     def __init__(self, track_id, detection: Detection, frame: int):
@@ -65,14 +65,20 @@ class Track:
         self.bias_y = 0.0
         self.class_scores = np.zeros(NUMBER_OF_CLASSES, dtype=np.float64)
         self.class_scores[detection.class_index] = detection.score
-        # Kept as the probability that every sighting so far was a mistake, so
-        # that repeated weak sightings accumulate into a strong track.
-        self.miss_probability = 1.0 - detection.score
-        self.best_score = detection.score
+        # The individual detection scores, best first. Kept rather than
+        # combined, because how they are combined turns out to matter: a
+        # noisy-or over ten sightings at 0.2 comes out at 0.89, which is how a
+        # rock that reads faintly as a tank every time the camera passes ends up
+        # ranked above real objects, and mAP is decided by that ranking.
+        self.scores = [detection.score]
         self.observations = 1
         self.last_seen_frame = frame
         self.created_frame = frame
         self.misses = 0
+        # Every time this track was inside the view and should have been seen,
+        # whether or not it was. A real object is found on nearly every look; a
+        # patch of terrain that sometimes reads as an object is not.
+        self.looks = 1
 
     @property
     def box(self) -> Tuple[float, float, float, float]:
@@ -137,20 +143,39 @@ class Track:
         self.y2 = centre_y + height / 2.0
 
         self.class_scores[detection.class_index] += detection.score
-        self.miss_probability *= (1.0 - detection.score)
-        self.best_score = max(self.best_score, detection.score)
+        self.scores.append(detection.score)
+        if len(self.scores) > config.SCORE_HISTORY:
+            self.scores.sort(reverse=True)
+            del self.scores[config.SCORE_HISTORY:]
         self.observations += 1
         self.last_seen_frame = frame
         self.misses = 0
 
+    @property
+    def hit_rate(self) -> float:
+        return min(1.0, self.observations / max(1, self.looks))
+
     def confidence(self, frame: int) -> float:
+        """How likely this track is to be a real object, for ranking.
+
+        mAP is decided entirely by the order predictions are considered in, so
+        this has to separate the three ways a track can be wrong: it was never
+        a strong detection, it was not the same thing twice, or it has not been
+        looked at recently enough to still be where it says it is.
+        """
+        best = sorted(self.scores, reverse=True)[:config.STRENGTH_SAMPLES]
+        strength = sum(best) / len(best)
+
         total = float(self.class_scores.sum())
         purity = float(self.class_scores.max()) / total if total > 0 else 0.0
-        strength = 1.0 - self.miss_probability
+
+        floor = config.SUPPORT_FLOOR
+        support = floor + (1.0 - floor) * self.hit_rate
+
         staleness = max(0, frame - self.last_seen_frame)
         decay = math.exp(-config.CONFIDENCE_STALENESS_DECAY * staleness)
-        value = strength * purity * decay
-        return float(min(0.999, max(0.0, value)))
+
+        return float(min(0.999, max(0.0, strength * purity * support * decay)))
 
 
 class World:
@@ -236,8 +261,13 @@ class World:
             used_tracks.add(id(track))
             track.correct(detections[detection_index], frame)
 
-        for track in expected:
-            if id(track) not in used_tracks:
+        # A look is any frame in which the track was either expected or found:
+        # a track matched while only partly inside the view was still seen.
+        expected_ids = {id(track) for track in expected}
+        for track in reachable:
+            if id(track) in expected_ids or id(track) in used_tracks:
+                track.looks += 1
+            if id(track) in expected_ids and id(track) not in used_tracks:
                 track.misses += 1
 
         for detection_index, detection in enumerate(detections):
@@ -261,6 +291,7 @@ class World:
         return ((right - left) * (bottom - top)) / area >= required
 
     def _retire(self) -> None:
+        """Drop tracks the camera keeps looking at and keeps not finding."""
         kept = []
         for track in self.tracks:
             limit = (
@@ -268,6 +299,9 @@ class World:
                 else config.MAXIMUM_MISSES
             )
             if track.misses >= limit:
+                continue
+            if (track.looks >= config.HIT_RATE_MINIMUM_LOOKS
+                    and track.hit_rate < config.MINIMUM_HIT_RATE):
                 continue
             kept.append(track)
         self.tracks = kept
@@ -286,8 +320,11 @@ class World:
                 kept.append(track)
                 continue
             duplicate.class_scores += track.class_scores
-            duplicate.miss_probability *= track.miss_probability
+            duplicate.scores = sorted(
+                duplicate.scores + track.scores, reverse=True
+            )[:config.SCORE_HISTORY]
             duplicate.observations += track.observations
+            duplicate.looks += track.looks
             duplicate.last_seen_frame = max(duplicate.last_seen_frame, track.last_seen_frame)
         self.tracks = kept
 

@@ -17,6 +17,9 @@ DETECTOR_CONFIDENCE = 0.05
 DETECTOR_NMS_IOU = 0.55
 DETECTOR_MAX_DETECTIONS = 120
 DETECTOR_HALF_PRECISION = True
+# A model that failed to load is tried again this often, in the background, so
+# one bad start does not cost a whole attempt.
+DETECTOR_RETRY_SECONDS = 20.0
 
 # --------------------------------------------------------------------------- #
 # Motion
@@ -26,6 +29,10 @@ DETECTOR_HALF_PRECISION = True
 # not uniform: it is linear in image position and spans roughly 56 to 76 source
 # pixels per frame across one frame. See solution/motion.py for the numbers.
 MAXIMUM_DRIFT_PER_FRAME = 260.0
+# Below this a tile measured the window rather than the ground (see motion.py).
+# On held-out flights every sample under 5 px was wrong and none over it was;
+# the true drift is about 65 px a frame.
+MINIMUM_DRIFT_PER_FRAME = 8.0
 FLOW_TILE_PIXELS = 256                      # view pixels per correlated tile
 FLOW_SAMPLE_HISTORY = 2000
 # The gradients hold over a sequence; the offset does not, so it is re-measured
@@ -58,6 +65,17 @@ SIZE_SMOOTHING = 0.45
 MAXIMUM_MISSES = 4
 UNCONFIRMED_MISSES = 2                      # a one-sighting track dies faster
 CONFIDENCE_STALENESS_DECAY = 0.030          # per frame since the last sighting
+# Confidence is the mean of a track's strongest few detections rather than a
+# noisy-or over all of them: ten faint sightings of the same rock should stay
+# faint, not add up to a certainty that outranks real objects.
+STRENGTH_SAMPLES = 3
+SCORE_HISTORY = 12
+# How much of the confidence a track keeps when it is never found on a look.
+SUPPORT_FLOOR = 0.35
+# A track the camera has looked at this many times, and found this rarely, is
+# terrain rather than an object.
+HIT_RATE_MINIMUM_LOOKS = 4
+MINIMUM_HIT_RATE = 0.34
 MINIMUM_OUTPUT_CONFIDENCE = 0.02
 OUTPUT_NMS_IOU_SAME_CLASS = 0.45
 OUTPUT_NMS_IOU_ANY_CLASS = 0.70
