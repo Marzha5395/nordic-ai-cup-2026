@@ -22,6 +22,7 @@ def validate_seed(
     camping=True,
     world_memory=False,
     tuning=None,
+    settings=None,
 ):
     started = time.perf_counter()
     sim = SimulationCore(seed=seed)
@@ -38,6 +39,10 @@ def validate_seed(
             world_memory=world_memory,
             tuning=tuning,
         )
+    elif policy_name == "forager":
+        from src.utils.controllers.forager_policy import ForagerPolicy
+
+        policy = ForagerPolicy(settings=settings)
     actions = []
     peak_population = len(sim.env.agents)
     decision_seconds = 0.0
@@ -84,6 +89,11 @@ def validate_seed(
                             "trees": len(policy.agents[agent.agent_id].trees),
                             "retired": policy.agents[agent.agent_id].retired,
                             "stuck": policy.agents[agent.agent_id].stuck,
+                        } if policy_name == "survival" and agent.agent_id in policy.agents else {
+                            "localized": policy.agents[agent.agent_id].localized,
+                            "senescent": policy.agents[agent.agent_id].senescent,
+                            "target": policy.agents[agent.agent_id].target_kind,
+                            "stuck": policy.agents[agent.agent_id].stuck,
                         } if policy is not None and agent.agent_id in policy.agents else None,
                     }
                 )
@@ -109,7 +119,14 @@ def validate_seed(
         actions = [(action.agent_id, action) for action in decisions]
         rest_ticks += sum(action.move_distance == 0 for action in decisions)
         agent_ticks += len(decisions)
-        if policy is not None:
+        if policy_name == "forager":
+            for agent in sim.env.agents:
+                memory = policy.agents[agent.agent_id]
+                if memory.localized:
+                    error = math.hypot(memory.last_x - agent.x, memory.last_y - agent.y)
+                    localization_error += error
+                    localization_max = max(localization_max, error)
+        elif policy is not None:
             for agent in sim.env.agents:
                 memory = policy.agents[agent.agent_id]
                 ox, oy, heading = origins[agent.agent_id]
@@ -156,7 +173,8 @@ def validate_seed(
         "predictive_escape": predictive_escape,
         "camping": camping,
         "world_memory": world_memory,
-        "tuning": policy.tuning if policy is not None else {},
+        "tuning": policy.tuning if policy_name == "survival" else {},
+        "settings": policy.settings if policy_name == "forager" else {},
         "time": round(sim.env.time, 1),
         "score": round(sim.env.score, 3),
         "alive": len(sim.env.agents),
@@ -186,7 +204,7 @@ def run_seed(args):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seeds", nargs="+", type=int, default=[1, 2, 3])
-    parser.add_argument("--policy", choices=["survival", "dummy"], default="survival")
+    parser.add_argument("--policy", choices=["survival", "forager", "dummy"], default="survival")
     parser.add_argument("--duration", type=float, default=3000.0)
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--progress", type=float, default=0.0)
@@ -197,6 +215,7 @@ def main():
     parser.add_argument("--world-memory", action="store_true")
     parser.add_argument("--tuning", type=json.loads)
     parser.add_argument("--override-tuning", type=json.loads)
+    parser.add_argument("--settings", type=json.loads)
     parser.add_argument("--output")
     args = parser.parse_args()
     if args.override_tuning is not None:
@@ -214,6 +233,7 @@ def main():
             not args.no_camping,
             args.world_memory,
             args.tuning,
+            args.settings,
         )
         for seed in args.seeds
     ]
