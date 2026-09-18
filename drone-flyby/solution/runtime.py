@@ -130,6 +130,10 @@ class SequenceState:
         self.previous_image_frame: Optional[int] = None
         self.previous_frame: Optional[int] = None
         self.frames_handled = 0
+        # The last camera command sent, as (level, x, y). The service can
+        # capture a view before the previous command lands, so this, not the
+        # view, is where the camera will be when the next command arrives.
+        self.last_command: Optional[Tuple[int, int, int]] = None
 
 
 _states: Dict[str, SequenceState] = {}
@@ -365,7 +369,30 @@ def _choose_view(
     request: DroneFlybyPredictRequestDto,
     velocity: Tuple[float, float],
 ) -> Optional[RequestedViewDto]:
+    """Pick the next camera position, legal wherever the camera turns out to be.
+
+    On validation about one frame in five arrived showing the camera where it
+    was before the previous command: the service applies commands in the
+    order they arrive, but does not wait for one before capturing the next
+    view. A move planned from the view alone was then measured from the
+    previous command instead, and three were refused for being too long. So
+    while the view lags the last command, the move is planned from that
+    command. If it was refused after all, the feedback names it and the view
+    is trusted again.
+    """
     view = request.view
+    at_view = (view.resolution_level, view.center_x, view.center_y)
+
+    pending = state.last_command
+    feedback = request.camera_command_feedback
+    if pending is not None and feedback is not None:
+        refused = feedback.requested_view
+        if (refused.resolution_level, refused.center_x, refused.center_y) == pending:
+            pending = None                           # it never took effect
+    if pending == at_view:
+        pending = None                               # the view has caught up
+    state.last_command = pending
+
     chosen = state.planner.choose(
         current_level=view.resolution_level,
         current_centre=(view.center_x, view.center_y),
@@ -373,28 +400,23 @@ def _choose_view(
         tracks=state.world.tracks,
         frame=request.frame,
         drift=velocity,
+        pending=pending,
     )
     if chosen is None:
         return None
-    level, centre_x, centre_y = chosen
-    if (level, centre_x, centre_y) == (
-        view.resolution_level, view.center_x, view.center_y
-    ):
-        return None                                   # already there, hold
+    level, centre_x, centre_y = (int(value) for value in chosen)
+    if (level, centre_x, centre_y) == (pending if pending is not None else at_view):
+        return None                                   # already going there, hold
 
-    # The same three checks the evaluator runs. A command it refuses costs a
-    # frame of camera movement, so never send one.
+    # The same three checks the evaluator runs, from where the camera will be
+    # when this command lands. A command it refuses costs a frame of camera
+    # movement, so never send one.
+    origin_level, origin_x, origin_y = pending if pending is not None else at_view
     rejection = describe_camera_rejection(
-        view.resolution_level,
-        (view.center_x, view.center_y),
-        level,
-        (centre_x, centre_y),
+        origin_level, (origin_x, origin_y), level, (centre_x, centre_y),
     )
     if rejection is not None:
         logger.warning('dropping illegal camera command: %s', rejection)
         return None
-    return RequestedViewDto(
-        resolution_level=int(level),
-        center_x=int(centre_x),
-        center_y=int(centre_y),
-    )
+    state.last_command = (level, centre_x, centre_y)
+    return RequestedViewDto(resolution_level=level, center_x=centre_x, center_y=centre_y)
