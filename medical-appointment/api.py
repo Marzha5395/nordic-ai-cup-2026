@@ -6,8 +6,15 @@ and leave the transport alone.
 The URL you submit is used exactly as you give it, path included, so if you
 keep the ``/predict`` route below then submit ``http://<your-host>:9054/predict``
 rather than just the host.
+
+This server runs Astra's solution (``solver.MedicalSolver``: faster-whisper
+speech recognition, then a local llama.cpp language model that answers every
+question with a verbatim evidence quote). ``example.py`` and ``main.py`` are the
+separate Qwen/transformers pipeline and are not used here. Prepare the models
+first with ``python prepare_models.py --build-cuda`` (see AGENTS.md).
 """
 
+from contextlib import asynccontextmanager
 import datetime
 import logging
 import time
@@ -16,8 +23,8 @@ import uvicorn
 from fastapi import FastAPI
 
 from dtos import ASRQuestionRequestDto, ASRQuestionResponseDto
-from example import predict
-from utils import validate_response
+from solver import fallback_response, get_solver
+from utils import audio_duration_seconds, decode_audio, validate_response
 
 HOST = '0.0.0.0'
 PORT = 9054
@@ -25,8 +32,53 @@ PORT = 9054
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app):
+    # Load and warm both models before the first request: there is no warm-up
+    # allowance, and the first inference is the slowest.
+    solver = get_solver()
+    try:
+        yield
+    finally:
+        solver.llm.close()
+        get_solver.cache_clear()
+
+
+app = FastAPI(lifespan=lifespan)
 start_time = time.time()
+
+
+### CALL YOUR CUSTOM MODEL VIA THIS FUNCTION ###
+
+def predict(request: ASRQuestionRequestDto) -> ASRQuestionResponseDto:
+    """Answer every question about one conversation.
+
+    The whole conversation and all of its questions arrive together, so the
+    expensive half — transcription — is paid once here and shared by every
+    answer. Never raises: an error falls back to answering no everywhere,
+    which still returns a valid body for all ten questions.
+    """
+    try:
+        audio_bytes = decode_audio(request.audio_base64)
+        duration = audio_duration_seconds(audio_bytes)
+        logger.info(
+            '%s (%.1f s, %.1f MB): %d questions',
+            request.audio_filename,
+            duration if duration is not None else float('nan'),
+            len(audio_bytes) / 1e6,
+            len(request.questions),
+        )
+        response = get_solver().predict(audio_bytes, request.questions)
+    except Exception:
+        logger.exception('Prediction failed for %s', request.audio_filename)
+        response = fallback_response(request.questions)
+
+    return ASRQuestionResponseDto(
+        answers=response.answers,
+        evidence_start=response.evidence_start,
+        evidence_end=response.evidence_end,
+    )
 
 
 @app.post('/predict', response_model=ASRQuestionResponseDto)

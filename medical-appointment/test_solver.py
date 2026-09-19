@@ -150,7 +150,7 @@ def test_evidence_does_not_expand_into_an_unrelated_topic():
 
 
 def test_invalid_base64_still_returns_well_formed_response():
-    from example import predict
+    from api import predict
     request = ASRQuestionRequestDto(audio_base64='a', audio_filename='x.mp3', questions=['Asthma?'])
     response = predict(request)
     validate_response(response, 1)
@@ -158,10 +158,10 @@ def test_invalid_base64_still_returns_well_formed_response():
 
 
 def test_empty_audio_still_returns_well_formed_response():
-    from example import predict
+    from api import predict
     request = ASRQuestionRequestDto(audio_base64=base64.b64encode(b'bad audio').decode(),
                                    audio_filename='../../untrusted.mp3', questions=['Asthma?'])
-    with patch('example.get_solver') as factory:
+    with patch('api.get_solver') as factory:
         factory.return_value.predict.side_effect = ValueError('bad audio')
         response = predict(request)
     validate_response(response, 1)
@@ -172,12 +172,11 @@ def test_http_contract_without_loading_models():
     from fastapi.testclient import TestClient
     from api import app
     from solver import fallback_response
-    with patch('example.get_solver') as factory:
+    with patch('api.get_solver') as factory:
         factory.return_value.predict.return_value = fallback_response(['Anything?'])
-        with patch('api.get_solver'):
-            with TestClient(app) as client:
-                response = client.post('/predict', json={
-                    'audio_base64': '', 'audio_filename': 'x.mp3', 'questions': ['Anything?'],
-                })
-                assert response.status_code == 200
-                validate_response(type(fallback_response([])).model_validate(response.json()), 1)
+        with TestClient(app) as client:
+            response = client.post('/predict', json={
+                'audio_base64': '', 'audio_filename': 'x.mp3', 'questions': ['Anything?'],
+            })
+            assert response.status_code == 200
+            validate_response(type(fallback_response([])).model_validate(response.json()), 1)

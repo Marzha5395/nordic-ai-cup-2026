@@ -58,7 +58,7 @@ class PendingCommandTests(unittest.TestCase):
         from submission import FlybyPredictor
         from test_solution import FakeDetector, request_for
 
-        predictor = FlybyPredictor(FakeDetector(), policy='adaptive')
+        predictor = FlybyPredictor(FakeDetector(), policy='adaptive', lag='resend')
         state = Sequence(3840, 2160)
         state.pending_command = (1, 2880, 540)
         state.last_view = (0, 1920, 1080)
@@ -88,8 +88,38 @@ class PendingCommandTests(unittest.TestCase):
         command = predictor.select_view(request_for(level=2, center=(2000, 900)), state, False)
         self.assertEqual((command.center_x, command.center_y), (960, 540))
         # Without the option the policy always decides afresh.
-        predictor.hold_pending = False
+        predictor.lag = 'none'
         state.pending_command = (1, 2880, 540)
         state.last_view = (0, 1920, 1080)
         command = predictor.select_view(request_for(level=0), state, False)
         self.assertEqual((command.center_x, command.center_y), (960, 540))
+
+
+class PlanAheadTests(unittest.TestCase):
+    def test_plans_from_the_pending_view_and_only_sends_moves_legal_from_both(self):
+        from dtos import RequestedViewDto
+        from solution import Sequence
+        from submission import FlybyPredictor
+        from test_solution import FakeDetector, request_for
+
+        predictor = FlybyPredictor(FakeDetector(), policy='adaptive', lag='ahead')
+        seen = []
+
+        def choose(request, state, motion_ok):
+            seen.append((request.view.resolution_level, request.view.center_x, request.view.center_y, request.camera_constraints.maximum_center_delta))
+            return RequestedViewDto(resolution_level=1, center_x=target[0], center_y=target[1])
+
+        predictor.choose = choose
+        state = Sequence(3840, 2160)
+        # Camera still at the full view; our command to L1 (2880, 540) has not landed yet.
+        target = (2880, 1100)
+        state.pending_command, state.last_view = (1, 2880, 540), (0, 1920, 1080)
+        command = predictor.select_view(request_for(level=0), state, False)
+        self.assertEqual(seen[-1], (1, 2880, 540, 1102.0))  # planned as if the camera were already there
+        self.assertEqual((command.center_x, command.center_y), target)  # legal from L1 (2880, 540) and from L0
+        # From the pending L1 view a move to the far corner is fine, but seen from the current L2 view it is too
+        # far, so the pending command is resent instead.
+        target = (2880, 1620)
+        state.pending_command, state.last_view = (1, 2400, 800), (2, 2300, 700)
+        command = predictor.select_view(request_for(level=2, center=(2300, 700)), state, False)
+        self.assertEqual((command.resolution_level, command.center_x, command.center_y), (1, 2400, 800))

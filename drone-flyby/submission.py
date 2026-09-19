@@ -7,21 +7,23 @@ import threading
 import cv2
 
 from recorder import record
-from dtos import RequestedViewDto
+from dtos import ALLOWED_RESOLUTION_LEVELS, MAXIMUM_CENTER_DELTA_PIXELS, RequestedViewDto
 from solution import Predictor, legal_view
-from utils import describe_camera_rejection
+from utils import center_bounds_for_level, describe_camera_rejection, source_region_for_view
 
 
 ROOT = Path(__file__).resolve().parent
 
 
 class FlybyPredictor(Predictor):
-    def __init__(self, detector, policy='full', max_sequences=8, hold_pending=True):
+    def __init__(self, detector, policy='full', max_sequences=8, lag='ahead'):
         if policy not in ('full', 'overview', 'adaptive'):
             raise ValueError('Camera policy must be full, overview, or adaptive')
+        if lag not in ('none', 'resend', 'ahead'):
+            raise ValueError('Lag handling must be none, resend, or ahead')
         super().__init__(detector, max_sequences=max_sequences)
         self.policy = policy
-        self.hold_pending = hold_pending
+        self.lag = lag
 
     def select_view(self, request, state, motion_ok):
         """Choose the next view, but resend a command the service has not applied yet.
@@ -37,15 +39,39 @@ class FlybyPredictor(Predictor):
         pending = getattr(state, 'pending_command', None)
         unmoved = getattr(state, 'last_view', None) == view
         state.last_view = view
-        if (self.hold_pending and pending is not None and pending != view and unmoved
-                and request.camera_command_feedback is None
-                and pending[0] in request.camera_constraints.allowed_resolution_levels
-                and describe_camera_rejection(view[0], view[1:], pending[0], pending[1:]) is None):
+        waiting = pending is not None and pending != view and request.camera_command_feedback is None
+        legal_here = lambda level, x, y: level in request.camera_constraints.allowed_resolution_levels and describe_camera_rejection(view[0], view[1:], level, (x, y)) is None
+        command = None
+        if self.lag == 'ahead' and waiting:
+            # Commands land in order, so an unrejected last command that is not the view is still to come.
+            # Plan the next move from there, so the camera keeps moving every frame, and send it only if it
+            # is also legal from where the camera is now; otherwise resend the pending command if that is legal.
+            planned = self.choose(self.from_view(request, pending), state, motion_ok)
+            if planned is not None and legal_here(planned.resolution_level, planned.center_x, planned.center_y):
+                command = planned
+            elif legal_here(*pending):
+                command = RequestedViewDto(resolution_level=pending[0], center_x=pending[1], center_y=pending[2])
+        elif self.lag == 'resend' and waiting and unmoved and legal_here(*pending):
             command = RequestedViewDto(resolution_level=pending[0], center_x=pending[1], center_y=pending[2])
-        else:
+        if command is None:
             command = self.choose(request, state, motion_ok)
         state.pending_command = None if command is None else (command.resolution_level, command.center_x, command.center_y)
         return command
+
+    @staticmethod
+    def from_view(request, view):
+        """The same request, but as if the camera were already at ``view`` (level, x, y)."""
+        level, x, y = view
+        bounds = []
+        for allowed in ALLOWED_RESOLUTION_LEVELS[level]:
+            x1, x2, y1, y2 = center_bounds_for_level(allowed)
+            bounds.append({'resolution_level': allowed, 'width': request.view.width, 'height': request.view.height,
+                           'minimum_center_x': x1, 'maximum_center_x': x2, 'minimum_center_y': y1, 'maximum_center_y': y2})
+        constraints = {'maximum_center_delta': MAXIMUM_CENTER_DELTA_PIXELS[level], 'allowed_resolution_levels': list(ALLOWED_RESOLUTION_LEVELS[level]),
+                       'center_bounds': bounds, 'full_view_reset_exempt_from_delta': request.camera_constraints.full_view_reset_exempt_from_delta}
+        shifted = request.view.model_copy(update={'resolution_level': level, 'center_x': x, 'center_y': y,
+                                                  'source_region_xyxy': list(source_region_for_view(level, x, y))})
+        return request.model_copy(update={'view': shifted, 'camera_constraints': type(request.camera_constraints).model_validate(constraints)})
 
     def choose(self, request, state, motion_ok):
         if self.policy == 'full' or (self.policy == 'overview' and request.view.resolution_level > 0):

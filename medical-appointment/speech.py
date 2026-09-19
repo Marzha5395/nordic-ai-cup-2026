@@ -35,13 +35,24 @@ class SpeechRecognizer:
         model_path = Path(os.getenv('ASR_MODEL', str(ROOT / 'models' / model_name)))
         if not model_path.exists():
             raise FileNotFoundError(f'ASR model missing at {model_path}. Run prepare_models.py first.')
-        self.model = WhisperModel(
-            str(model_path), device=self.device,
-            compute_type=os.getenv('ASR_COMPUTE_TYPE', 'int8_float16' if self.device == 'cuda' else 'int8'),
-            cpu_threads=int(os.getenv('ASR_THREADS', '4')), local_files_only=True,
-        )
+        compute_type = os.getenv('ASR_COMPUTE_TYPE', 'int8_float16' if self.device == 'cuda' else 'int8')
+        self.model = self._load(model_path, compute_type)
+        if self.device == 'cuda' and compute_type == 'int8_float16' and not os.getenv('ASR_COMPUTE_TYPE'):
+            # CTranslate2's int8 GEMM is not supported by cuBLAS on every GPU (RTX 50-series fails with
+            # CUBLAS_STATUS_NOT_SUPPORTED). Test once, and fall back to float16 there.
+            try:
+                self.warmup()
+            except RuntimeError as error:
+                if 'CUBLAS_STATUS_NOT_SUPPORTED' not in str(error):
+                    raise
+                logger.warning('int8_float16 is not supported on this GPU; using float16 for speech recognition')
+                self.model = self._load(model_path, 'float16')
         self.batch_size = int(os.getenv('ASR_BATCH_SIZE', '1' if self.device == 'cuda' else '0'))
         self.batched = BatchedInferencePipeline(self.model) if self.batch_size else None
+
+    def _load(self, model_path, compute_type):
+        return WhisperModel(str(model_path), device=self.device, compute_type=compute_type,
+                            cpu_threads=int(os.getenv('ASR_THREADS', '4')), local_files_only=True)
 
     def transcribe(self, audio_bytes):
         from solver import Transcript, Word

@@ -682,6 +682,14 @@
       "score": 0.41228208142983613,
       "camera_policy": "adaptive",
       "note": "recorded: 104 of 237 views showed the view from before the previous command (commands landing one frame late); 17 moves rejected"
+    },
+    {
+      "model": "flyby_v6",
+      "attempt": "dddd557655f845a981d673d970851cf2",
+      "score": 0.32642761516890717,
+      "camera_policy": "adaptive",
+      "lag_handling": "resend",
+      "note": "recorded: 17 frames skipped (network), 108 views still at the old position; resending made the camera wait a frame each time"
     }
   ],
   "interpretation": [
@@ -689,5 +697,5 @@
     "The recorded validation views were only looked at to identify domain differences; they are not used for training or scoring.",
     "Helsinki is training data; its score is a sanity check only."
   ],
-  "camera_policy_choice": "adaptive, chosen by validation (0.412 vs 0.34 for full with the same weights). Commands the service has not applied yet are resent (submission.FlybyPredictor.hold_pending): in lag_replay.py with 44% of commands one frame late, adaptive went from 23 rejected moves to 0 (mean mAP 0.6245 -> 0.6327 on the held-out flights); with no lag it changes nothing (0.6225 both)."
+  "camera_policy_choice": "adaptive, chosen by validation (0.412 vs 0.34 for full with the same weights). Late commands: the service applies about 44% of commands one frame late. lag=\"ahead\" (default) plans the next move from the pending command and sends it only if it is also legal from the current view. lag_replay.py, 8 held-out flights, 44% late: none 0.6245 (23 rejected), resend 0.6327 (0), ahead 0.6408 (0); no lag: 0.6225 for all."
 }

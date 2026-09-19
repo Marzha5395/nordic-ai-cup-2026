@@ -54,7 +54,7 @@ def main():
     parser.add_argument('--weights', default='weights/flyby_v6.pt')
     parser.add_argument('--policy', default='adaptive')
     parser.add_argument('--late', type=float, default=0.44, help='Probability that a command lands one frame late (validation: 104/237)')
-    parser.add_argument('--hold-pending', action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument('--lag', choices=['none', 'resend', 'ahead'], default='ahead', help='FlybyPredictor lag handling')
     parser.add_argument('--scenes', default='heldout_flight_0,heldout_flight_1,heldout_flight_2,heldout_flight_3,heldout_flightB_0,heldout_flightB_1,heldout_flightB_2,heldout_flightB_3')
     parser.add_argument('--seed', type=int, default=7)
     args = parser.parse_args()
@@ -64,10 +64,10 @@ def main():
     detector = TorchDetector(args.weights, width=960, threshold=0.05, canonical=False)
     results = {}
     for scene in args.scenes.split(','):
-        engine = FlybyPredictor(detector, policy=args.policy, hold_pending=args.hold_pending)
+        engine = FlybyPredictor(detector, policy=args.policy, lag=args.lag)
         results[scene] = replay(engine, scene, args.late, args.seed)
     scores = [value for value, _ in results.values()]
-    print(json.dumps({'policy': args.policy, 'late': args.late, 'hold_pending': args.hold_pending, 'mean_map50': round(float(np.mean(scores)), 4),
+    print(json.dumps({'policy': args.policy, 'late': args.late, 'lag_handling': args.lag, 'mean_map50': round(float(np.mean(scores)), 4),
                       'rejected_moves': sum(count for _, count in results.values()), 'per_scene': {k: round(v, 3) for k, (v, _) in results.items()}}))
 
 
