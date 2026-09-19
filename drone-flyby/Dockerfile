@@ -12,8 +12,8 @@ RUN pip install --no-cache-dir -r requirements-gpu.txt
 
 # Your model and the server. The sample data under src/ is not copied: it is
 # 400 MB and only local_evaluator.py needs it.
-COPY dtos.py utils.py example.py api.py detector.py gpu_detector.py motion.py solution.py submission.py ./
-COPY weights/flyby_v2.pt weights/flyby_v2.runtime.json ./weights/
+COPY dtos.py utils.py example.py api.py detector.py gpu_detector.py motion.py solution.py submission.py recorder.py ./
+COPY weights/flyby_v6.pt weights/flyby_v6.runtime.json ./weights/
 
 ENV YOLO_OFFLINE=true YOLO_AUTOINSTALL=false
 

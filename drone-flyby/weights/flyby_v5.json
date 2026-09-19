@@ -1,0 +1,594 @@
+{
+  "weights_sha256": "407938987b485339c800928e675e44d3883a082bddea9a54ebb2cd1c04b424e8",
+  "training": {
+    "seed": 2026,
+    "image_size": 640,
+    "p2": true,
+    "photometric": true,
+    "appearance": true,
+    "class_weights": {
+      "hangar": 0.057100001722574234,
+      "helicopter": 0.057100001722574234,
+      "jet_plane": 0.057100001722574234,
+      "large_launcher": 0.057100001722574234,
+      "large_tower": 0.057100001722574234,
+      "medium_launcher": 0.06210000067949295,
+      "medium_plane": 0.05820000171661377,
+      "mine_roller": 0.057100001722574234,
+      "small_launcher": 0.08309999853372574,
+      "small_plane": 0.061900001019239426,
+      "small_tower": 0.057100001722574234,
+      "ta-ta": 0.08720000088214874,
+      "tank": 0.060499999672174454,
+      "condor": 0.057100001722574234,
+      "jammer": 0.06870000064373016,
+      "spacecraft": 0.0617000013589859
+    },
+    "planned_steps": 10000,
+    "batch_size": 12,
+    "gradient_accumulation": 1,
+    "learning_rate": 0.001,
+    "antialiased_resampling": true,
+    "initial_weights_sha256": "43fa63102922e0701501241b307420d24fc55e080816888b18bf8c6f96b1a45a",
+    "training_code_sha256": {
+      "train_terrain.py": "ee9c5224297b039d3a3f58757c51d68480a6dbe950ddd1b985381ce5af4566dd",
+      "terrain_data.py": "5113e41208167da95d8be881620690da351c1ea5ee1b5873bab908dc1f9e044b",
+      "sprites.py": "734ab0fe4d4a01e0be8b6c98c2728b4f2e3cafe2fa1e0a34fec01e8c679f47ae"
+    },
+    "classes": [
+      "hangar",
+      "helicopter",
+      "jet_plane",
+      "large_launcher",
+      "large_tower",
+      "medium_launcher",
+      "medium_plane",
+      "mine_roller",
+      "small_launcher",
+      "small_plane",
+      "small_tower",
+      "ta-ta",
+      "tank",
+      "condor",
+      "jammer",
+      "spacecraft"
+    ],
+    "source_frames": 25,
+    "annotation_sha256": "10bce6f2779bc43ebe58b8d787eb40bc997c3de70f8b0ceb4b0f2e7718fc3283",
+    "sprites_per_class": {
+      "hangar": 3,
+      "helicopter": 18,
+      "jet_plane": 21,
+      "large_launcher": 20,
+      "large_tower": 18,
+      "medium_launcher": 5,
+      "medium_plane": 4,
+      "mine_roller": 2,
+      "small_launcher": 25,
+      "small_plane": 9,
+      "small_tower": 19,
+      "ta-ta": 25,
+      "tank": 24,
+      "condor": 9,
+      "jammer": 12,
+      "spacecraft": 22
+    },
+    "terrain_tiles": 156,
+    "selection": "fixed training schedule, final exponential moving average; measured only by heldout_eval.py on held-out terrain places",
+    "augmentation": "80% SAM cut-outs composited at source resolution on outside terrain (train places only) or object-free reference ground, with unlabelled look-alike patches, reduced by the view level factor with INTER_AREA; 20% real reference crops; quarter turns, flips, colour, blur, noise",
+    "completed_steps": 10000,
+    "elapsed_seconds": 1979.16
+  },
+  "deployment": {
+    "device": "cuda:0",
+    "input_width": 960,
+    "canonical": false,
+    "confidence": 0.05,
+    "camera_policy": "full",
+    "tta": "none",
+    "runtime_external_api_calls": false
+  },
+  "selection": "Chosen over v3 (same recipe without per-object restyling and global photometric augmentation) and V2 on held-out places only; Helsinki was not used for any choice. Adaptive policy chosen over full for class balance (worst class 0.32 vs 0.19 on the held-out flights, equal mean on the re-lit flights). 2x level-0 upsampling was rejected: +0.125 on plain-pasted flights but -0.043 on re-lit ones. UPDATE after validation 0.341 (served with adaptive): through the quick tunnel a real 1.5 MB request took 243-446 ms, so about half the frames were never sent; the service also rejected moves computed from stale views. With +250 ms simulated latency on the 8 held-out flights, full scored 0.336 vs adaptive 0.316, and full cannot be desynchronised, so the served policy is now full.",
+  "measurements": {
+    "heldout_views_plain": {
+      "model": ".training/runs/v5/detector.pt",
+      "views": 1638,
+      "level0": {
+        "false_alarms_per_clean_view@0.25": 0.1111111111111111,
+        "false_alarms_per_clean_view@0.5": 0.047619047619047616,
+        "mAP50_with_objects": 0.8135951819679953,
+        "per_class": {
+          "hangar": 1.0,
+          "helicopter": 0.9277300799980367,
+          "jet_plane": 0.965810653471076,
+          "large_launcher": 0.9573993367039176,
+          "large_tower": 0.8495049504950495,
+          "medium_launcher": 0.6852365578172724,
+          "medium_plane": 0.6737882398674581,
+          "mine_roller": 0.7848171162220301,
+          "small_launcher": 0.45256266698098385,
+          "small_plane": 0.7721813032970506,
+          "small_tower": 0.9990999099909991,
+          "ta-ta": 0.5116063900355508,
+          "tank": 0.8004417533873255,
+          "condor": 1.0,
+          "jammer": 0.64055233857584,
+          "spacecraft": 0.9967916146453355
+        }
+      },
+      "level1": {
+        "false_alarms_per_clean_view@0.25": 0.023809523809523808,
+        "false_alarms_per_clean_view@0.5": 0.003968253968253968,
+        "mAP50_with_objects": 0.9718564554026634,
+        "per_class": {
+          "hangar": 1.0,
+          "helicopter": 1.0,
+          "jet_plane": 0.9801980198019802,
+          "large_launcher": 0.9700181285734206,
+          "large_tower": 1.0,
+          "medium_launcher": 0.956863910787687,
+          "medium_plane": 0.958425835373732,
+          "mine_roller": 0.9801980198019802,
+          "small_launcher": 0.8693801999479404,
+          "small_plane": 0.998937340542565,
+          "small_tower": 0.9702970297029703,
+          "ta-ta": 0.9451146406823204,
+          "tank": 0.9997287399972874,
+          "condor": 0.9702970297029703,
+          "jammer": 0.9504950495049505,
+          "spacecraft": 0.9997493420228097
+        }
+      },
+      "level2": {
+        "false_alarms_per_clean_view@0.25": 0.017857142857142856,
+        "false_alarms_per_clean_view@0.5": 0.005952380952380952,
+        "mAP50_with_objects": 0.9887899847677075,
+        "per_class": {
+          "hangar": 1.0,
+          "helicopter": 1.0,
+          "jet_plane": 1.0,
+          "large_launcher": 0.979055597867479,
+          "large_tower": 1.0,
+          "medium_launcher": 0.9702970297029703,
+          "medium_plane": 1.0,
+          "mine_roller": 0.9801980198019802,
+          "small_launcher": 0.9405940594059405,
+          "small_plane": 1.0,
+          "small_tower": 0.9801980198019802,
+          "ta-ta": 1.0,
+          "tank": 1.0,
+          "condor": 0.9702970297029703,
+          "jammer": 1.0,
+          "spacecraft": 1.0
+        }
+      }
+    },
+    "heldout_views_relit": {
+      "model": ".training/runs/v5/detector.pt",
+      "views": 1638,
+      "level0": {
+        "false_alarms_per_clean_view@0.25": 0.12698412698412698,
+        "false_alarms_per_clean_view@0.5": 0.047619047619047616,
+        "mAP50_with_objects": 0.5250346303820147,
+        "per_class": {
+          "hangar": 0.8217821782178217,
+          "helicopter": 0.4894274042788895,
+          "jet_plane": 0.6332348915215896,
+          "large_launcher": 0.644407154911864,
+          "large_tower": 0.6212164790296517,
+          "medium_launcher": 0.25368132401475446,
+          "medium_plane": 0.3707913104975094,
+          "mine_roller": 0.5050438811971452,
+          "small_launcher": 0.1391962725684333,
+          "small_plane": 0.3309348907336424,
+          "small_tower": 0.8191913308977956,
+          "ta-ta": 0.10136727958510137,
+          "tank": 0.57852170665983,
+          "condor": 0.8810144172311968,
+          "jammer": 0.41739337395277987,
+          "spacecraft": 0.7933501908142296
+        }
+      },
+      "level1": {
+        "false_alarms_per_clean_view@0.25": 0.06349206349206349,
+        "false_alarms_per_clean_view@0.5": 0.007936507936507936,
+        "mAP50_with_objects": 0.7788851895735696,
+        "per_class": {
+          "hangar": 0.7623762376237624,
+          "helicopter": 0.7507049024230154,
+          "jet_plane": 0.9007362274689008,
+          "large_launcher": 0.8779521505780047,
+          "large_tower": 0.8003776958492104,
+          "medium_launcher": 0.6565776581483243,
+          "medium_plane": 0.6396507049972396,
+          "mine_roller": 0.7323196605374824,
+          "small_launcher": 0.546683777078038,
+          "small_plane": 0.7675819140142554,
+          "small_tower": 0.8706778370144707,
+          "ta-ta": 0.5296730720118351,
+          "tank": 0.8549729972997299,
+          "condor": 0.8993548003448993,
+          "jammer": 0.9240972118857725,
+          "spacecraft": 0.9484261859021723
+        }
+      },
+      "level2": {
+        "false_alarms_per_clean_view@0.25": 0.015873015873015872,
+        "false_alarms_per_clean_view@0.5": 0.005952380952380952,
+        "mAP50_with_objects": 0.9276940812246471,
+        "per_class": {
+          "hangar": 0.8505421970768505,
+          "helicopter": 0.9402057852844109,
+          "jet_plane": 0.9603960396039604,
+          "large_launcher": 0.9687218721872187,
+          "large_tower": 0.95005500550055,
+          "medium_launcher": 0.8579915134370578,
+          "medium_plane": 0.9303394625176804,
+          "mine_roller": 0.9207920792079208,
+          "small_launcher": 0.7961274562259745,
+          "small_plane": 0.9694942467219694,
+          "small_tower": 0.9500645716745588,
+          "ta-ta": 0.9175169843476207,
+          "tank": 0.9603960396039604,
+          "condor": 0.9207920792079208,
+          "jammer": 0.9694719471947196,
+          "spacecraft": 0.9801980198019802
+        }
+      }
+    },
+    "heldout_flights_adaptive": {
+      "heldout_flightB_0": {
+        "map50": 0.7363015282174012,
+        "ap_by_class": {
+          "hangar": 1.0,
+          "helicopter": 0.7681577086280057,
+          "jet_plane": 1.0,
+          "large_launcher": 0.7722772277227723,
+          "large_tower": 0.6831683168316832,
+          "medium_launcher": 0.9504950495049505,
+          "medium_plane": 0.9083992120142246,
+          "mine_roller": 0.7470914200173333,
+          "small_launcher": 0.5023188033089023,
+          "small_plane": 0.7227722772277227,
+          "small_tower": 1.0,
+          "ta-ta": 0.0,
+          "tank": 0.801980198019802,
+          "condor": 0.45544554455445546,
+          "jammer": 0.6330355861673124,
+          "spacecraft": 0.8356831074812551
+        }
+      },
+      "heldout_flightB_1": {
+        "map50": 0.7089200659818585,
+        "ap_by_class": {
+          "hangar": 0.693069306930693,
+          "helicopter": 0.8674782348924548,
+          "jet_plane": 0.2079207920792079,
+          "large_launcher": 0.8090309030903089,
+          "large_tower": 1.0,
+          "medium_launcher": 0.0,
+          "medium_plane": 0.20297029702970298,
+          "mine_roller": 0.9405940594059405,
+          "small_launcher": 1.0,
+          "small_plane": 0.9405940594059405,
+          "small_tower": 0.9306930693069307,
+          "ta-ta": 0.20756311166989572,
+          "tank": 1.0,
+          "condor": 1.0,
+          "jammer": 0.7705299941758882,
+          "spacecraft": 0.7722772277227723
+        }
+      },
+      "heldout_flightB_2": {
+        "map50": 0.5898041909582765,
+        "ap_by_class": {
+          "hangar": 0.7018278750952018,
+          "helicopter": 0.8997366199288228,
+          "jet_plane": 0.8316831683168316,
+          "large_launcher": 0.7821782178217822,
+          "large_tower": 0.43564356435643564,
+          "medium_launcher": 0.57007200720072,
+          "medium_plane": 0.7250000000000001,
+          "mine_roller": 0.6920270974465867,
+          "small_launcher": 0.0,
+          "small_plane": 0.6895332390381895,
+          "small_tower": 0.801980198019802,
+          "ta-ta": 0.29612961296129614,
+          "tank": 0.5976897689768977,
+          "condor": 0.504950495049505,
+          "jammer": 0.5717815277540161,
+          "spacecraft": 0.33663366336633666
+        }
+      },
+      "heldout_flightB_3": {
+        "map50": 0.3552389950623894,
+        "ap_by_class": {
+          "hangar": 1.0,
+          "helicopter": 0.17656765676567657,
+          "jet_plane": 0.0,
+          "large_launcher": 0.028941355674028946,
+          "large_tower": 0.68810299263009,
+          "medium_launcher": 1.0,
+          "medium_plane": 0.0,
+          "mine_roller": 0.2079207920792079,
+          "small_launcher": 0.0297029702970297,
+          "small_plane": 0.039603960396039604,
+          "small_tower": 1.0,
+          "ta-ta": 0.0,
+          "tank": 0.0,
+          "condor": 0.9387267674135833,
+          "jammer": 0.0,
+          "spacecraft": 0.5742574257425742
+        }
+      },
+      "heldout_flight_0": {
+        "map50": 0.5572232672707955,
+        "ap_by_class": {
+          "hangar": 0.7266939182268647,
+          "helicopter": 0.6422988163478003,
+          "jet_plane": 0.9207920792079208,
+          "large_launcher": 0.7994712412911161,
+          "large_tower": 0.7119894910685556,
+          "medium_launcher": 0.29534517939937427,
+          "medium_plane": 0.5544554455445545,
+          "mine_roller": 0.693069306930693,
+          "small_launcher": 0.0,
+          "small_plane": 0.6319280926980352,
+          "small_tower": 0.8313250281072064,
+          "ta-ta": 0.46463932107496464,
+          "tank": 0.0,
+          "condor": 0.504950495049505,
+          "jammer": 0.33663366336633666,
+          "spacecraft": 0.801980198019802
+        }
+      },
+      "heldout_flight_1": {
+        "map50": 0.8460342907632938,
+        "ap_by_class": {
+          "hangar": 0.8712871287128713,
+          "helicopter": 0.8514851485148515,
+          "jet_plane": 1.0,
+          "large_launcher": 0.8910891089108911,
+          "large_tower": 0.9306930693069307,
+          "medium_launcher": 0.0,
+          "medium_plane": 0.8712871287128713,
+          "mine_roller": 0.8415841584158416,
+          "small_launcher": 0.8384545351086832,
+          "small_plane": 0.9928915968519928,
+          "small_tower": 0.8811881188118812,
+          "ta-ta": 1.0,
+          "tank": 0.9306930693069307,
+          "condor": 0.7821782178217822,
+          "jammer": 0.9405940594059405,
+          "spacecraft": 0.9131233123312331
+        }
+      },
+      "heldout_flight_2": {
+        "map50": 0.6763962920092548,
+        "ap_by_class": {
+          "hangar": 0.8641559077354575,
+          "helicopter": 0.8415841584158416,
+          "jet_plane": 0.0,
+          "large_launcher": 0.5346534653465347,
+          "large_tower": 0.900990099009901,
+          "medium_launcher": 0.9306930693069307,
+          "medium_plane": 0.8514851485148515,
+          "mine_roller": 0.6138613861386139,
+          "small_launcher": 0.8470574512508118,
+          "small_plane": 0.7249886993004206,
+          "small_tower": 0.9108910891089109,
+          "ta-ta": 0.10891089108910891,
+          "tank": 1.0,
+          "condor": 0.42574257425742573,
+          "jammer": 0.44554455445544555,
+          "spacecraft": 0.8217821782178217
+        }
+      },
+      "heldout_flight_3": {
+        "map50": 0.6166340825894715,
+        "ap_by_class": {
+          "hangar": 1.0,
+          "helicopter": 0.0,
+          "jet_plane": 0.5797477580575395,
+          "large_launcher": 0.8810905284076798,
+          "large_tower": 0.6633663366336634,
+          "medium_launcher": 0.7427264734195429,
+          "medium_plane": 0.4752475247524752,
+          "mine_roller": 0.6726471548253731,
+          "small_launcher": 0.15100129922494512,
+          "small_plane": 0.9987623762376238,
+          "small_tower": 0.9405940594059405,
+          "ta-ta": 0.471947194719472,
+          "tank": 0.4488448844884488,
+          "condor": 0.8514851485148515,
+          "jammer": 0.39603960396039606,
+          "spacecraft": 0.5926449787835927
+        }
+      }
+    },
+    "heldout_flights_full": {
+      "heldout_flightB_0": {
+        "map50": 0.7251914022736516,
+        "ap_by_class": {
+          "hangar": 1.0,
+          "helicopter": 0.8464139096836513,
+          "jet_plane": 0.9685997171145687,
+          "large_launcher": 0.8993399339933993,
+          "large_tower": 0.37623762376237624,
+          "medium_launcher": 0.9504950495049505,
+          "medium_plane": 0.8708156529938708,
+          "mine_roller": 0.9577905158936947,
+          "small_launcher": 0.504950495049505,
+          "small_plane": 0.22772277227722773,
+          "small_tower": 1.0,
+          "ta-ta": 0.0,
+          "tank": 0.9603960396039604,
+          "condor": 0.9306930693069307,
+          "jammer": 0.23832052848141957,
+          "spacecraft": 0.8712871287128713
+        }
+      },
+      "heldout_flightB_1": {
+        "map50": 0.7183041702164985,
+        "ap_by_class": {
+          "hangar": 0.8514851485148515,
+          "helicopter": 0.9594959495949594,
+          "jet_plane": 0.23492349234923493,
+          "large_launcher": 0.9096869146374098,
+          "large_tower": 1.0,
+          "medium_launcher": 0.0,
+          "medium_plane": 0.504950495049505,
+          "mine_roller": 0.9702970297029703,
+          "small_launcher": 0.801980198019802,
+          "small_plane": 0.9694942467219694,
+          "small_tower": 1.0,
+          "ta-ta": 0.0,
+          "tank": 1.0,
+          "condor": 0.9533695305014375,
+          "jammer": 0.3965896589658966,
+          "spacecraft": 0.9405940594059405
+        }
+      },
+      "heldout_flightB_2": {
+        "map50": 0.6562127555566668,
+        "ap_by_class": {
+          "hangar": 0.9405940594059405,
+          "helicopter": 0.89607653774496,
+          "jet_plane": 1.0,
+          "large_launcher": 0.8514851485148515,
+          "large_tower": 0.42574257425742573,
+          "medium_launcher": 0.6039603960396039,
+          "medium_plane": 0.935774806876292,
+          "mine_roller": 0.40504050405040504,
+          "small_launcher": 0.0,
+          "small_plane": 0.8596181046676096,
+          "small_tower": 0.9405940594059405,
+          "ta-ta": 0.0,
+          "tank": 0.8217821782178217,
+          "condor": 0.5841584158415841,
+          "jammer": 0.4028941355674029,
+          "spacecraft": 0.8316831683168316
+        }
+      },
+      "heldout_flightB_3": {
+        "map50": 0.3135575634631132,
+        "ap_by_class": {
+          "hangar": 0.8415841584158416,
+          "helicopter": 0.0,
+          "jet_plane": 0.0,
+          "large_launcher": 0.0,
+          "large_tower": 0.5537482319660537,
+          "medium_launcher": 0.9434229137199429,
+          "medium_plane": 0.0,
+          "mine_roller": 0.16435643564356436,
+          "small_launcher": 0.0,
+          "small_plane": 0.0,
+          "small_tower": 1.0,
+          "ta-ta": 0.0,
+          "tank": 0.0,
+          "condor": 0.9395518499218343,
+          "jammer": 0.0,
+          "spacecraft": 0.5742574257425742
+        }
+      },
+      "heldout_flight_0": {
+        "map50": 0.6302188061555887,
+        "ap_by_class": {
+          "hangar": 0.9702970297029703,
+          "helicopter": 0.7823636976190389,
+          "jet_plane": 0.9207920792079208,
+          "large_launcher": 0.9501439505652693,
+          "large_tower": 0.8611438451965332,
+          "medium_launcher": 0.0,
+          "medium_plane": 0.03581828771112405,
+          "mine_roller": 0.13861386138613863,
+          "small_launcher": 0.0,
+          "small_plane": 0.7425742574257426,
+          "small_tower": 1.0,
+          "ta-ta": 0.5346534653465347,
+          "tank": 1.0,
+          "condor": 1.0,
+          "jammer": 0.21640735502121639,
+          "spacecraft": 0.9306930693069307
+        }
+      },
+      "heldout_flight_1": {
+        "map50": 0.9460822106800844,
+        "ap_by_class": {
+          "hangar": 0.9306930693069307,
+          "helicopter": 0.9702970297029703,
+          "jet_plane": 1.0,
+          "large_launcher": 0.9603960396039604,
+          "large_tower": 0.998701509495212,
+          "medium_launcher": 0.504950495049505,
+          "medium_plane": 1.0,
+          "mine_roller": 0.9405940594059405,
+          "small_launcher": 0.9603960396039604,
+          "small_plane": 1.0,
+          "small_tower": 0.9603960396039604,
+          "ta-ta": 1.0,
+          "tank": 0.9801980198019802,
+          "condor": 0.9306930693069307,
+          "jammer": 1.0,
+          "spacecraft": 1.0
+        }
+      },
+      "heldout_flight_2": {
+        "map50": 0.8005415979349122,
+        "ap_by_class": {
+          "hangar": 0.9801980198019802,
+          "helicopter": 0.9405940594059405,
+          "jet_plane": 0.4158415841584158,
+          "large_launcher": 0.9306930693069307,
+          "large_tower": 1.0,
+          "medium_launcher": 0.989225393127548,
+          "medium_plane": 0.9504950495049505,
+          "mine_roller": 0.5496381936330279,
+          "small_launcher": 0.9702970297029703,
+          "small_plane": 0.5074257425742574,
+          "small_tower": 1.0,
+          "ta-ta": 0.0,
+          "tank": 1.0,
+          "condor": 0.8514851485148515,
+          "jammer": 0.7722772277227723,
+          "spacecraft": 0.9504950495049505
+        }
+      },
+      "heldout_flight_3": {
+        "map50": 0.49792751301675553,
+        "ap_by_class": {
+          "hangar": 1.0,
+          "helicopter": 0.0,
+          "jet_plane": 0.7615152819629789,
+          "large_launcher": 0.8720985523856664,
+          "large_tower": 0.7029702970297029,
+          "medium_launcher": 0.5901093955549401,
+          "medium_plane": 0.0,
+          "mine_roller": 0.5167897742155168,
+          "small_launcher": 0.0,
+          "small_plane": 1.0,
+          "small_tower": 1.0,
+          "ta-ta": 0.0,
+          "tank": 0.14112211221122112,
+          "condor": 0.9306930693069307,
+          "jammer": 0.2899575671852899,
+          "spacecraft": 0.1615841584158416
+        }
+      }
+    }
+  },
+  "interpretation": [
+    "Held-out places (.training/terrain/test) were never trained on; the objects are the reference cut-outs, so recall is optimistic.",
+    "The re-lit set/flights use Poisson blending and per-frame gamma/colour grading, a compositing the training data does not use.",
+    "Helsinki is training data; its score is a sanity check only.",
+    "No official remote validation or evaluation attempt was made for this model."
+  ],
+  "validation": [
+    {
+      "attempt": "4f17b3f578ca4c0f808435543634b06b",
+      "score": 0.3410564440883969,
+      "camera_policy": "adaptive",
+      "service": "trycloudflare quick tunnel"
+    }
+  ]
+}

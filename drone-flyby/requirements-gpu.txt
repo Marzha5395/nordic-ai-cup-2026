@@ -1,4 +1,6 @@
 -r requirements.txt
-torch==2.6.0
-torchvision==0.21.0
+# RTX 50-series GPUs (sm_120) need a CUDA 12.8 build; torch 2.6 (cu124) has no kernels for them.
+# Install torch/torchvision from https://download.pytorch.org/whl/cu128
+torch==2.7.1
+torchvision==0.22.1
 ultralytics==8.3.203

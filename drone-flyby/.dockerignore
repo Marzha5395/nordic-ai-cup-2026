@@ -8,6 +8,8 @@ __pycache__/
 *.log
 *.pt
 !weights/flyby_v2.pt
+!weights/flyby_v6.pt
 src/
 annotated/
 .training/
+recordings/

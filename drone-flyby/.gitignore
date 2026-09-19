@@ -85,3 +85,9 @@ cython_debug/
 .vscode
 .devcontainer
 .jupyter
+
+# Held-out synthetic flights (synthetic_flight.py), measurement only
+src/heldout_flight*/
+
+# Recorded validation views (recorder.py), data only
+recordings/
