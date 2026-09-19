@@ -12,19 +12,3 @@ requests>=2.31            # [2.34.2]
 # Only needed by local_evaluator.py. It is the same scorer the competition
 # uses, and the same version range.
 faster-coco-eval>=1.7.2,<2  # [1.7.2]
-
-# --------------------------------------------------------------------------- #
-# The solution's detection stack.
-# --------------------------------------------------------------------------- #
-#
-# Install torch first, from the index that matches your CUDA runtime, or pip
-# will resolve a build that cannot see the GPU:
-#
-#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
-#
-# Then this file. Verified against torch 2.11.0+cu128 on an RTX 5090
-# (compute capability 12.0, which needs a cu128 build or newer).
-
-torch>=2.4                # [2.11.0+cu128]
-torchvision>=0.19         # [0.26.0+cu128]
-ultralytics>=8.3,<9       # [8.4.155]
