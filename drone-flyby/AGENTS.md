@@ -1,0 +1,12 @@
+# Drone flyby development
+
+- `example.py` is the untouched official baseline. The API serves `solution.py`, with ONNX inference in `detector.py` and image-based motion estimation in `motion.py`.
+- Runtime inference must not read reference frames, annotation files, or scene metadata, and must not make external API calls. The container intentionally includes only runtime code and `weights/detector.onnx`.
+- The local Python 3.12 environment is `.venv-ml`. Start the API with `.venv-ml/bin/python api.py` from this directory. The system Python is 3.14 and does not have the project dependencies.
+- Run software correctness checks with `.venv-ml/bin/python -m unittest -v test_solution`. These tests use generated images and stub predictions, not challenge accuracy measurements. After training and export, `.venv-ml/bin/python -m unittest -v test_artifact` checks export parity and the real endpoint using generated inputs only. TestClient needs `httpx==0.28.1`, included in the training requirements.
+- Training dependencies are in `requirements-training.txt`. The local GPU uses PyTorch 2.6.0 and torchvision 0.21.0 from the CUDA 12.4 wheel index.
+- Train with `.venv-ml/bin/python train.py --steps 12000 --batch 2 --size 640`; export with `.venv-ml/bin/python export_model.py`. Training uses a custom loop without a validator, scorer, or scored checkpoint selection. The final EMA weights are used.
+- `train.py` uses the supplied reference scenes only. It mixes real crops with class-balanced foreground copy-paste and randomized position, count, orientation, scale, background, color, and blur. `weights/detector.json` records training provenance. Adjacent reference frames are not an independent validation split.
+- Unit tests, graph export, and synthetic-input interface checks are not evidence of a competition score or of generalization. Never claim measured detection accuracy without a separately authorized measurement.
+- Do not run `local_evaluator.py`, remote verification, validation, or evaluation attempts unless the user explicitly authorizes them; the implementation session requested no attempts.
+- Container verification works with rootless Podman: `podman build --pull=missing -t localhost/drone-flyby-local .`, then `podman run --rm --network none localhost/drone-flyby-local python -c "import api; from solution import initialize; initialize()"`. The offline startup check does not run a scorer. `.dockerignore` excludes training data, virtual environments, checkpoints, and dotenv files from the build context.

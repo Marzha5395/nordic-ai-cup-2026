@@ -1,0 +1,12 @@
+.venv/
+.venv-ml/
+.git/
+.env
+.env.*
+__pycache__/
+*.pyc
+*.log
+*.pt
+src/
+annotated/
+.training/

@@ -8,6 +8,7 @@ keep the ``/predict`` route below then submit ``http://<your-host>:9053/predict`
 rather than just the host.
 """
 
+from contextlib import asynccontextmanager
 import datetime
 import logging
 import time
@@ -16,7 +17,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from dtos import DroneFlybyPredictRequestDto, DroneFlybyPredictResponseDto
-from example import predict
+from solution import initialize, predict
 from utils import validate_response
 
 HOST = '0.0.0.0'
@@ -25,7 +26,14 @@ PORT = 9053
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app):
+    initialize()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 start_time = time.time()
 
 

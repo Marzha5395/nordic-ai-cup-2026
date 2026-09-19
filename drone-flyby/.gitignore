@@ -1,5 +1,9 @@
 # Rendered by visualize.py on demand
 annotated/
+.venv-ml/
+.training/
+weights/*-pretrained.pt
+/yolo11n.pt
 
 # Generic Python files (Source: https://github.com/github/gitignore/blob/main/Python.gitignore)
 __pycache__/

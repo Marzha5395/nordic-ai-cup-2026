@@ -1,0 +1,6 @@
+-r requirements.txt
+torch==2.6.0
+torchvision==0.21.0
+ultralytics==8.3.203
+onnx==1.18.0
+httpx==0.28.1
