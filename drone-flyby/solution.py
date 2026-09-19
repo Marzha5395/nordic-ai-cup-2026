@@ -213,6 +213,9 @@ class Predictor:
         self.sequences = OrderedDict()
         self.lock = threading.Lock()
 
+    def select_view(self, request, state, motion_ok):
+        return choose_view(request, state, motion_ok)
+
     def predict(self, request):
         with self.lock:
             now = time.monotonic()
@@ -237,6 +240,8 @@ class Predictor:
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             matrix, motion_ok = IDENTITY.copy(), False
             gap = request.frame_index - state.frame_index
+            if gap > 6:
+                state.tracks.clear()
             if state.previous_image is not None and 0 < gap <= 6:
                 matrix, motion_ok = estimate_motion(state.previous_image, gray, state.previous_region, request.view.source_region_xyxy)
             detections = self.detector.detect(image, request)
@@ -249,7 +254,7 @@ class Predictor:
                 request_id=request.request_id,
                 frame=request.frame,
                 annotations=annotations_for(state, request.frame_index),
-                requested_view=choose_view(request, state, motion_ok),
+                requested_view=self.select_view(request, state, motion_ok),
             )
             state.previous_image = gray
             state.previous_region = tuple(request.view.source_region_xyxy)

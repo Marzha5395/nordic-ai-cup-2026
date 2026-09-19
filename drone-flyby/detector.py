@@ -65,6 +65,9 @@ class Detector:
             raise ValueError('DRONE_CONFIDENCE must be between zero and one')
         self.session.run(None, {self.input_name: np.zeros(shape, dtype=np.float32)})
 
+    def infer(self, tensor):
+        return self.session.run(None, {self.input_name: tensor})[0]
+
     def detect(self, image, request):
         height, width = image.shape[:2]
         scale = min(self.width / width, self.height / height)
@@ -74,7 +77,7 @@ class Detector:
         canvas = np.full((self.height, self.width, 3), 114, dtype=np.uint8)
         canvas[top:top + resized_height, left:left + resized_width] = resized
         tensor = np.ascontiguousarray(canvas[..., ::-1].transpose(2, 0, 1)[None], dtype=np.float32) / 255
-        raw = self.session.run(None, {self.input_name: tensor})[0]
+        raw = self.infer(tensor)
         if raw.ndim != 3 or raw.shape[0] != 1 or raw.shape[1] != 4 + len(OBJECT_CLASSES):
             raise ValueError(f'Unexpected detector output shape: {raw.shape}')
         output = raw[0].T

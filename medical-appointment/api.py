@@ -9,6 +9,7 @@ rather than just the host.
 """
 
 import datetime
+from contextlib import asynccontextmanager
 import logging
 import time
 
@@ -17,6 +18,7 @@ from fastapi import FastAPI
 
 from dtos import ASRQuestionRequestDto, ASRQuestionResponseDto
 from example import predict
+from solver import get_solver
 from utils import validate_response
 
 HOST = '0.0.0.0'
@@ -25,7 +27,17 @@ PORT = 9054
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app):
+    solver = get_solver()
+    try:
+        yield
+    finally:
+        solver.llm.close()
+        get_solver.cache_clear()
+
+
+app = FastAPI(lifespan=lifespan)
 start_time = time.time()
 
 

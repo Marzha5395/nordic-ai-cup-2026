@@ -50,7 +50,7 @@ def clip_labels(boxes, classes, width, height, minimum_visibility=0.45):
 
 
 class TrainingScenes:
-    def __init__(self, directory, size=640, seed=2026):
+    def __init__(self, directory, size=640, seed=2026, frames=None):
         self.size = size
         self.rng = np.random.default_rng(seed)
         self.frames = []
@@ -58,6 +58,8 @@ class TrainingScenes:
         self.backgrounds = []
         for annotation_path in sorted(Path(directory).glob('*/annotations/*.json')):
             payload = json.loads(annotation_path.read_text())
+            if frames is not None and payload['frame'] not in frames:
+                continue
             image_path = annotation_path.parent.parent / 'images' / (annotation_path.stem + '.png')
             image = cv2.imread(str(image_path))
             if image is None:

@@ -17,7 +17,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from dtos import DroneFlybyPredictRequestDto, DroneFlybyPredictResponseDto
-from solution import initialize, predict
+from submission import initialize, predict
 from utils import validate_response
 
 HOST = '0.0.0.0'

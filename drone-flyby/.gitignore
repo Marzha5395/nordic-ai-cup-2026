@@ -4,6 +4,8 @@ annotated/
 .training/
 weights/*-pretrained.pt
 /yolo11n.pt
+/yolo11*-obb.pt
+/sam2*.pt
 
 # Generic Python files (Source: https://github.com/github/gitignore/blob/main/Python.gitignore)
 __pycache__/

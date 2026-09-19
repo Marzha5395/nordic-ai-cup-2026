@@ -1,0 +1,10 @@
+{
+  "device": "cuda:0",
+  "input_width": 1920,
+  "canonical_scale": 0.5,
+  "confidence": 0.05,
+  "camera_policy": "full",
+  "tta": "none",
+  "runtime_external_api_calls": false,
+  "weights_sha256": "f55826866c056cbe09362218ce3c03759fb9a490e1afaeceed6c300faf168fad"
+}

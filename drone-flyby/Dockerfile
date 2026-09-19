@@ -7,13 +7,15 @@ RUN apt-get update \
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt requirements-gpu.txt ./
+RUN pip install --no-cache-dir -r requirements-gpu.txt
 
 # Your model and the server. The sample data under src/ is not copied: it is
 # 400 MB and only local_evaluator.py needs it.
-COPY dtos.py utils.py example.py api.py detector.py motion.py solution.py ./
-COPY weights/detector.onnx ./weights/detector.onnx
+COPY dtos.py utils.py example.py api.py detector.py gpu_detector.py motion.py solution.py submission.py ./
+COPY weights/flyby_v2.pt weights/flyby_v2.runtime.json ./weights/
+
+ENV YOLO_OFFLINE=true YOLO_AUTOINSTALL=false
 
 EXPOSE 9053
 

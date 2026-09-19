@@ -1,0 +1,10 @@
+.venv*
+.runtime
+models
+transcripts
+benchmark_results
+data
+__pycache__
+.pytest_cache
+.git
+*.log

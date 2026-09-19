@@ -1,6 +1,9 @@
 # Transcripts and model weights you cache locally
 transcripts/
 models/
+.venv312/
+.runtime/
+benchmark_results/
 
 # Generic Python files (Source: https://github.com/github/gitignore/blob/main/Python.gitignore)
 __pycache__/
