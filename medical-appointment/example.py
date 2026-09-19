@@ -15,7 +15,7 @@ from typing import Optional, Tuple
 
 from dtos import ASRQuestionRequestDto, ASRQuestionResponseDto
 from utils import Span, audio_duration_seconds, decode_audio
-from solver import fallback_response, get_solver
+from main import transcribe, generate, segment
 
 logger = logging.getLogger(__name__)
 
@@ -29,23 +29,31 @@ def predict(request: ASRQuestionRequestDto) -> ASRQuestionResponseDto:
     expensive half — transcription — is paid once here and shared by every
     answer below.
     """
-    try:
-        audio_bytes = decode_audio(request.audio_base64)
-        duration = audio_duration_seconds(audio_bytes)
-        logger.info(
-            '%s (%.1f s, %.1f MB): %d questions',
-            request.audio_filename,
-            duration if duration is not None else float('nan'),
-            len(audio_bytes) / 1e6,
-            len(request.questions),
-        )
-        response = get_solver().predict(audio_bytes, request.questions)
-    except Exception:
-        logger.exception('Prediction failed for %s', request.audio_filename)
-        response = fallback_response(request.questions)
-    answers = response.answers
-    evidence_start = response.evidence_start
-    evidence_end = response.evidence_end
+    audio_bytes = decode_audio(request.audio_base64)
+
+    duration = audio_duration_seconds(audio_bytes)
+    logger.info(
+        '%s (%.1f s, %.1f MB): %d questions',
+        request.audio_filename,
+        duration if duration is not None else float('nan'),
+        len(audio_bytes) / 1e6,
+        len(request.questions),
+    )
+
+    with open("data/audio/conversation.mp3", "wb") as f:
+        f.write(audio_bytes)
+    
+    results, full_text, words = transcribe(file="conversation.mp3")
+    questions = request.questions
+    predictions = generate(results, questions)
+    answers = [p == 'yes' for p in predictions]
+    evidence_start = [0]*len(questions)
+    evidence_end = [60]*len(questions)
+    for i in range(len(questions)):
+        if answers[i]:
+            start, end = segment(results, words, questions[i])
+            evidence_start[i] = start
+            evidence_end[i] = end
 
 
     # Never let this raise. An exception means no response, and no response
