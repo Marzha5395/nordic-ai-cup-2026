@@ -1,7 +1,8 @@
 FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04 AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends git cmake build-essential ca-certificates
-RUN git clone --depth 1 --branch b10917 https://github.com/ggml-org/llama.cpp.git /llama.cpp
+RUN git clone --depth 1 --branch b10917 https://github.com/ggml-org/llama.cpp.git /llama.cpp \
+    && test "$(git -C /llama.cpp rev-parse HEAD)" = "8ea290247c87ced2ab245b056ffe96dbcf90d36c"
 ARG CUDA_ARCHITECTURES="75;80;86;89;90"
 RUN cmake -S /llama.cpp -B /llama.cpp/build -DGGML_CUDA=ON -DGGML_NATIVE=OFF \
     -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHITECTURES}" -DLLAMA_OPENSSL=OFF \
@@ -24,8 +25,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY prepare_models.py .
-ARG LLM_SIZE=4B
-RUN python prepare_models.py --size ${LLM_SIZE}
+ARG LLM_SIZE=9B
+RUN python prepare_models.py --size "${LLM_SIZE}"
 ENV LLM_MODEL=/app/models/Qwen3.5-${LLM_SIZE}-Q4_K_M.gguf
 ENV HF_HUB_OFFLINE=1
 

@@ -120,6 +120,29 @@ def test_evidence_includes_the_prescription_not_just_its_dose():
     assert response.evidence_end == [2.8]
 
 
+def test_generic_quote_can_be_relocated_to_an_explicit_nearby_report():
+    speech = transcript('I have been unwell. A stomach bug. All the usual gastroenteritis symptoms.')
+    response = response_from_evidence(speech, ['Does the patient describe gastroenteritis symptoms?'],
+                                      [[0, 'I have been unwell.']])
+    assert response.evidence_start == [2.8]
+    assert response.evidence_end == [4.8]
+
+
+def test_side_effect_reply_is_preferred_to_generic_tolerability():
+    speech = transcript('Any side effects? None. That means treatment is well tolerated.')
+    response = response_from_evidence(speech, ['Has the patient been free of side effects?'],
+                                      [[2, 'That means treatment is well tolerated.']])
+    assert response.evidence_start == [0.0]
+    assert response.evidence_end == [1.6]
+
+
+def test_specific_diagnosis_is_not_replaced_by_a_nearby_body_part():
+    speech = transcript('They look like seborrhea keratosis. The abdomen and lower leg are affected.')
+    response = response_from_evidence(speech, ['Do the abdomen and lower leg resemble seborrheic keratoses?'],
+                                      [[0, 'They look like seborrhea keratosis.']])
+    assert response.evidence_start == [0.0]
+
+
 def test_evidence_does_not_expand_into_an_unrelated_topic():
     speech = transcript('The heart is normal. Next we discuss a rash. The patient is going home.')
     response = response_from_evidence(speech, ['Is the heart normal?'], [[0, 'The heart is normal.']])

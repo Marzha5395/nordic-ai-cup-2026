@@ -1,6 +1,5 @@
 import argparse
 import hashlib
-import io
 import json
 import logging
 import os
@@ -10,7 +9,7 @@ from pathlib import Path
 from llm import LocalLanguageModel, SYSTEM_PROMPT
 from local_evaluator import Statistics
 from solver import Transcript, parse_evidence, response_from_evidence
-from speech import SpeechRecognizer, decode_audio, repair_word_times
+from speech import SpeechRecognizer, default_device
 from utils import gold_evidence, group_questions_by_conversation, load_sample_audio, validate_response
 
 ROOT = Path(__file__).resolve().parent
@@ -24,8 +23,7 @@ def main():
     parser.add_argument('--offset', type=int, default=0)
     parser.add_argument('--transcribe-only', action='store_true')
     parser.add_argument('--reuse-transcripts', action='store_true')
-    parser.add_argument('--repair-times', action='store_true')
-    parser.add_argument('--cache', default='transcripts/small.en')
+    parser.add_argument('--cache', help='Transcript cache directory; otherwise derived from ASR settings')
     parser.add_argument('--output', default='benchmark_results/current.json')
     parser.add_argument('--llm-budget', type=float, default=600)
     parser.add_argument('--predictions', help='Re-score saved raw model outputs without running the LLM')
@@ -41,6 +39,17 @@ def main():
     groups = groups[args.offset:]
     if args.limit:
         groups = groups[:args.limit]
+    if args.cache is None:
+        device = os.getenv('ASR_DEVICE') or default_device()
+        profile = {
+            'model': os.getenv('ASR_MODEL', 'large-v3-turbo' if device == 'cuda' else 'small.en'),
+            'device': device,
+            'compute': os.getenv('ASR_COMPUTE_TYPE', 'int8_float16' if device == 'cuda' else 'int8'),
+            'batch': os.getenv('ASR_BATCH_SIZE', '1' if device == 'cuda' else '0'),
+            'beam': os.getenv('ASR_BEAM_SIZE', '5'),
+        }
+        key = hashlib.sha256(json.dumps(profile, sort_keys=True).encode()).hexdigest()[:12]
+        args.cache = f'transcripts/{Path(profile["model"]).name}-{key}'
     cache = ROOT / args.cache
     cache.mkdir(parents=True, exist_ok=True)
     output = ROOT / args.output
@@ -59,8 +68,6 @@ def main():
             transcript = asr.transcribe(load_sample_audio(filename))
             elapsed = time.monotonic() - started
             path.write_text(json.dumps(transcript.to_dict(), indent=2))
-        if args.repair_times:
-            transcript.words = repair_word_times(transcript.words, decode_audio(io.BytesIO(load_sample_audio(filename))))
         transcripts[filename] = (transcript, elapsed)
         print(f'Transcribed {filename}: {len(transcript.words)} words; seconds={elapsed}', flush=True)
     del asr

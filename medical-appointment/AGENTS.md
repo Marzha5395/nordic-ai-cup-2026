@@ -35,7 +35,7 @@ python prepare_models.py --build-cuda
 python api.py
 ```
 
-The default models are Whisper small.en and Qwen3.5-4B Q4_K_M, with explicit yes/no generation and question-aware evidence boundary refinement. This configuration was chosen from local development experiments. Both models use CUDA on a suitable GPU; Whisper uses int8 on CPU. Qwen3.5-9B is also supported with `prepare_models.py --size 9B` and `LLM_MODEL=models/Qwen3.5-9B-Q4_K_M.gguf`, or `docker build --build-arg LLM_SIZE=9B`. The development laptop exposes only a 2 GB GPU, so automatic device selection uses CPU and leaves that GPU alone.
+The default GPU models are Whisper large-v3-turbo (`int8_float16`, batch size 1) and Qwen3.5-9B Q4_K_M, with explicit yes/no generation and question-aware evidence boundary refinement. Both models use CUDA on a suitable GPU. This is the scored deployment configuration. The lightweight CPU fallback uses Whisper small.en and Qwen3.5-4B; it is not the configuration that achieved the final local score. The development laptop exposes only a 2 GB GPU, so automatic device selection uses CPU. Speech-only experiments explicitly used the small GPU once enough memory was free.
 
 ```sh
 python prepare_models.py --size 4B --cpu-runtime
@@ -44,7 +44,7 @@ ASR_DEVICE=cpu REQUEST_BUDGET_SECONDS=600 python api.py
 
 The CPU budget override is for debugging only, not competition deployment. `LLAMA_SERVER` selects an already-built llama-server executable. `LLM_MODEL` and `ASR_MODEL` select local model paths. `LLM_GPU_LAYERS=0` forces CPU LLM execution. `LLM_URL` can reuse an explicitly started loopback model server; use `LLM_API_KEY` if that server requires authentication. Only one automatic model server can use port 9060 at once.
 
-Whisper large-v3-turbo is optional, via `prepare_models.py --asr dropbox-dash/faster-whisper-large-v3-turbo`, `ASR_MODEL=models/faster-whisper-large-v3-turbo`, and `ASR_BATCH_SIZE=8`. The default non-batched small.en path matches the local timing experiments.
+Whisper small.en is available explicitly with `prepare_models.py --asr Systran/faster-whisper-small.en`, `ASR_MODEL=models/faster-whisper-small.en`, and `ASR_BATCH_SIZE=0`. Prefer large-v3-turbo for scoring: small.en sometimes drops punctuation across a long dialogue, causing evidence to be reduced to unhelpful keyword fragments.
 
 ## Local experiments
 
@@ -55,6 +55,12 @@ python benchmark.py --split holdout --reuse-transcripts
 python local_evaluator.py --verbose
 ```
 
-`benchmark.py` is an offline accuracy experiment with a relaxed LLM timeout, not a 60-second GPU benchmark. Its default development set is the first 29 supplied conversations; the last ten are the local holdout. ASR caches and diagnostic predictions are ignored by git. Do not reuse a transcript cache directory across different ASR configurations. Metadata records the prompt and environment for new benchmark runs.
+`benchmark.py` is an offline accuracy experiment with a relaxed LLM timeout, not a 60-second GPU benchmark. Its default development set is the first 29 supplied conversations; `--split holdout` selects the last ten. Those last ten were subsequently inspected during development, so they are no longer an untouched holdout. ASR caches and diagnostic predictions are ignored by git. The default cache directory is keyed by ASR settings. Do not reuse an explicit transcript cache directory across different ASR configurations. Metadata records the prompt and environment for new benchmark runs. `--predictions` re-scores saved model outputs without generating new ones and must not be used as a latency measurement.
+
+Final configuration check on a different ten-conversation subset: sample IDs `10 20 39 42 43 47 48 50 52 54`, 100 questions, accuracy 0.990, mean positive tIoU 0.673, combined score approximately 0.800. Raw outputs are in `benchmark_results/turbo_clauses_9b.json`; final postprocessing was checked with `benchmark_results/final_100.json`. The transcript cache used was `transcripts/turbo_gpu`. These are local supplied-data results, not official validation or evaluation results. The 9B language model ran on CPU for this check. Large-v3-turbo speech recognition was measured on the 2 GB GPU at roughly 4–13 seconds per conversation.
+
+`evidence_ranker.py` is an experimental ONNX passage-ranking baseline. It underperformed the LLM-based locator and is not imported by the service or included in the deployment container.
+
+Verification completed: 28 unit/HTTP-contract tests pass; Python compilation and `git diff --check` pass. A live `/predict` smoke test used GPU transcription, CPU Qwen3.5-9B, offline model loading, and an unrelated audio filename; it returned the expected three booleans with valid spans and null negative evidence. The local CPU request budget was relaxed for that smoke test. The CUDA image tags were checked, but the full container build and full-GPU request latency were not tested on this laptop.
 
 Use the unchanged HTTP local evaluator on the actual GPU to verify latency as well as accuracy before considering an official attempt. A successful CPU accuracy test does not establish compliance with the GPU request deadline.

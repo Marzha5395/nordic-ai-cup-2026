@@ -27,9 +27,13 @@ For EVERY question, first decide whether its answer is YES or NO.
 Return [false, -1, ""] for NO. Return [true, line_number, "exact evidence quote"] for YES.
 A quote contradicting the question means NO, not YES. Check each question separately, in order.
 The transcript lines are numbered starting at 0. The line number is where the quote STARTS.
-Copy the shortest continuous clause or sentence that actually establishes the answer, word for word.
-The quote may cross consecutive lines. Never quote the patient's question instead of its answer.
-For an agreed plan or finding, prefer the doctor's definitive statement over an earlier suggestion.
+Copy a complete, concise supporting clause or sentence, word for word, NOT isolated keywords.
+For example, quote "My assessment is that this is most likely viral gastroenteritis", not just
+"viral gastroenteritis"; quote "We have taken your blood tests today", not just "blood tests".
+The quote may cross consecutive lines. Never quote a question alone instead of its answer.
+Prefer the FIRST explicit statement establishing the fact, not later summaries or repetitions.
+For reported symptoms or history, use the patient's original specific report. For an agreed plan,
+diagnosis, or examination finding, use the doctor's first definitive statement, not a tentative suggestion.
 Do not include unrelated explanations, the next question, greetings, or the patient's reaction.
 For a dose, quote the prescription clause with the dose. For a duration, quote the duration clause.
 For a request, quote the request itself. A short explicit confirmation may be enough in context.
@@ -76,7 +80,8 @@ class LocalLanguageModel:
             raise RuntimeError('Port 9060 is occupied. Stop the other model server or explicitly configure LLM_URL.')
         from speech import default_device
         device = os.getenv('ASR_DEVICE') or default_device()
-        model = Path(os.getenv('LLM_MODEL', str(ROOT / 'models' / 'Qwen3.5-4B-Q4_K_M.gguf')))
+        size = '9B' if device == 'cuda' else '4B'
+        model = Path(os.getenv('LLM_MODEL', str(ROOT / 'models' / f'Qwen3.5-{size}-Q4_K_M.gguf')))
         if not model.is_file():
             raise FileNotFoundError(f'LLM model missing at {model}. Run prepare_models.py first.')
         executable = os.getenv('LLAMA_SERVER') or shutil.which('llama-server')

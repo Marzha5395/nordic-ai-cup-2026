@@ -8,6 +8,7 @@ from huggingface_hub import hf_hub_download, snapshot_download
 
 ROOT = Path(__file__).resolve().parent
 LLAMA_VERSION = 'b10917'
+LLAMA_COMMIT = '8ea290247c87ced2ab245b056ffe96dbcf90d36c'
 LLAMA_SHA256 = 'e7d547fb0bbdc64960e58cb57b02ab2a5f754036eed482d1e6ddce54c6fcafe0'
 MODEL_REVISIONS = {
     '4B': 'e87f176479d0855a907a41277aca2f8ee7a09523',
@@ -21,12 +22,15 @@ ASR_REVISIONS = {
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--size', choices=MODEL_REVISIONS, default='4B')
-    parser.add_argument('--asr', choices=ASR_REVISIONS, default='Systran/faster-whisper-small.en')
+    parser.add_argument('--size', choices=MODEL_REVISIONS)
+    parser.add_argument('--asr', choices=ASR_REVISIONS)
     runtime_options = parser.add_mutually_exclusive_group()
     runtime_options.add_argument('--cpu-runtime', action='store_true')
     runtime_options.add_argument('--build-cuda', action='store_true')
     args = parser.parse_args()
+    args.size = args.size or ('4B' if args.cpu_runtime else '9B')
+    args.asr = args.asr or ('Systran/faster-whisper-small.en' if args.cpu_runtime else
+                            'dropbox-dash/faster-whisper-large-v3-turbo')
     directory = ROOT / 'models'
     directory.mkdir(exist_ok=True)
     hf_hub_download(
@@ -58,6 +62,10 @@ def main():
         if not source.exists():
             subprocess.run(['gh', 'repo', 'clone', 'ggml-org/llama.cpp', str(source),
                             '--', '--depth', '1', '--branch', LLAMA_VERSION], check=True)
+        revision = subprocess.run(['git', '-C', str(source), 'rev-parse', 'HEAD'],
+                                  capture_output=True, text=True, check=True).stdout.strip()
+        if revision != LLAMA_COMMIT:
+            raise ValueError(f'Expected llama.cpp commit {LLAMA_COMMIT}, found {revision}')
         build = source / 'build'
         subprocess.run(['cmake', '-S', str(source), '-B', str(build), '-DGGML_CUDA=ON',
                         '-DCMAKE_BUILD_TYPE=Release', '-DLLAMA_OPENSSL=OFF',

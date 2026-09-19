@@ -3,12 +3,10 @@ import logging
 import os
 import subprocess
 import time
-from dataclasses import replace
 from functools import lru_cache
 from pathlib import Path
 
 import ctranslate2
-import numpy as np
 from faster_whisper import BatchedInferencePipeline, WhisperModel
 from faster_whisper.audio import decode_audio
 
@@ -30,45 +28,19 @@ def default_device():
     return 'cuda'
 
 
-def repair_word_times(words, audio, sample_rate=16000):
-    hop = sample_rate // 100
-    count = len(audio) // hop
-    if not count:
-        return words
-    rms = np.sqrt(np.mean(np.square(audio[:count * hop].reshape(count, hop)), axis=1))
-    threshold = max(0.0001, float(np.percentile(rms, 85)) * 0.015)
-    active = np.convolve((rms > threshold).astype(np.int32), np.ones(5, dtype=np.int32), mode='same') > 0
-    result = []
-    for word in words:
-        start, end = word.start, word.end
-        if end - start >= 0.7:
-            a, b = max(0, int(start * 100)), min(count, int(end * 100))
-            window = active[a:b]
-            voiced = np.flatnonzero(window)
-            if len(voiced):
-                silence = ~window
-                edges = np.flatnonzero(np.diff(np.r_[False, silence, False])).reshape(-1, 2)
-                gaps = [right for left, right in edges if right - left >= 12 and right <= voiced[-1]]
-                if gaps:
-                    start = max(start, (a + gaps[-1]) / 100 - 0.01)
-                if len(window) - voiced[-1] >= 12:
-                    end = min(end, (a + voiced[-1] + 1) / 100 + 0.01)
-        result.append(replace(word, start=round(start, 3), end=round(max(start, end), 3)))
-    return result
-
-
 class SpeechRecognizer:
     def __init__(self):
         self.device = os.getenv('ASR_DEVICE') or default_device()
-        model_path = Path(os.getenv('ASR_MODEL', str(ROOT / 'models' / 'faster-whisper-small.en')))
+        model_name = 'faster-whisper-large-v3-turbo' if self.device == 'cuda' else 'faster-whisper-small.en'
+        model_path = Path(os.getenv('ASR_MODEL', str(ROOT / 'models' / model_name)))
         if not model_path.exists():
             raise FileNotFoundError(f'ASR model missing at {model_path}. Run prepare_models.py first.')
         self.model = WhisperModel(
             str(model_path), device=self.device,
-            compute_type=os.getenv('ASR_COMPUTE_TYPE', 'float16' if self.device == 'cuda' else 'int8'),
+            compute_type=os.getenv('ASR_COMPUTE_TYPE', 'int8_float16' if self.device == 'cuda' else 'int8'),
             cpu_threads=int(os.getenv('ASR_THREADS', '4')), local_files_only=True,
         )
-        self.batch_size = int(os.getenv('ASR_BATCH_SIZE', '0'))
+        self.batch_size = int(os.getenv('ASR_BATCH_SIZE', '1' if self.device == 'cuda' else '0'))
         self.batched = BatchedInferencePipeline(self.model) if self.batch_size else None
 
     def transcribe(self, audio_bytes):
@@ -85,11 +57,8 @@ class SpeechRecognizer:
             segments, _ = self.model.transcribe(audio, **options)
         words = [Word(float(word.start), float(word.end), word.word.strip())
                  for segment in segments for word in (segment.words or [])]
-        transcript = Transcript(words)
-        if os.getenv('REPAIR_WORD_TIMES', '1') == '1':
-            transcript.words = repair_word_times(transcript.words, audio)
         logger.info('ASR: %d words in %.2fs', len(words), time.monotonic() - started)
-        return transcript
+        return Transcript(words)
 
     def warmup(self):
         import numpy as np

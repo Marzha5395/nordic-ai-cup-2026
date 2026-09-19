@@ -1,31 +1,41 @@
+from types import SimpleNamespace
+from unittest.mock import patch
+
 import numpy as np
+import pytest
 
-from solver import Word
-from speech import repair_word_times
-
-
-def test_leading_pause_is_not_part_of_a_long_word():
-    audio = np.zeros(3 * 16000, dtype=np.float32)
-    audio[int(1.7 * 16000):2 * 16000] = 0.1
-    word = repair_word_times([Word(0.2, 2.0, 'Yes.')], audio)[0]
-    assert 1.64 <= word.start <= 1.72
-    assert word.end == 2.0
+from speech import SpeechRecognizer, default_device
 
 
-def test_a_normal_short_word_keeps_its_alignment():
-    audio = np.ones(16000, dtype=np.float32) * 0.1
-    words = [Word(0.2, 0.5, 'Normal.')]
-    assert repair_word_times(words, audio) == words
+@pytest.mark.parametrize('memory,expected', [('2048', 'cpu'), ('16384', 'cuda')])
+def test_device_selection_respects_gpu_capacity(memory, expected):
+    default_device.cache_clear()
+    with patch('speech.ctranslate2.get_cuda_device_count', return_value=1):
+        with patch('speech.subprocess.run', return_value=SimpleNamespace(stdout=memory)):
+            assert default_device() == expected
+    default_device.cache_clear()
 
 
-def test_trailing_pause_is_not_part_of_a_long_word():
-    audio = np.zeros(2 * 16000, dtype=np.float32)
-    audio[:int(0.3 * 16000)] = 0.1
-    word = repair_word_times([Word(0.0, 1.5, 'Yes.')], audio)[0]
-    assert word.start == 0.0
-    assert 0.3 <= word.end <= 0.36
+def test_cpu_without_cuda():
+    default_device.cache_clear()
+    with patch('speech.ctranslate2.get_cuda_device_count', return_value=0):
+        assert default_device() == 'cpu'
+    default_device.cache_clear()
 
 
-def test_all_silence_does_not_invent_word_boundaries():
-    words = [Word(0.1, 1.5, 'Hello.')]
-    assert repair_word_times(words, np.zeros(32000, dtype=np.float32)) == words
+def test_transcription_is_in_memory_and_preserves_word_timings(monkeypatch, tmp_path):
+    monkeypatch.setenv('ASR_DEVICE', 'cpu')
+    monkeypatch.setenv('ASR_MODEL', str(tmp_path))
+    monkeypatch.setenv('ASR_BATCH_SIZE', '0')
+    waveform = np.zeros(16000, dtype=np.float32)
+    word = SimpleNamespace(start=0.2, end=0.7, word=' Hello.')
+    with patch('speech.WhisperModel') as factory, patch('speech.decode_audio', return_value=waveform):
+        factory.return_value.transcribe.return_value = (iter([SimpleNamespace(words=[word])]), None)
+        asr = SpeechRecognizer()
+        result = asr.transcribe(b'audio bytes')
+        assert factory.call_args.kwargs['compute_type'] == 'int8'
+        assert factory.call_args.kwargs['local_files_only'] is True
+        assert factory.return_value.transcribe.call_args.args[0] is waveform
+        assert result.words[0].start == 0.2
+        assert result.words[0].end == 0.7
+        assert result.words[0].text == 'Hello.'

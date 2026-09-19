@@ -172,6 +172,28 @@ def refine_span(transcript, question, span):
         return span
     start, end = selected[0], selected[-1] + 1
     target = evidence_keywords(question)
+    present = evidence_keywords(' '.join(word.text for word in words[start:end]))
+    generic = set('well unwell tolerat treatment mean since weekend fine feel felt feeling '
+                  'help work what hope hear good better lately recently'.split())
+    if present <= generic and not (target & present):
+        alternatives = []
+        for index, (a, b) in enumerate(transcript.sentences):
+            if abs(words[a].start - span[0]) > 12:
+                continue
+            text = ' '.join(word.text for word in words[a:b])
+            matches = len(target & evidence_keywords(text))
+            if matches < 2:
+                continue
+            if text.endswith('?'):
+                if index + 1 == len(transcript.sentences):
+                    continue
+                c, d = transcript.sentences[index + 1]
+                reply = ' '.join(word.text for word in words[c:d]).lower()
+                if d - c > 4 or not re.match(r'^(yes|no|none|correct|exactly|right)\b', reply):
+                    continue
+            alternatives.append((matches, -(b - a), -abs(words[a].start - span[0]), a, b))
+        if alternatives:
+            _, _, _, start, end = max(alternatives)
     for _ in range(2):
         present = evidence_keywords(' '.join(word.text for word in words[start:end]))
         missing = target - present
