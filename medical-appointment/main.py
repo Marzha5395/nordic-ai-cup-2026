@@ -6,7 +6,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 df = pd.read_csv('data/question_train.csv')
 
-model_id = "Qwen/Qwen3.5-2B"
+model_id = "Qwen/Qwen3.5-9B"
 
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(
@@ -23,7 +23,7 @@ def transcribe(path='data/audio/', file='conversation_sample_77.mp3'):
 
     file_path = path + file
     
-    segments, _ = audio_model.transcribe(file_path, language='en', vad_filter=False)
+    segments, _ = audio_model.transcribe(file_path, language='en', vad_filter=True)
     results = [{'start': s.start, 'end': s.end, 'text': s.text} for s in segments]
     full_text = ''.join([r['text'] for r in results]).strip()
     
@@ -49,7 +49,7 @@ def generate(results, questions):
     """
 
     messages = [{"role": "user", "content": prompt}]
-    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
 
     inputs = tokenizer([text], return_tensors="pt").to(model.device)
 
@@ -65,10 +65,46 @@ def generate(results, questions):
     
     end_time = time.perf_counter()
     execution_time = end_time - start_time
-    predictions = response.lower().split()
+    predictions = response.lower().strip().split('\n')
 
     print(f"⏱️ Generation completed in {execution_time:.2f} seconds.")
     return predictions[:num_questions]
+
+def segment(results, question):
+
+    prompt = f"""
+    You are given a question related to a conversation. Your task is to find which part of the conversation is evidence of the question and answer with a starting and ending timestamp.
+    This is the conversation:
+    {results}
+    Here is the question related to the conversation.
+    {question}
+    You should answer with two space separated values. They are the starting and ending times of the supporting passages of the conversation that contains the answer to the question.
+    Note that you are supposed the find support for the answers, not the question itself.
+    The supporting passages are all consecutive, and there might only be one single supporting passage. Therefore it is enough with the starting time of the first passage and the ending time of the last passage.
+    Make sure to answer with two floating point numbers only. An example answer is:
+    21.06 25.74
+    Make no mistakes.
+    """
+
+    messages = [{"role": "user", "content": prompt}]
+    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
+
+    inputs = tokenizer([text], return_tensors="pt").to(model.device)
+
+    # Generate
+    generate_ids = model.generate(
+        **inputs, 
+        max_new_tokens=300
+    )
+
+    # Decode response while slicing out the original prompt tokens
+    generated_ids = [output_ids[len(input_ids):] for input_ids, output_ids in zip(inputs.input_ids, generate_ids)]
+    response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+    
+    predictions = response.strip().split()
+
+    return float(predictions[0]), float(predictions[1])
+
 
 def main():
     for id in df['transcript_id'].unique():
@@ -83,6 +119,15 @@ def main():
 
         n_correct = sum(predictions[i] == answers[i] for i in range(max(len(predictions), len(answers))))
         print(f'Sample id: {id} | Correct predictions: {n_correct}/10')
+
+        evidence_start = [0]*len(questions)
+        evidence_end = [60]*len(questions)
+        predictions = [p == 'yes' for p in predictions]
+        for i in range(len(questions)):
+            if predictions[i]:
+                start, end = segment(results, questions[i])
+                evidence_start[i] = start
+                evidence_end[i] = end
 
 if __name__ == '__main__':
     main()

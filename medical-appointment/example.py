@@ -15,7 +15,7 @@ from typing import Optional, Tuple
 
 from dtos import ASRQuestionRequestDto, ASRQuestionResponseDto
 from utils import Span, audio_duration_seconds, decode_audio
-from main import transcribe, generate
+from main import transcribe, generate, segment
 
 logger = logging.getLogger(__name__)
 
@@ -44,33 +44,41 @@ def predict(request: ASRQuestionRequestDto) -> ASRQuestionResponseDto:
         f.write(audio_bytes)
     
     results, full_text = transcribe(file="conversation.mp3")
-    questions_str = request.questions
-    predictions = generate(results, questions_str)
-    answers1 = [p == 'yes' for p in predictions]
+    questions = request.questions
+    predictions = generate(results, questions)
+    answers = [p == 'yes' for p in predictions]
+    evidence_start = [0]*len(questions)
+    evidence_end = [60]*len(questions)
+    for i in range(len(questions)):
+        if answers[i]:
+            start, end = segment(results, questions[i])
+            evidence_start[i] = start
+            evidence_end[i] = end
+
 
     # Never let this raise. An exception means no response, and no response
     # means every question about this conversation is scored wrong — ten marks,
     # not one. A guess is worth half a mark on average; an error is worth
     # nothing.
-    answers = []
-    evidence_start = []
-    evidence_end = []
+    # answers = []
+    # evidence_start = []
+    # evidence_end = []
 
-    for question in request.questions:
-        try:
-            answer, span = answer_question(
-                audio_bytes, request.audio_filename, question
-            )
-        except Exception:
-            logger.exception('Falling back to a guess for: %s', question)
-            answer, span = True, None
+    # for question in request.questions:
+    #     try:
+    #         answer, span = answer_question(
+    #             audio_bytes, request.audio_filename, question
+    #         )
+    #     except Exception:
+    #         logger.exception('Falling back to a guess for: %s', question)
+    #         answer, span = True, None
 
-        answers.append(answer)
-        evidence_start.append(span[0] if span is not None else None)
-        evidence_end.append(span[1] if span is not None else None)
+    #     answers.append(answer)
+    #     evidence_start.append(span[0] if span is not None else None)
+    #     evidence_end.append(span[1] if span is not None else None)
 
     return ASRQuestionResponseDto(
-        answers=answers1,
+        answers=answers,
         evidence_start=evidence_start,
         evidence_end=evidence_end,
     )
