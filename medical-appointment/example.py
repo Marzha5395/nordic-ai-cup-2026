@@ -43,7 +43,7 @@ def predict(request: ASRQuestionRequestDto) -> ASRQuestionResponseDto:
     with open("data/audio/conversation.mp3", "wb") as f:
         f.write(audio_bytes)
     
-    results, full_text = transcribe(file="conversation.mp3")
+    results, full_text, words = transcribe(file="conversation.mp3")
     questions = request.questions
     predictions = generate(results, questions)
     answers = [p == 'yes' for p in predictions]
@@ -51,7 +51,7 @@ def predict(request: ASRQuestionRequestDto) -> ASRQuestionResponseDto:
     evidence_end = [60]*len(questions)
     for i in range(len(questions)):
         if answers[i]:
-            start, end = segment(results, questions[i])
+            start, end = segment(results, words, questions[i])
             evidence_start[i] = start
             evidence_end[i] = end
 
