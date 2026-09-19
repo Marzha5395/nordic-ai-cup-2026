@@ -49,3 +49,47 @@ class TerrainDataGeometryTests(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
+
+
+class PendingCommandTests(unittest.TestCase):
+    def test_command_not_yet_applied_is_resent_and_a_rejection_is_not(self):
+        from dtos import RequestedViewDto
+        from solution import Sequence
+        from submission import FlybyPredictor
+        from test_solution import FakeDetector, request_for
+
+        predictor = FlybyPredictor(FakeDetector(), policy='adaptive')
+        state = Sequence(3840, 2160)
+        state.pending_command = (1, 2880, 540)
+        state.last_view = (0, 1920, 1080)
+        predictor.choose = lambda request, state, motion_ok: RequestedViewDto(resolution_level=1, center_x=960, center_y=540)
+        # The view still shows the old position and nothing was rejected: the command is pending, so repeat it.
+        command = predictor.select_view(request_for(level=0), state, False)
+        self.assertEqual((command.resolution_level, command.center_x, command.center_y), (1, 2880, 540))
+        # Once the view shows the command, decide afresh.
+        command = predictor.select_view(request_for(level=1, center=(2880, 540)), state, False)
+        self.assertEqual((command.center_x, command.center_y), (960, 540))
+        # A rejected command is not pending: decide afresh from the view.
+        state.pending_command = (1, 2880, 540)
+        state.last_view = (0, 1920, 1080)
+        request = request_for(level=0)
+        request.camera_command_feedback = {'frame': 1, 'requested_view': {'resolution_level': 1, 'center_x': 2880, 'center_y': 540}, 'reason': 'test'}
+        request = type(request).model_validate(request.model_dump())
+        command = predictor.select_view(request, state, False)
+        self.assertEqual((command.center_x, command.center_y), (960, 540))
+        # A view that moved somewhere else is not a late command: decide afresh.
+        state.pending_command = (1, 2880, 540)
+        state.last_view = (1, 1920, 1080)
+        command = predictor.select_view(request_for(level=0), state, False)
+        self.assertEqual((command.center_x, command.center_y), (960, 540))
+        # Never resend a command that would be illegal from this view (level 2 cannot reach level 0).
+        state.pending_command = (0, 1920, 1080)
+        state.last_view = (2, 2000, 900)
+        command = predictor.select_view(request_for(level=2, center=(2000, 900)), state, False)
+        self.assertEqual((command.center_x, command.center_y), (960, 540))
+        # Without the option the policy always decides afresh.
+        predictor.hold_pending = False
+        state.pending_command = (1, 2880, 540)
+        state.last_view = (0, 1920, 1080)
+        command = predictor.select_view(request_for(level=0), state, False)
+        self.assertEqual((command.center_x, command.center_y), (960, 540))

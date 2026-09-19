@@ -9,6 +9,7 @@ import cv2
 from recorder import record
 from dtos import RequestedViewDto
 from solution import Predictor, legal_view
+from utils import describe_camera_rejection
 
 
 ROOT = Path(__file__).resolve().parent
@@ -28,12 +29,18 @@ class FlybyPredictor(Predictor):
         On validation, 104 of 237 views still showed the view from before our previous command: when a
         response arrives just after the next frame is rendered, the service applies the command one frame
         late. Deciding again from that stale view gave targets judged against the already-moved camera, and
-        they were rejected. If the view is not the last command and no rejection came back, that command is
-        still pending: repeat it. It is legal whether it has landed yet or not.
+        they were rejected. So when the view is exactly the previous request's view (the camera has not moved),
+        differs from the last command, and no rejection came back, that command is still pending: repeat it.
+        It is only repeated if it is also legal from this view, so it is legal whether it has landed yet or not.
         """
         view = (request.view.resolution_level, request.view.center_x, request.view.center_y)
         pending = getattr(state, 'pending_command', None)
-        if self.hold_pending and pending is not None and pending != view and request.camera_command_feedback is None:
+        unmoved = getattr(state, 'last_view', None) == view
+        state.last_view = view
+        if (self.hold_pending and pending is not None and pending != view and unmoved
+                and request.camera_command_feedback is None
+                and pending[0] in request.camera_constraints.allowed_resolution_levels
+                and describe_camera_rejection(view[0], view[1:], pending[0], pending[1:]) is None):
             command = RequestedViewDto(resolution_level=pending[0], center_x=pending[1], center_y=pending[2])
         else:
             command = self.choose(request, state, motion_ok)

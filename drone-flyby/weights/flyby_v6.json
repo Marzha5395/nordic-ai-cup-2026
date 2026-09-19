@@ -85,7 +85,7 @@
     "input_width": 960,
     "canonical": false,
     "confidence": 0.05,
-    "camera_policy": "full",
+    "camera_policy": "adaptive",
     "tta": "none",
     "runtime_external_api_calls": false
   },
@@ -670,11 +670,24 @@
       "score": 0.3155782440346764,
       "camera_policy": "full",
       "note": "1 of 249 frames skipped (recorded)"
+    },
+    {
+      "model": "flyby_v6",
+      "score": 0.34,
+      "camera_policy": "full"
+    },
+    {
+      "model": "flyby_v6",
+      "attempt": "b4272f2ecde84ca493c0afaa960c587c",
+      "score": 0.41228208142983613,
+      "camera_policy": "adaptive",
+      "note": "recorded: 104 of 237 views showed the view from before the previous command (commands landing one frame late); 17 moves rejected"
     }
   ],
   "interpretation": [
     "Held-out places (.training/terrain/test) were never trained on; the objects are the reference cut-outs, so recall is optimistic.",
     "The recorded validation views were only looked at to identify domain differences; they are not used for training or scoring.",
     "Helsinki is training data; its score is a sanity check only."
-  ]
+  ],
+  "camera_policy_choice": "adaptive, chosen by validation (0.412 vs 0.34 for full with the same weights). Commands the service has not applied yet are resent (submission.FlybyPredictor.hold_pending): in lag_replay.py with 44% of commands one frame late, adaptive went from 23 rejected moves to 0 (mean mAP 0.6245 -> 0.6327 on the held-out flights); with no lag it changes nothing (0.6225 both)."
 }
