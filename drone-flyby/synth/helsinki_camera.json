@@ -1,0 +1,43 @@
+{
+ "description": "Camera model fitted to Helsinki GT box-centre displacements (218 consecutive-frame pairs, mean residual 0.75 px). Ground plane Z=0, camera at height h looking down; cam = rot_y(roll) @ rot_x(pitch) @ diag(1,1,h) applied to ground (X,Y,1); image = K @ cam with K = [[f,0,cx],[0,f,cy],[0,0,1]]. Camera translates by (tx,ty) metres per frame, so the ground appears to move by (-tx,-ty). Per-frame image map A = G @ T @ inv(G) with T = translation(-tx,-ty).",
+ "image_width": 3840,
+ "image_height": 2160,
+ "cx": 1920.0,
+ "cy": 1080.0,
+ "height_m": 600.0,
+ "focal_px": 3399.6172962450364,
+ "pitch_rad": -0.3423743124151188,
+ "roll_rad": 0.016012096911738768,
+ "tx_m": -0.07900288389889285,
+ "ty_m": -13.041151068023268,
+ "frame_map_homography": [
+  [
+   1.006007513055408,
+   -0.001387189625519224,
+   -11.612178316783138
+  ],
+  [
+   0.00027548112465649254,
+   1.0122019807309341,
+   51.332284921356276
+  ],
+  [
+   -3.257450832597891e-08,
+   -7.251014173014798e-07,
+   1.0
+  ]
+ ],
+ "frame_map_affine": [
+  [
+   1.0070807719541834,
+   5.852927610246195e-05,
+   -13.615879724263614
+  ],
+  [
+   0.0002858004552172333,
+   1.0133232701048291,
+   51.26414036517575
+  ]
+ ],
+ "notes": "affine row i: new_coord_i = a*x + b*y + c (source px). Centre (1920,1080) moves ~(0.0, +66.2) px/frame; flow ~51 px/frame at the top edge and ~80 px/frame at the bottom edge; objects appear ~30% larger at the bottom than at the top."
+}

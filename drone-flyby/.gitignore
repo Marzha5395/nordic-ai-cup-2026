@@ -91,3 +91,9 @@ src/heldout_flight*/
 
 # Recorded validation views (recorder.py), data only
 recordings/
+
+# memory-policy solution: local evaluation artefacts
+logs/
+src/synth*/
+data/
+detect/

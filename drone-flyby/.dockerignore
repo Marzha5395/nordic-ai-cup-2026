@@ -13,3 +13,4 @@ src/
 annotated/
 .training/
 recordings/
+!weights/policy_y11s_run2.pt

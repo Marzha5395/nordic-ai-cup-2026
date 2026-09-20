@@ -1,0 +1,23 @@
+# Memory-policy endpoint (api_policy.py). Build: docker build -f Dockerfile.policy -t drone-flyby-policy .
+FROM python:3.11-slim
+
+# opencv needs libGL and libglib even in headless use.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt requirements-gpu.txt ./
+RUN pip install --no-cache-dir -r requirements-gpu.txt
+
+COPY dtos.py utils.py api_policy.py policy_controller.py ./
+COPY policy/ ./policy/
+COPY synth/helsinki_camera.json ./synth/helsinki_camera.json
+COPY weights/policy_y11s_run2.pt ./weights/policy_y11s_run2.pt
+
+ENV YOLO_OFFLINE=true YOLO_AUTOINSTALL=false
+
+EXPOSE 9053
+
+CMD ["python", "api_policy.py"]
