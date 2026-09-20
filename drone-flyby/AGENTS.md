@@ -40,4 +40,12 @@
 - Inter-frame ground motion is a constant homography (camera pitched ~20 deg; 51 px/frame at the top edge, 80 at the bottom): `synth/helsinki_camera.json` is the prior for `policy/flow.py` and the camera for `synth/make_scene.py`, which renders 250-frame evaluator-format flights under `src/synth*/` (git-ignored).
 - Tests: `python -m unittest -v test_policy`. Evaluation: `python synth/eval_policy.py --scene synth250 --quiet` (in-process, per-object diagnostics) or `api_policy.py` + `local_evaluator.py`. Ablations: `synth/run_ablations.sh <weights> <scene...>`.
 - Env switches all start with `DRONE_` and are listed in `policy/detector.py`; `DRONE_DEVICE` is shared with V2, everything else is separate (`DRONE_TTA` only reacts to the literal value `1`).
+- `synth/make_scene.py --heading-deg N` renders a flight whose ground motion is rotated (180 = objects enter at the bottom); the flow hypothesis check switches on the first L0->L1 transition, and the `measured translation differs from prior` warning is then expected on every frame (it compares against the static Helsinki prior, adaptation is real).
 - Colab helpers (`synth/colab_train.py`, `synth/upload_parts.sh`, `synth/pull_ckpt.sh`, `synth/refresh_colab_token.py`): the free runtime is recycled after ~10 min of kernel idleness and the CLI's proxy token expires after 60 min without being refreshed; see the script docstrings.
+
+## Ported fierceviking pipeline (`api_fv.py`, `fv/`)
+
+- Third independent endpoint, ported 2026-09-20 from the public `fierceviking/Nordic-AI-Cup-2026` branch `mtp_drone`; provenance, presets, measurements and the GPU run-book are in `SOLUTION_FV.md`. Shares only `dtos.py`/`utils.py` with the other solutions.
+- `python api_fv.py --experiment {v19frames|ours-only|v19ens}`; env `DRONE_*` switches are theirs (`fv/solution.py`), plus our `DRONE_ENSEMBLE_WEIGHTS/SCALE/CONF`. Install `requirements-fv.txt` (ultralytics 8.4.155; the fv checkpoint was saved by 8.4.x).
+- Local evaluation: `local_evaluator.py --scene {helsinki|synth250|synth250b}`; the synth scenes are symlinks into `../drone-flyby/src` on the laptop (git-ignored). Captured evaluator outputs live in `.fv_eval/` (git-ignored). Kill the server with `kill <pid>`, not `pkill -f api_fv.py`.
+- Their detector was trained on hand-labelled frames of the official validation flight, so its validation score is not an estimate of the evaluation score; ours never saw that flight.

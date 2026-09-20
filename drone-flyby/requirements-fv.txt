@@ -1,0 +1,7 @@
+-r requirements.txt
+# fierceviking port (api_fv.py): both checkpoints load with these; ultralytics
+# 8.4.155 is the version the local measurements used. Pick the torch CUDA
+# index that matches the GPU (cu128 for RTX 50-series).
+torch==2.7.1
+torchvision==0.22.1
+ultralytics==8.4.155

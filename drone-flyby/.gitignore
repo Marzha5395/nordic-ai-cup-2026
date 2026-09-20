@@ -95,6 +95,11 @@ recordings/
 # memory-policy solution: local evaluation artefacts
 logs/
 src/synth*/
+
+# fierceviking port: local evaluator captures
+.fv_eval/
+# symlinked synth scenes (src/synth*/ only matches real dirs)
+src/synth*
 data/
 detect/
 recordings/
