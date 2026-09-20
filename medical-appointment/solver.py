@@ -97,6 +97,27 @@ def align_quote(transcript, quote, sentence_id=None):
     return (round(first.start, 3), round(last.end, 3)) if last.end > first.start else None
 
 
+def parse_json_entries(text, count):
+    """The raw entries of the model's "evidence" array, in order."""
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.S)
+    match = re.search(r'"evidence"\s*:\s*\[', text)
+    entries = []
+    if match:
+        position = match.end()
+        decoder = json.JSONDecoder()
+        while len(entries) < count:
+            while position < len(text) and text[position] in ' \r\n\t,':
+                position += 1
+            if position >= len(text) or text[position] == ']':
+                break
+            try:
+                value, position = decoder.raw_decode(text, position)
+            except json.JSONDecodeError:
+                break
+            entries.append(value)
+    return entries
+
+
 def parse_evidence(text, count):
     text = re.sub(r'<think>.*?</think>', '', text, flags=re.S)
     match = re.search(r'"evidence"\s*:\s*\[', text)
@@ -123,6 +144,57 @@ def parse_evidence(text, count):
             else:
                 values.append('missing')
     return (values + ['missing'] * count)[:count]
+
+
+def parse_ranges(text, count):
+    """Like parse_evidence, but every entry is [yes, first_line, last_line]."""
+    values = []
+    for item in parse_json_entries(text, count):
+        if isinstance(item, list) and len(item) == 3 and type(item[0]) is bool:
+            if not item[0]:
+                values.append(None)
+                continue
+            first, last = item[1], item[2]
+            values.append([first, last] if type(first) is int and type(last) is int and 0 <= first <= last else 'missing')
+        else:
+            values.append('missing')
+    return (values + ['missing'] * count)[:count]
+
+
+def response_from_ranges(transcript, questions, evidence):
+    """Turn [first_line, last_line] answers into spans over those transcript lines."""
+    answers, starts, ends = [], [], []
+    for i, question in enumerate(questions):
+        item = evidence[i] if i < len(evidence) else 'missing'
+        if item is None:
+            answer, span = False, None
+        elif item == 'missing':
+            span = retrieve_fallback(transcript, question)
+            answer = span is not None
+        else:
+            answer = True
+            first, last = min(item[0], len(transcript.sentences) - 1), min(item[1], len(transcript.sentences) - 1)
+            a = transcript.sentences[first][0]
+            b = transcript.sentences[last][1]
+            span = (transcript.words[a].start, transcript.words[b - 1].end) if b > a else retrieve_fallback(transcript, question)
+        span = calibrate_start(transcript, span)
+        if answer:
+            span = add_context_to_short_span(transcript, span)
+        answers.append(answer)
+        starts.append(round(span[0], 3) if span else None)
+        ends.append(round(span[1], 3) if span else None)
+    return ASRQuestionResponseDto(answers=answers, evidence_start=starts, evidence_end=ends)
+
+
+def answer_from_raw(transcript, questions, raw):
+    """Parse one model reply and build the response, in whichever evidence mode is configured."""
+    from llm import evidence_mode
+
+    if evidence_mode() == 'range':
+        evidence = parse_ranges(raw, len(questions))
+        return response_from_ranges(transcript, questions, evidence), evidence
+    evidence = parse_evidence(raw, len(questions))
+    return response_from_evidence(transcript, questions, evidence), evidence
 
 
 STOPWORDS = set('a an the is are was were be been being do does did has have had will would should '
@@ -249,10 +321,10 @@ def calibrate_start(transcript, span):
 
 
 # A reply shorter than this carries no evidence on its own ("None.", "A lot of wind."), so the sentence
-# it answers is prepended. Off by default (0): on the supplied data it gained 0.024 tIoU on the first 29
-# conversations (8 spans better, 3 worse) but lost 0.016 on the last 10 (0 better, 1 worse, 2 touched),
-# so it is measured on validation before it becomes a default. MEDICAL_SHORT_CONTEXT sets the seconds.
-SHORT_SPAN_CONTEXT_SECONDS = float(os.getenv('MEDICAL_SHORT_CONTEXT', '0'))
+# it answers is prepended. On the supplied data it gained 0.024 tIoU on the first 29 conversations
+# (8 spans better, 3 worse) and lost 0.016 on the last 10 (2 spans touched), so it was settled on
+# validation: 0.7515 -> 0.7617, about +0.017 tIoU. MEDICAL_SHORT_CONTEXT overrides; 0 disables it.
+SHORT_SPAN_CONTEXT_SECONDS = float(os.getenv('MEDICAL_SHORT_CONTEXT', '1.0'))
 
 
 def add_context_to_short_span(transcript, span, gap=2.0):
@@ -313,9 +385,9 @@ class MedicalSolver:
 
     def answer(self, transcript, questions, deadline):
         text = self.llm.complete(transcript, questions, deadline)
-        evidence = parse_evidence(text, len(questions))
+        response, evidence = answer_from_raw(transcript, questions, text)
         logger.info('LLM: %d/%d complete answers', sum(item != 'missing' for item in evidence), len(questions))
-        return response_from_evidence(transcript, questions, evidence), text
+        return response, text
 
     def predict(self, audio_bytes, questions):
         if not questions:

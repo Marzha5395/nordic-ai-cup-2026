@@ -8,7 +8,7 @@ from pathlib import Path
 
 from llm import LocalLanguageModel, SYSTEM_PROMPT
 from local_evaluator import Statistics
-from solver import Transcript, parse_evidence, response_from_evidence
+from solver import Transcript, answer_from_raw
 from speech import SpeechRecognizer, default_compute_type, default_device
 from utils import gold_evidence, group_questions_by_conversation, load_sample_audio, validate_response
 
@@ -90,8 +90,7 @@ def main():
             started = time.monotonic()
             raw = saved[filename] if args.predictions else model.complete(transcript, questions, started + args.llm_budget)
             llm_seconds = time.monotonic() - started
-            evidence = parse_evidence(raw, len(questions))
-            response = response_from_evidence(transcript, questions, evidence)
+            response, evidence = answer_from_raw(transcript, questions, raw)
             validate_response(response, len(questions))
             statistics.record_request(len(questions), None, failed=False)
             details = []

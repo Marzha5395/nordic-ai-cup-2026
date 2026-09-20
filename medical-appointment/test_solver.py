@@ -11,8 +11,9 @@ from utils import validate_response
 
 @pytest.fixture(autouse=True)
 def exact_word_starts(monkeypatch):
-    """These tests check which words the evidence covers; keep word starts uncalibrated here."""
+    """These tests check which words the evidence covers; keep the span geometry unadjusted here."""
     monkeypatch.setattr('solver.SPAN_START_DELAY_SECONDS', 0.0)
+    monkeypatch.setattr('solver.SHORT_SPAN_CONTEXT_SECONDS', 0.0)
 
 
 
