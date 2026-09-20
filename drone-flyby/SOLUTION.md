@@ -57,6 +57,55 @@ Tunables (environment variables, defaults chosen by the ablations below):
 `DRONE_CONF_TAU` (1.0), `DRONE_NEW_TRACK_CONF` (no gating), `DRONE_TTA` (0),
 `DRONE_L0_UPSCALE` (1).
 
+## Running the official validation (run-book for the GPU machine)
+
+```bash
+# 1. code (the 19 MB detector is in the repo)
+git clone git@github.com:Marzha5395/nordic-ai-cup-2026.git
+cd nordic-ai-cup-2026/drone-flyby
+
+# 2. environment - the same pins the V2 solution uses; the tests below pass with
+#    exactly these versions (torch 2.7.1, ultralytics 8.3.203)
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-gpu.txt
+#    RTX 50-series only: first
+#    pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
+python -c "import torch; print(torch.cuda.is_available())"     # must print True
+
+# 3. self-check (13 tests, ~10 s; the last line prints smoke mAP ~0.84 on Helsinki)
+python -m unittest -q test_policy
+
+# 4. start the endpoint - ONE worker, it keeps per-sequence state.
+#    DRONE_RECORD_DIR keeps every request (view PNG + geometry) so the validation
+#    sequence can be replayed/analysed later; ~1.4 MB per frame, ~350 MB per run.
+DRONE_RECORD_DIR=recordings python api_policy.py
+#    the first log lines must contain:
+#    detector: weights=weights/policy_y11s_run2.pt device=cuda:0 half=True conf=0.10
+#    (device=cpu means torch has no CUDA -> fix step 2; CPU works but drops frames)
+
+# 5. protocol + timing check from a second terminal (same machine)
+python local_evaluator.py --realtime
+#    expect: COCO mAP@0.50 ~0.84, "camera moves refused 0", "frames skipped 0",
+#    round trip well under 333 ms (laptop 2 GB GPU: ~45 ms).
+
+# 6. make port 9053 reachable from the internet (cloud firewall / security group
+#    rule for TCP 9053, or a tunnel), then on https://cases.nordicaicup.com
+#    submit   http://<public-ip-or-host>:9053/predict   (path included),
+#    run "Verify" first, then "Validation".
+#    Do NOT start "Evaluation" - that is the single one-shot attempt.
+```
+
+While a validation runs, the server log prints one line per frame
+(`frame N L<level> (cx,cy) dets=.. tracks=.. ann=.. flow_res=.. <ms>`); a
+`scheduler: command ... rejected` warning would mean a refused camera move
+(none expected), and `flow: measured translation differs from prior` means the
+sequence's motion differs from Helsinki and the online estimator adapted.
+Nothing else needs to be configured; all `DRONE_*` switches default to the
+shipped configuration.
+
+Container alternative: `docker build -f Dockerfile.policy -t drone-flyby-policy .`
+then `docker run --gpus all -p 9053:9053 -e DRONE_RECORD_DIR=/app/recordings -v $PWD/recordings:/app/recordings drone-flyby-policy`.
+
 ## Reproducing the data and the model
 
 ```bash

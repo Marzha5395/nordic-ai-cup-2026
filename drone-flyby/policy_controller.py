@@ -7,8 +7,10 @@ Run ``python local_evaluator.py`` (optionally ``--realtime``) with
 """
 
 import logging
+import os
 import time
 from collections import OrderedDict
+from pathlib import Path
 from typing import Optional
 
 import cv2
@@ -28,6 +30,22 @@ from policy.scheduler import Scheduler
 from utils import clip_bbox_to_frame, decode_view
 
 logger = logging.getLogger(__name__)
+
+# Set DRONE_RECORD_DIR to keep every request (view PNG + geometry) as JSON,
+# e.g. to archive the official validation sequence for later analysis.
+RECORD_DIR = os.environ.get('DRONE_RECORD_DIR')
+
+
+def _record(request: DroneFlybyPredictRequestDto) -> None:
+    if not RECORD_DIR:
+        return
+    try:
+        d = Path(RECORD_DIR) / request.sequence_id.replace('/', '_')
+        d.mkdir(parents=True, exist_ok=True)
+        (d / f'{request.frame_index:06d}.json').write_text(request.model_dump_json())
+    except Exception:
+        logger.exception('recording failed on frame %s', request.frame)
+
 
 # Loaded once, shared by every sequence. If it fails we still import and
 # answer frames with memory-only (empty) predictions rather than crash.
@@ -74,6 +92,7 @@ def _controller(sequence_id: str, frame: int) -> Controller:
 
 def predict(request: DroneFlybyPredictRequestDto) -> DroneFlybyPredictResponseDto:
     """Answer one frame: whole-frame predictions plus the next camera move."""
+    _record(request)
     if request.camera_command_feedback is not None:
         feedback = request.camera_command_feedback
         logger.warning(
