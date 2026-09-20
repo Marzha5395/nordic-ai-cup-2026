@@ -177,9 +177,11 @@ def main():
                 start, end = segment(results, words, questions[i])
                 evidence_start[i] = start
                 evidence_end[i] = end
-        print(results)
-        print(evidence_start)
-        print(evidence_end)
+        print()
+        print(f'transcriptions: {results}')
+        print(f'{evidence_start = }')
+        print(f'{evidence_end = }')
+        print()
 
 if __name__ == '__main__':
     main()

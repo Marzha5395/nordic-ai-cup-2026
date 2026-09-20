@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_44.mp3",
+ "questions": [
+  "Was the HbA1c normal?",
+  "Has the patient been left without any treatment?",
+  "Does the patient express interest in joining a local swimming club?",
+  "Was the HbA1c elevated?",
+  "Does the doctor consider the fatigue non-pathological?",
+  "Were the test results reassuring?",
+  "Have several of the blood tests come back abnormal?",
+  "Did the other blood tests also come back normal?",
+  "The blood samples gave no explanation for the tiredness, correct?",
+  "Is tiredness the patient's main complaint?"
+ ],
+ "answers": [
+  true,
+  true,
+  false,
+  false,
+  true,
+  false,
+  false,
+  true,
+  true,
+  true
+ ],
+ "evidence_start": [
+  38.47,
+  62.7,
+  null,
+  null,
+  49.58,
+  null,
+  null,
+  42.47,
+  45.16,
+  22.29
+ ],
+ "evidence_end": [
+  41.31,
+  65.32,
+  null,
+  null,
+  53.5,
+  null,
+  null,
+  47.86,
+  47.86,
+  25.57
+ ]
+}

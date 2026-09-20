@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_14.mp3",
+ "questions": [
+  "The doctor's assessment was allergic eye irritation, correct?",
+  "Was redness of the conjunctiva found?",
+  "Is one drop to be given in each eye?",
+  "Did the patient ask for allergy eye drops?",
+  "Are the symptoms linked to heat and windy weather?",
+  "Should the drops be applied to the left eye only?",
+  "Did the patient request allergy tablets instead of eye drops?",
+  "Should the drops be used twice daily?",
+  "Is the prescribed concentration of Opatanol 10 mg/ml?",
+  "Does the patient mention owning a digital camera?"
+ ],
+ "answers": [
+  true,
+  true,
+  true,
+  true,
+  true,
+  false,
+  false,
+  true,
+  false,
+  false
+ ],
+ "evidence_start": [
+  86.67,
+  59.89,
+  128.5,
+  30.58,
+  45.81,
+  null,
+  null,
+  128.5,
+  null,
+  null
+ ],
+ "evidence_end": [
+  89.09,
+  62.11,
+  131.16,
+  33.52,
+  48.31,
+  null,
+  null,
+  134.66,
+  null,
+  null
+ ]
+}

@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_46.mp3",
+ "questions": [
+  "Was the fasting blood glucose 6.2 mmol/L?",
+  "Does the doctor ask if the patient is planning to go on holiday?",
+  "Has the fasting glucose been judged completely normal?",
+  "Did the patient come in without any complaints?",
+  "Were the blood samples taken without fasting?",
+  "Was baking discussed as part of the patient's recent activities?",
+  "Did the patient present with several complaints?",
+  "Does the doctor consider prediabetes a possibility?",
+  "Is the glucose level slightly elevated?",
+  "The visit was a preventive health examination, correct?"
+ ],
+ "answers": [
+  true,
+  false,
+  false,
+  true,
+  false,
+  false,
+  false,
+  true,
+  true,
+  true
+ ],
+ "evidence_start": [
+  23.62,
+  null,
+  null,
+  9.87,
+  null,
+  null,
+  null,
+  44.41,
+  31.63,
+  5.16
+ ],
+ "evidence_end": [
+  27.42,
+  null,
+  null,
+  11.52,
+  null,
+  null,
+  null,
+  47.79,
+  33.51,
+  7.64
+ ]
+}

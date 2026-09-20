@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_45.mp3",
+ "questions": [
+  "Is the patient troubled by a cough?",
+  "The condition was assessed as acute bronchitis, right?",
+  "Has the illness been assessed as chronic bronchitis?",
+  "Are the speakers discussing the patient's college studies?",
+  "Does the patient feel slightly short of breath?",
+  "Was the patient free of fever?",
+  "Were the patient's complaints related to the airways?",
+  "Did the examination show no signs of pneumonia?",
+  "Did the doctor start antibiotic tablets?",
+  "Has inhalation therapy been initiated?"
+ ],
+ "answers": [
+  true,
+  true,
+  false,
+  false,
+  true,
+  true,
+  true,
+  true,
+  false,
+  true
+ ],
+ "evidence_start": [
+  9.46,
+  42.56,
+  null,
+  null,
+  12.14,
+  18.34,
+  66.09,
+  24.59,
+  null,
+  56.85
+ ],
+ "evidence_end": [
+  11.32,
+  44.72,
+  null,
+  null,
+  13.48,
+  19.4,
+  69.89,
+  28.01,
+  null,
+  58.85
+ ]
+}

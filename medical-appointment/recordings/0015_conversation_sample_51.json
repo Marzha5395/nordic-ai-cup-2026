@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_51.mp3",
+ "questions": [
+  "The HbA1c is elevated, isn't it?",
+  "Was the patient discussing their new hobby of gardening?",
+  "Is medication now part of the treatment going forward?",
+  "Does the patient have type 2 diabetes?",
+  "Was insulin the medication started at this consultation?",
+  "Was metformin started for this patient?",
+  "Is the diabetes still only a suspicion at this point?",
+  "Will the patient receive support from a diabetes nurse?",
+  "Has the patient's diabetes diagnosis been confirmed?",
+  "Did the doctor refer the patient onwards to a diabetes nurse?"
+ ],
+ "answers": [
+  true,
+  false,
+  true,
+  true,
+  false,
+  true,
+  false,
+  true,
+  true,
+  true
+ ],
+ "evidence_start": [
+  38.48,
+  null,
+  51.07,
+  30.44,
+  null,
+  53.29,
+  null,
+  69.26,
+  30.44,
+  69.26
+ ],
+ "evidence_end": [
+  41.02,
+  null,
+  55.17,
+  33.04,
+  null,
+  55.17,
+  null,
+  72.06,
+  33.04,
+  72.06
+ ]
+}

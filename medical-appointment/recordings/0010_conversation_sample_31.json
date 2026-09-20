@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_31.mp3",
+ "questions": [
+  "Is a nasal steroid the prescribed treatment?",
+  "Does the doctor consider this an infectious rhinitis?",
+  "Did the patient remain free of fever?",
+  "Were coughing and a sore throat the main complaints?",
+  "Have the allergy symptoms appeared for the very first time?",
+  "Has an antihistamine been prescribed?",
+  "Did the patient have a fever?",
+  "Does the patient have a known allergy?",
+  "Was the secretion purulent?",
+  "Can the patient be heard discussing their desire to learn digital photography techniques?"
+ ],
+ "answers": [
+  false,
+  false,
+  true,
+  false,
+  false,
+  true,
+  false,
+  true,
+  false,
+  false
+ ],
+ "evidence_start": [
+  null,
+  null,
+  46.72,
+  null,
+  null,
+  126.11,
+  null,
+  55.81,
+  null,
+  null
+ ],
+ "evidence_end": [
+  null,
+  null,
+  49.58,
+  null,
+  null,
+  128.75,
+  null,
+  56.93,
+  null,
+  null
+ ]
+}

@@ -1,8 +1,8 @@
 """Agent endpoint.
 
 The evaluator stops a game once the accumulated wait for this endpoint passes
-600 seconds. A game is 30000 ticks, so the whole round trip -- network plus
-server -- has to average under 20 ms. The server side is kept as small as
+1200 seconds (raised from 600). A game is 30000 ticks, so the whole round trip
+-- network plus server -- has to average under 40 ms. The server side is kept as small as
 possible: the body is decoded with the standard JSON parser instead of being
 validated field by field, the policy runs directly on the event loop (no
 thread-pool hop), and the answer is written back as pre-encoded bytes.

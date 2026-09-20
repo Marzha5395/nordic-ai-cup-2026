@@ -1,5 +1,6 @@
 # Survival simulator project notes
 
+- The evaluator ends a run once the accumulated wait for the endpoint passes 1200 seconds (raised from 600), so the round trip has to average under 40 ms over 30000 ticks, not 20 ms. `validate.py` reports `decision_ms_mean` and `decision_ms_max` per run.
 - Use validation only. Do not call or queue the competition's one-shot evaluation without explicit user permission.
 - The simulator and scoring code under `src/elements/`, `src/core.py`, and `src/utils/simulation.py` are the reference rules; do not change them to improve policy scores.
 - The policy must use only the supplied observations/statuses, not live simulator internals or cloud inference APIs.

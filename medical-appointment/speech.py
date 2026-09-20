@@ -28,6 +28,21 @@ def default_device():
     return 'cuda'
 
 
+def default_compute_type(device):
+    """int8_float16 on the GPU, except where cuBLAS has no int8 GEMM for CTranslate2 (compute capability
+    12.x, the RTX 50 series, fails with CUBLAS_STATUS_NOT_SUPPORTED): float16 there. int8 on the CPU."""
+    if device != 'cuda':
+        return 'int8'
+    try:
+        result = subprocess.run(['nvidia-smi', '--query-gpu=compute_cap', '--format=csv,noheader'],
+                                capture_output=True, text=True, check=True, timeout=5)
+        if max(float(value) for value in result.stdout.split()) >= 12:
+            return 'float16'
+    except (OSError, ValueError, subprocess.SubprocessError):
+        pass
+    return 'int8_float16'
+
+
 class SpeechRecognizer:
     def __init__(self):
         self.device = os.getenv('ASR_DEVICE') or default_device()
@@ -35,7 +50,7 @@ class SpeechRecognizer:
         model_path = Path(os.getenv('ASR_MODEL', str(ROOT / 'models' / model_name)))
         if not model_path.exists():
             raise FileNotFoundError(f'ASR model missing at {model_path}. Run prepare_models.py first.')
-        compute_type = os.getenv('ASR_COMPUTE_TYPE', 'int8_float16' if self.device == 'cuda' else 'int8')
+        compute_type = os.getenv('ASR_COMPUTE_TYPE') or default_compute_type(self.device)
         self.model = self._load(model_path, compute_type)
         if self.device == 'cuda' and compute_type == 'int8_float16' and not os.getenv('ASR_COMPUTE_TYPE'):
             # CTranslate2's int8 GEMM is not supported by cuBLAS on every GPU (RTX 50-series fails with

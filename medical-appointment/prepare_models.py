@@ -14,6 +14,8 @@ MODEL_REVISIONS = {
     '4B': 'e87f176479d0855a907a41277aca2f8ee7a09523',
     '9B': '3885219b6810b007914f3a7950a8d1b469d598a5',
 }
+GEMMA_FILE = 'gemma-4-26B_q4_0-it.gguf'
+GEMMA_REVISION = 'd1c082be9cf3c8a514acf63b8761f4b41935842e'
 ASR_REVISIONS = {
     'dropbox-dash/faster-whisper-large-v3-turbo': '0a363e9161cbc7ed1431c9597a8ceaf0c4f78fcf',
     'Systran/faster-whisper-small.en': 'd1d751a5f8271d482d14ca55d9e2deeebbae577f',
@@ -37,6 +39,9 @@ def main():
         f'unsloth/Qwen3.5-{args.size}-GGUF', f'Qwen3.5-{args.size}-Q4_K_M.gguf',
         revision=MODEL_REVISIONS[args.size], local_dir=directory,
     )
+    if not args.cpu_runtime:
+        # The GPU default language model in llm.py: Gemma 4 26B-A4B, Google's QAT q4_0 build.
+        hf_hub_download('google/gemma-4-26B-A4B-it-qat-q4_0-gguf', GEMMA_FILE, revision=GEMMA_REVISION, local_dir=directory)
     snapshot_download(args.asr, revision=ASR_REVISIONS[args.asr],
                       local_dir=directory / args.asr.rsplit('/', 1)[-1],
                       allow_patterns=['*.json', '*.bin', '*.txt'])

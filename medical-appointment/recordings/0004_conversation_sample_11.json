@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_11.mp3",
+ "questions": [
+  "Is the patient allergic to wasp stings?",
+  "Are wasps the trigger of the patient's allergy?",
+  "Were they discussing the patient's recent purchase of groceries?",
+  "Should the pen be used for asthma attacks?",
+  "Have the symptoms been judged to carry a low risk?",
+  "Did the doctor prescribe an EpiPen of 0.15 mg?",
+  "Does a pollen allergy explain why the patient came in?",
+  "Does the patient discuss their upcoming movie night?",
+  "Was an EpiPen of 0.3 mg prescribed?",
+  "Is the patient allergic to bee stings?"
+ ],
+ "answers": [
+  true,
+  true,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  true,
+  false
+ ],
+ "evidence_start": [
+  26.52,
+  26.52,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  74.1,
+  null
+ ],
+ "evidence_end": [
+  31.3,
+  31.3,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  77.36,
+  null
+ ]
+}
