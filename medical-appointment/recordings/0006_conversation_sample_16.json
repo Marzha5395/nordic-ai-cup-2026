@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_16.mp3",
+ "questions": [
+  "Does the patient have a bee allergy?",
+  "Was Thor's hammer used during the examination to test any aspect of the patient's condition?",
+  "Has the patient expressed motivation to quit smoking?",
+  "Is the patient allergic to wasps?",
+  "Does the conversation indicate the patient discussed their college studies?",
+  "Peak flow was recorded as 523.6 L/min, correct?",
+  "Has cost been the reason Spiriva is not taken regularly?",
+  "Was the patient advised to take Spiriva regularly?",
+  "The FEV1/FVC ratio came out at 88 percent, right?",
+  "Was FEV1 measured at 82 percent?"
+ ],
+ "answers": [
+  false,
+  false,
+  false,
+  true,
+  false,
+  false,
+  true,
+  true,
+  false,
+  true
+ ],
+ "evidence_start": [
+  null,
+  null,
+  null,
+  64.85,
+  null,
+  null,
+  45.18,
+  128.38,
+  null,
+  81.94
+ ],
+ "evidence_end": [
+  null,
+  null,
+  null,
+  67.41,
+  null,
+  null,
+  48.28,
+  130.86,
+  null,
+  84.28
+ ]
+}

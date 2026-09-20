@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_7.mp3",
+ "questions": [
+  "Is the pain mainly on the right side?",
+  "Will Pancillin be continued for another five days?",
+  "Have the symptoms worsened after the antibiotic treatment?",
+  "The patient was described as slim, correct?",
+  "Does the patient continue the treatment for another ten days?",
+  "Was a lot of gas in the abdomen reported?",
+  "Is the patient's appetite reduced?",
+  "Was the pain mostly located on the left side?",
+  "Did the doctor ask about the patient's shopping habits?",
+  "At any point does the patient mention owning a digital camera?"
+ ],
+ "answers": [
+  true,
+  true,
+  false,
+  false,
+  false,
+  true,
+  false,
+  false,
+  false,
+  false
+ ],
+ "evidence_start": [
+  28.58,
+  154.69,
+  null,
+  null,
+  null,
+  35.63,
+  null,
+  null,
+  null,
+  null
+ ],
+ "evidence_end": [
+  29.6,
+  158.26,
+  null,
+  null,
+  null,
+  36.41,
+  null,
+  null,
+  null,
+  null
+ ]
+}

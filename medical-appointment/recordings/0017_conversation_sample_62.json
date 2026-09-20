@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_62.mp3",
+ "questions": [
+  "Is the patient's sensation intact?",
+  "Is neuropathy considered to be present?",
+  "Is there any mention of a specific software program the patient uses?",
+  "Is the patient being followed for type 2 diabetes?",
+  "Was the foot status found to be normal?",
+  "Are there no signs of neuropathy?",
+  "Has the diabetes been described as unstable?",
+  "The doctor concluded that the diabetes is stable, right?",
+  "Should the patient return for a foot check every three months?",
+  "Did the patient come in without any complaints?"
+ ],
+ "answers": [
+  true,
+  false,
+  false,
+  true,
+  true,
+  true,
+  false,
+  true,
+  false,
+  true
+ ],
+ "evidence_start": [
+  51.01,
+  null,
+  null,
+  25.33,
+  51.01,
+  59.32,
+  null,
+  67.18,
+  null,
+  30.08
+ ],
+ "evidence_end": [
+  53.64,
+  null,
+  null,
+  28.09,
+  53.64,
+  61.12,
+  null,
+  68.56,
+  null,
+  33.49
+ ]
+}

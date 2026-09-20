@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_60.mp3",
+ "questions": [
+  "Has the patient been left free of complaints?",
+  "Will the current treatment continue unchanged?",
+  "Does the patient complain of tiredness at this visit?",
+  "Have the lipid values worsened?",
+  "Does the doctor consider the diabetes well controlled?",
+  "Is a specific dish being planned for dinner discussed?",
+  "Have the lipid values improved?",
+  "Was the HbA1c 42 mmol/mol?",
+  "The lipids are also under good control, aren't they?",
+  "Is the patient feeling well?"
+ ],
+ "answers": [
+  true,
+  true,
+  false,
+  false,
+  true,
+  false,
+  true,
+  true,
+  true,
+  true
+ ],
+ "evidence_start": [
+  18.53,
+  48.13,
+  null,
+  null,
+  40.39,
+  null,
+  36.12,
+  29.29,
+  38.82,
+  16.75
+ ],
+ "evidence_end": [
+  21.52,
+  50.79,
+  null,
+  null,
+  44.39,
+  null,
+  38.1,
+  32.85,
+  44.39,
+  21.52
+ ]
+}

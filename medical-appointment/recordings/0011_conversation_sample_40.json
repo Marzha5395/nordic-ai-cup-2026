@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_40.mp3",
+ "questions": [
+  "Did the doctor prescribe nitrofurantoin?",
+  "Was the urine dipstick positive for nitrite?",
+  "Does the patient experience burning when urinating?",
+  "Does the patient report itching rather than burning during urination?",
+  "Were painkillers the only treatment given?",
+  "Did the dipstick also show leukocytes?",
+  "Is the condition assessed as a kidney infection?",
+  "Does the patient mention baking a cake?",
+  "Was the urine dipstick negative for nitrite?",
+  "Have the leukocytes in the urine turned out normal?"
+ ],
+ "answers": [
+  false,
+  true,
+  true,
+  false,
+  false,
+  true,
+  false,
+  false,
+  false,
+  false
+ ],
+ "evidence_start": [
+  null,
+  45.08,
+  11.52,
+  null,
+  null,
+  36.51,
+  null,
+  null,
+  null,
+  null
+ ],
+ "evidence_end": [
+  null,
+  48.8,
+  13.44,
+  null,
+  null,
+  39.17,
+  null,
+  null,
+  null,
+  null
+ ]
+}

@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_80.mp3",
+ "questions": [
+  "Will the patient be started on a course of antibiotics?",
+  "Was the healing judged to be delayed?",
+  "Is there any discussion about the patient owning a digital camera?",
+  "Is the patient here to have a plaster cast removed?",
+  "Were signs of infection seen around the wound?",
+  "The patient showed up in person for this visit, correct?",
+  "Were the sutures put in after an open hip operation?",
+  "Has the course after the procedure been uncomplicated?",
+  "Is the patient talking about their pet's recent birthday celebration?",
+  "Was the wound free of any signs of infection?"
+ ],
+ "answers": [
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  true,
+  false,
+  true
+ ],
+ "evidence_start": [
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  113.76,
+  null,
+  90.22
+ ],
+ "evidence_end": [
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  119.64,
+  null,
+  91.82
+ ]
+}

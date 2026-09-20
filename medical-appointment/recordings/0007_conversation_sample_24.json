@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_24.mp3",
+ "questions": [
+  "Was the lump removed at the same time as the skin wart?",
+  "Has the patient noticed a lump on the left forearm?",
+  "Were antibiotics prescribed after the removal?",
+  "Is an ultrasound referral planned if the lump stays unchanged?",
+  "The follow-up was set for six months from now, right?",
+  "Could the lump be a lipoma or a hematoma?",
+  "Did the patient feel the lump on the right forearm?",
+  "Has the lump been judged likely to be malignant?",
+  "Did the patient mention learning how to bake sourdough bread at home?",
+  "Did the patient come to have a skin change under the breast removed?"
+ ],
+ "answers": [
+  false,
+  true,
+  false,
+  true,
+  false,
+  true,
+  false,
+  false,
+  false,
+  true
+ ],
+ "evidence_start": [
+  null,
+  47.28,
+  null,
+  116.8,
+  null,
+  86.27,
+  null,
+  null,
+  null,
+  29.48
+ ],
+ "evidence_end": [
+  null,
+  49.14,
+  null,
+  123.18,
+  null,
+  93.93,
+  null,
+  null,
+  null,
+  33.88
+ ]
+}

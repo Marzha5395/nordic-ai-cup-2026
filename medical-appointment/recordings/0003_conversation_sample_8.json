@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_8.mp3",
+ "questions": [
+  "Did the examination show redness in the oral cavity?",
+  "Has Fluconazole been tried before without effect?",
+  "Was Brentan also tried earlier?",
+  "Should an antibiotic be used for this condition?",
+  "Is the candidiasis considered persistent?",
+  "Does the patient have a tendency to develop oral thrush?",
+  "Has the patient's oral thrush responded well to Brentan in the past?",
+  "Will the patient take Fluconazole for seven days?",
+  "Is the patient talking about their college studies?",
+  "Does the treatment plan involve Fluconazole 150 mg daily?"
+ ],
+ "answers": [
+  true,
+  true,
+  true,
+  false,
+  true,
+  false,
+  false,
+  true,
+  false,
+  false
+ ],
+ "evidence_start": [
+  71.88,
+  53.5,
+  53.5,
+  null,
+  94.5,
+  null,
+  null,
+  111.54,
+  null,
+  null
+ ],
+ "evidence_end": [
+  75.46,
+  56.1,
+  56.1,
+  null,
+  97.17,
+  null,
+  null,
+  116.0,
+  null,
+  null
+ ]
+}

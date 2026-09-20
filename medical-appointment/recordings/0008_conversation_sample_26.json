@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_26.mp3",
+ "questions": [
+  "Did the assessment describe the growth as benign?",
+  "The doctor concluded seborrheic keratosis, right?",
+  "Is the patient asking for the result of the removed skin change?",
+  "Did the consultation take place on the Millennium Falcon?",
+  "Does the patient still await removal of the lesion?",
+  "Had the lesion already been removed before this contact?",
+  "Did they talk about the patient's daily commute?",
+  "Should the patient be reassured that the change is harmless?",
+  "Were the results communicated through an e-consultation?",
+  "Is the growth described as malignant?"
+ ],
+ "answers": [
+  true,
+  true,
+  true,
+  false,
+  false,
+  true,
+  false,
+  true,
+  true,
+  false
+ ],
+ "evidence_start": [
+  32.84,
+  29.98,
+  12.16,
+  null,
+  null,
+  14.0,
+  null,
+  32.84,
+  82.2,
+  null
+ ],
+ "evidence_end": [
+  34.7,
+  31.96,
+  16.24,
+  null,
+  null,
+  16.24,
+  null,
+  37.13,
+  89.68,
+  null
+ ]
+}

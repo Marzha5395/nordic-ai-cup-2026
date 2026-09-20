@@ -83,5 +83,3 @@ cython_debug/
 .vscode
 .devcontainer
 .jupyter
-
-recordings/

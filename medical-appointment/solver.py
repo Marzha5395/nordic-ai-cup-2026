@@ -248,6 +248,27 @@ def calibrate_start(transcript, span):
     return min(span[0] + SPAN_START_DELAY_SECONDS, first.end - 0.05), span[1]
 
 
+# A reply shorter than this carries no evidence on its own ("None.", "A lot of wind."), so the sentence
+# it answers is prepended. Off by default (0): on the supplied data it gained 0.024 tIoU on the first 29
+# conversations (8 spans better, 3 worse) but lost 0.016 on the last 10 (0 better, 1 worse, 2 touched),
+# so it is measured on validation before it becomes a default. MEDICAL_SHORT_CONTEXT sets the seconds.
+SHORT_SPAN_CONTEXT_SECONDS = float(os.getenv('MEDICAL_SHORT_CONTEXT', '0'))
+
+
+def add_context_to_short_span(transcript, span, gap=2.0):
+    """Prepend the preceding sentence to a very short span, if it is close enough in time."""
+    if span is None or not SHORT_SPAN_CONTEXT_SECONDS or span[1] - span[0] >= SHORT_SPAN_CONTEXT_SECONDS:
+        return span
+    words = transcript.words
+    selected = [i for i, word in enumerate(words) if word.end > span[0] + 0.01 and word.start < span[1] - 0.01]
+    if not selected:
+        return span
+    preceding = [(a, b) for a, b in transcript.sentences if b <= selected[0]]
+    if not preceding or words[selected[0]].start - words[preceding[-1][1] - 1].end > gap:
+        return span
+    return calibrate_start(transcript, (words[preceding[-1][0]].start, span[1]))
+
+
 def response_from_evidence(transcript, questions, evidence):
     answers, starts, ends = [], [], []
     for i, question in enumerate(questions):
@@ -265,6 +286,8 @@ def response_from_evidence(transcript, questions, evidence):
             if os.getenv('REFINE_EVIDENCE', '1') == '1':
                 span = refine_span(transcript, question, span)
         span = calibrate_start(transcript, span)
+        if answer:
+            span = add_context_to_short_span(transcript, span)
         answers.append(answer)
         starts.append(round(span[0], 3) if span else None)
         ends.append(round(span[1], 3) if span else None)

@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_73.mp3",
+ "questions": [
+  "Did swelling appear at the injection site?",
+  "The vaccination was given without complications, wasn't it?",
+  "Was the patient reminded about an upcoming dental check?",
+  "Has the patient been reminded about an upcoming foot check?",
+  "Can the patient be heard discussing their college studies?",
+  "Did the patient turn up for an influenza vaccination?",
+  "Is an eye check also coming up?",
+  "Did the patient come in for a travel vaccination?",
+  "Has the eye check already been carried out at this visit?",
+  "Is the patient feeling well?"
+ ],
+ "answers": [
+  false,
+  true,
+  false,
+  true,
+  false,
+  true,
+  true,
+  false,
+  false,
+  true
+ ],
+ "evidence_start": [
+  null,
+  45.25,
+  null,
+  52.89,
+  null,
+  9.36,
+  52.89,
+  null,
+  null,
+  27.1
+ ],
+ "evidence_end": [
+  null,
+  47.85,
+  null,
+  55.93,
+  null,
+  11.16,
+  55.93,
+  null,
+  null,
+  31.23
+ ]
+}

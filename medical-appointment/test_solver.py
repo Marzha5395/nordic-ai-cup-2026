@@ -197,3 +197,15 @@ def test_span_start_is_calibrated_but_never_past_the_first_word(monkeypatch):
     speech = Transcript([Word(1.0, 1.1, 'No.'), Word(1.2, 1.6, 'fever.')])
     assert calibrate_start(speech, (1.0, 1.6)) == (1.05, 1.6)
     assert calibrate_start(speech, None) is None
+
+
+def test_short_span_gets_the_sentence_it_answers_only_when_enabled(monkeypatch):
+    from solver import Transcript, Word, add_context_to_short_span
+    speech = Transcript([Word(1.0, 1.4, 'Any'), Word(1.4, 1.8, 'swelling?'), Word(2.0, 2.3, 'None.')])
+    monkeypatch.setattr('solver.SHORT_SPAN_CONTEXT_SECONDS', 0.0)
+    assert add_context_to_short_span(speech, (2.0, 2.3)) == (2.0, 2.3)
+    monkeypatch.setattr('solver.SHORT_SPAN_CONTEXT_SECONDS', 1.0)
+    monkeypatch.setattr('solver.SPAN_START_DELAY_SECONDS', 0.0)
+    assert add_context_to_short_span(speech, (2.0, 2.3)) == (1.0, 2.3)
+    assert add_context_to_short_span(speech, (1.0, 2.3)) == (1.0, 2.3)   # long enough already
+    assert add_context_to_short_span(speech, None) is None

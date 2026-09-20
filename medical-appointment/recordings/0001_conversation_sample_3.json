@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_3.mp3",
+ "questions": [
+  "Has InfluvacTetra already been given?",
+  "At the examination, was the patient free of acute signs of illness?",
+  "Was the patient told about possible side effects of the vaccination?",
+  "Was a tetanus booster the second vaccine the patient asked about?",
+  "Did the patient ask for a flu vaccine?",
+  "Does the conversation indicate the patient discussed their recent purchase?",
+  "Will a prescription for Prevenar13 or Pneumovax23 be issued?",
+  "Does the patient express interest in painting a picture?",
+  "Should the patient avoid vaccination because of a current illness?",
+  "Does the assessment include a risk evaluation?"
+ ],
+ "answers": [
+  true,
+  true,
+  true,
+  false,
+  true,
+  false,
+  true,
+  false,
+  false,
+  true
+ ],
+ "evidence_start": [
+  68.08,
+  46.94,
+  27.32,
+  null,
+  14.28,
+  null,
+  75.07,
+  null,
+  null,
+  58.27
+ ],
+ "evidence_end": [
+  70.04,
+  47.18,
+  32.42,
+  null,
+  15.96,
+  null,
+  79.57,
+  null,
+  null,
+  62.17
+ ]
+}

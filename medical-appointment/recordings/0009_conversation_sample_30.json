@@ -1,0 +1,51 @@
+{
+ "audio_filename": "conversation_sample_30.mp3",
+ "questions": [
+  "Was the patient discussing their experiences with a hobby?",
+  "Is earache the main complaint?",
+  "Have fluids and rest been recommended?",
+  "Has penicillin been prescribed?",
+  "Did the patient report a fever of 39 degrees?",
+  "Did the doctor find no signs of a bacterial infection?",
+  "Was the patient afebrile at the examination?",
+  "Were abnormal findings noted during the examination?",
+  "Is there any reference to the patient's college graduation date?",
+  "The advice given was supportive treatment only, correct?"
+ ],
+ "answers": [
+  false,
+  false,
+  true,
+  false,
+  false,
+  true,
+  true,
+  false,
+  false,
+  true
+ ],
+ "evidence_start": [
+  null,
+  null,
+  93.52,
+  null,
+  null,
+  46.22,
+  44.27,
+  null,
+  null,
+  93.52
+ ],
+ "evidence_end": [
+  null,
+  null,
+  97.36,
+  null,
+  null,
+  48.41,
+  45.69,
+  null,
+  null,
+  97.36
+ ]
+}
