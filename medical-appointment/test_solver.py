@@ -9,6 +9,13 @@ from solver import Transcript, Word, align_quote, parse_evidence, response_from_
 from utils import validate_response
 
 
+@pytest.fixture(autouse=True)
+def exact_word_starts(monkeypatch):
+    """These tests check which words the evidence covers; keep word starts uncalibrated here."""
+    monkeypatch.setattr('solver.SPAN_START_DELAY_SECONDS', 0.0)
+
+
+
 def transcript(text):
     return Transcript([Word(i * 0.4, (i + 1) * 0.4, word) for i, word in enumerate(text.split())])
 
@@ -180,3 +187,13 @@ def test_http_contract_without_loading_models():
             })
             assert response.status_code == 200
             validate_response(type(fallback_response([])).model_validate(response.json()), 1)
+
+
+def test_span_start_is_calibrated_but_never_past_the_first_word(monkeypatch):
+    from solver import Transcript, Word, calibrate_start
+    monkeypatch.setattr('solver.SPAN_START_DELAY_SECONDS', 0.18)
+    speech = Transcript([Word(1.0, 1.5, 'The'), Word(1.5, 2.0, 'heart'), Word(2.0, 2.1, 'is'), Word(2.1, 2.6, 'normal.')])
+    assert calibrate_start(speech, (1.0, 2.6)) == (1.18, 2.6)
+    speech = Transcript([Word(1.0, 1.1, 'No.'), Word(1.2, 1.6, 'fever.')])
+    assert calibrate_start(speech, (1.0, 1.6)) == (1.05, 1.6)
+    assert calibrate_start(speech, None) is None

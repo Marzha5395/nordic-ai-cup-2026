@@ -9,7 +9,7 @@ from pathlib import Path
 from llm import LocalLanguageModel, SYSTEM_PROMPT
 from local_evaluator import Statistics
 from solver import Transcript, parse_evidence, response_from_evidence
-from speech import SpeechRecognizer, default_device
+from speech import SpeechRecognizer, default_compute_type, default_device
 from utils import gold_evidence, group_questions_by_conversation, load_sample_audio, validate_response
 
 ROOT = Path(__file__).resolve().parent
@@ -44,7 +44,7 @@ def main():
         profile = {
             'model': os.getenv('ASR_MODEL', 'large-v3-turbo' if device == 'cuda' else 'small.en'),
             'device': device,
-            'compute': os.getenv('ASR_COMPUTE_TYPE', 'int8_float16' if device == 'cuda' else 'int8'),
+            'compute': os.getenv('ASR_COMPUTE_TYPE') or default_compute_type(device),
             'batch': os.getenv('ASR_BATCH_SIZE', '1' if device == 'cuda' else '0'),
             'beam': os.getenv('ASR_BEAM_SIZE', '5'),
         }

@@ -32,7 +32,7 @@ ENV HF_HUB_OFFLINE=1
 
 # Your model and the server. The sample data under data/ is not copied: only
 # local_evaluator.py needs it.
-COPY dtos.py utils.py example.py api.py solver.py speech.py llm.py ./
+COPY dtos.py utils.py example.py api.py solver.py speech.py llm.py recorder.py ./
 
 EXPOSE 9054
 

@@ -23,6 +23,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from dtos import ASRQuestionRequestDto, ASRQuestionResponseDto
+from recorder import record
 from solver import fallback_response, get_solver
 from utils import audio_duration_seconds, decode_audio, validate_response
 
@@ -74,11 +75,13 @@ def predict(request: ASRQuestionRequestDto) -> ASRQuestionResponseDto:
         logger.exception('Prediction failed for %s', request.audio_filename)
         response = fallback_response(request.questions)
 
-    return ASRQuestionResponseDto(
+    answer = ASRQuestionResponseDto(
         answers=response.answers,
         evidence_start=response.evidence_start,
         evidence_end=response.evidence_end,
     )
+    record(request, answer)
+    return answer
 
 
 @app.post('/predict', response_model=ASRQuestionResponseDto)

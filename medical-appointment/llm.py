@@ -16,6 +16,29 @@ import requests
 logger = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent
 
+# Seconds kept free for answering without reasoning when reasoning runs long. Without reasoning the
+# model answers in about 3 s on this GPU, and about 8 s when the laptop GPU is power-throttled.
+ANSWER_RESERVE_SECONDS = 15
+
+
+def complete_answers(text, count):
+    from solver import parse_evidence
+    return 'missing' not in parse_evidence(text, count)
+
+
+def reasoning_budget():
+    """Tokens the model may think before answering; 0 disables thinking.
+
+    Default 2048 on the GPU: on the supplied data it raised the score from 0.773 to 0.805 on the first
+    29 conversations and from 0.766 to 0.783 on the last 10, at about 20 s of LLM time per conversation.
+    Default 0 on the CPU, where that much thinking would not fit the 60 s budget. LLM_REASONING_BUDGET
+    overrides both. The server ends thinking when the budget runs out.
+    """
+    if os.getenv('LLM_REASONING_BUDGET'):
+        return max(0, int(os.getenv('LLM_REASONING_BUDGET')))
+    from speech import default_device
+    return 2048 if (os.getenv('ASR_DEVICE') or default_device()) == 'cuda' else 0
+
 SYSTEM_PROMPT = '''You answer yes/no questions about a recorded medical consultation, using only its transcript.
 A yes means the conversation establishes the ENTIRE claim, including the exact drug, dose, duration,
 body part, timing, and who said it. A plausible but different detail means no. Unmentioned topics mean no.
@@ -56,6 +79,7 @@ class LocalLanguageModel:
     def __init__(self):
         self.process = None
         self.log_file = None
+        self.reasoning_budget = reasoning_budget()
         self.session = requests.Session()
         self.session.trust_env = False
         self.url = os.getenv('LLM_URL', 'http://127.0.0.1:9060').rstrip('/')
@@ -81,7 +105,10 @@ class LocalLanguageModel:
         from speech import default_device
         device = os.getenv('ASR_DEVICE') or default_device()
         size = '9B' if device == 'cuda' else '4B'
-        model = Path(os.getenv('LLM_MODEL', str(ROOT / 'models' / f'Qwen3.5-{size}-Q4_K_M.gguf')))
+        # GPU default: Gemma 4 26B-A4B (Google's QAT q4_0 GGUF). Qwen3.5-9B stays available with
+        # LLM_MODEL=models/Qwen3.5-9B-Q4_K_M.gguf; the CPU fallback keeps Qwen3.5-4B.
+        default = ROOT / 'models' / ('gemma-4-26B_q4_0-it.gguf' if device == 'cuda' else f'Qwen3.5-{size}-Q4_K_M.gguf')
+        model = Path(os.getenv('LLM_MODEL', str(default)))
         if not model.is_file():
             raise FileNotFoundError(f'LLM model missing at {model}. Run prepare_models.py first.')
         executable = os.getenv('LLAMA_SERVER') or shutil.which('llama-server')
@@ -95,7 +122,7 @@ class LocalLanguageModel:
             executable, '-m', str(model), '--host', '127.0.0.1', '--port', '9060',
             '-c', '8192', '-np', '1', '-ngl', os.getenv('LLM_GPU_LAYERS', '99' if device == 'cuda' else '0'),
             '-t', os.getenv('LLM_THREADS', '6'), '-tb', os.getenv('LLM_THREADS', '6'),
-            '--jinja', '--reasoning-budget', '0', '--no-webui',
+            '--jinja', '--reasoning-budget', str(self.reasoning_budget), '--no-webui',
         ]
         runtime = ROOT / '.runtime'
         runtime.mkdir(exist_ok=True)
@@ -129,17 +156,35 @@ class LocalLanguageModel:
         }
         prompt = 'TRANSCRIPT:\n' + transcript.render() + '\n\nQUESTIONS:\n'
         prompt += '\n'.join(f'{i + 1}. {q}' for i, q in enumerate(questions))
-        payload = {
-            'messages': [{'role': 'system', 'content': SYSTEM_PROMPT}, {'role': 'user', 'content': prompt}],
-            'temperature': 0, 'max_tokens': min(1800, 100 * len(questions) + 40),
-            'chat_template_kwargs': {'enable_thinking': False},
-            'response_format': {'type': 'json_schema', 'json_schema': {'name': 'evidence', 'schema': schema}},
-            'stream': True, 'cache_prompt': True,
-        }
+
+        def payload(thinking):
+            return {
+                'messages': [{'role': 'system', 'content': SYSTEM_PROMPT}, {'role': 'user', 'content': prompt}],
+                # Reasoning tokens count towards max_tokens, so the budget is added on top of the answer's share.
+                'temperature': 0, 'max_tokens': min(1800, 100 * len(questions) + 40) + (self.reasoning_budget if thinking else 0),
+                'chat_template_kwargs': {'enable_thinking': thinking},
+                'response_format': {'type': 'json_schema', 'json_schema': {'name': 'evidence', 'schema': schema}},
+                'stream': True, 'cache_prompt': True,
+            }
+
+        if self.reasoning_budget > 0:
+            # Think only while there is time: if no answer has started by deadline - ANSWER_RESERVE (a slow or
+            # throttled GPU), give up the reasoning and answer directly, so every question still gets an answer.
+            cutoff = deadline - ANSWER_RESERVE_SECONDS
+            if time.monotonic() < cutoff:
+                output, finished = self._stream(payload(True), deadline, cutoff)
+                if finished and complete_answers(output, len(questions)):
+                    return output
+                logger.warning('Reasoning answer %s; answering without reasoning', 'incomplete' if finished else 'ran out of time')
+        return self._stream(payload(False), deadline, None)[0]
+
+    def _stream(self, payload, deadline, cutoff):
+        """Stream a completion. Returns (content, finished). Aborts at the deadline, or at ``cutoff``
+        if no answer content has started by then."""
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            return ''
-        output = ''
+            return '', False
+        output, finished = '', False
         try:
             with self.session.post(self.url + '/v1/chat/completions', json=payload,
                                    stream=True, allow_redirects=False, timeout=(2, max(0.1, remaining))) as response:
@@ -147,16 +192,20 @@ class LocalLanguageModel:
                 if response.status_code != 200:
                     raise requests.RequestException('Local LLM did not return HTTP 200')
                 for line in response.iter_lines(chunk_size=1):
-                    if time.monotonic() >= deadline:
+                    now = time.monotonic()
+                    if now >= deadline or (cutoff is not None and not output and now >= cutoff):
                         break
-                    if not line.startswith(b'data: ') or line == b'data: [DONE]':
+                    if line == b'data: [DONE]':
+                        finished = True
+                        break
+                    if not line.startswith(b'data: '):
                         continue
                     chunk = json.loads(line[6:])
                     for choice in chunk.get('choices', []):
                         output += choice.get('delta', {}).get('content') or ''
         except (requests.RequestException, json.JSONDecodeError):
             logger.exception('Local LLM request interrupted; retaining complete answers')
-        return output
+        return output, finished
 
     def warmup(self):
         from solver import Transcript, Word, parse_evidence

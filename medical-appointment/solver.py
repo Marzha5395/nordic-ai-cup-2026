@@ -232,6 +232,22 @@ def refine_span(transcript, question, span):
     return round(words[start].start, 3), round(words[end - 1].end, 3)
 
 
+# Whisper's word start times include a little of the pause or breath before the word, while the annotated
+# evidence starts at the speech itself: where a span covers exactly the annotated words, its start was a median
+# 0.18 s early (0.18 s on the first 29 supplied conversations, 0.16 s on the last 10) and its end was on time.
+SPAN_START_DELAY_SECONDS = 0.18
+
+
+def calibrate_start(transcript, span):
+    """Move a span's start later by SPAN_START_DELAY_SECONDS, never past the end of its first word."""
+    if span is None:
+        return None
+    first = next((word for word in transcript.words if word.end > span[0] + 0.01), None)
+    if first is None or first.end - 0.05 <= span[0]:
+        return span
+    return min(span[0] + SPAN_START_DELAY_SECONDS, first.end - 0.05), span[1]
+
+
 def response_from_evidence(transcript, questions, evidence):
     answers, starts, ends = [], [], []
     for i, question in enumerate(questions):
@@ -248,6 +264,7 @@ def response_from_evidence(transcript, questions, evidence):
                 span = retrieve_fallback(transcript, question)
             if os.getenv('REFINE_EVIDENCE', '1') == '1':
                 span = refine_span(transcript, question, span)
+        span = calibrate_start(transcript, span)
         answers.append(answer)
         starts.append(round(span[0], 3) if span else None)
         ends.append(round(span[1], 3) if span else None)
