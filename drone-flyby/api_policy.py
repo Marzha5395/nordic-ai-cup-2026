@@ -34,9 +34,23 @@ def predict_endpoint(request: DroneFlybyPredictRequestDto):
     """Answer one frame."""
     response = predict(request)
 
-    # Fail here, loudly, rather than having the evaluator silently discard the
-    # frame. Every rule this checks is a rule the evaluator also enforces.
-    validate_response(response)
+    # Every rule this checks is a rule the evaluator also enforces. An invalid
+    # response would cost the whole frame, so fall back to an empty answer
+    # (keeping the camera command) instead of failing the request.
+    try:
+        validate_response(response)
+    except Exception:
+        logger.exception('invalid response on frame %s; sending empty '
+                         'annotations', request.frame)
+        response = DroneFlybyPredictResponseDto(
+            request_id=request.request_id, frame=request.frame,
+            annotations=[], requested_view=response.requested_view)
+        try:
+            validate_response(response)
+        except Exception:
+            logger.exception('camera command also invalid on frame %s; '
+                             'holding', request.frame)
+            response.requested_view = None
 
     logger.info(
         'frame %s (index %s) L%s at (%s, %s): returned %s detections',

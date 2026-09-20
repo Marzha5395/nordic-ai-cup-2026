@@ -30,19 +30,32 @@ def _rot(k):
     return np.array([[c, -s], [s, c]])
 
 
+def _rot_x(a):
+    c, s = math.cos(a), math.sin(a)
+    return np.array([[1, 0, 0], [0, c, -s], [0, s, c]])
+
+
+def _rot_y(a):
+    c, s = math.cos(a), math.sin(a)
+    return np.array([[c, 0, s], [0, 1, 0], [-s, 0, c]])
+
+
 class Flow:
     def __init__(self, camera_json=None):
         path = Path(camera_json) if camera_json else CAMERA_JSON
         try:
-            self.H = np.array(
-                json.loads(path.read_text())['frame_map_homography'],
-                dtype=np.float64)
+            cam = json.loads(path.read_text())
+            self.H = np.array(cam['frame_map_homography'], dtype=np.float64)
         except Exception:
             logger.warning('No camera homography at %s; using identity + '
                            '(0,66) translation', path)
             self.H = np.eye(3)
             self.H[0, 2] = 0.0
             self.H[1, 2] = 66.0
+            cam = {}
+        keys = ('focal_px', 'cx', 'cy', 'height_m', 'pitch_rad', 'roll_rad',
+                'tx_m', 'ty_m')
+        self._cam = cam if all(k in cam for k in keys) else None
         self.prior = self.H.copy()
         self._powers = {}
         self._meas = deque(maxlen=12)
@@ -233,17 +246,35 @@ class Flow:
 
     # ---------------- one-shot hypothesis check ----------------
 
+    def _camera_map(self, k):
+        """Per-frame image map for a flight heading rotated by 90*k deg,
+        built like synth/make_scene.py: ground step (-tx_m, -ty_m) rotated in
+        the ground plane, frame map = G @ T(step) @ G^-1."""
+        c = self._cam
+        K = np.array([[c['focal_px'], 0.0, c['cx']],
+                      [0.0, c['focal_px'], c['cy']], [0.0, 0.0, 1.0]])
+        G = K @ _rot_y(c['roll_rad']) @ _rot_x(c['pitch_rad']) @ np.diag(
+            [1.0, 1.0, c['height_m']])
+        step = _rot(k) @ np.array([-c['tx_m'], -c['ty_m']])
+        T = np.array([[1.0, 0.0, step[0]], [0.0, 1.0, step[1]],
+                      [0.0, 0.0, 1.0]])
+        H = G @ T @ np.linalg.inv(G)
+        return H / H[2, 2]
+
     def _variants(self):
         """Prior H plus 3 variants whose effective centre motion is rotated
         by 90/180/270 deg."""
         A = self.prior[:2, :2]
         t = self.prior[:2, 2]
         motion = A @ FRAME_CENTRE + t - FRAME_CENTRE
-        variants = []
-        for k in range(4):
-            Hv = self.prior.copy()
-            Hv[:2, 2] = FRAME_CENTRE + _rot(k) @ motion - A @ FRAME_CENTRE
-            variants.append(Hv)
+        variants = [self.prior]
+        for k in range(1, 4):
+            if self._cam is not None:
+                variants.append(self._camera_map(k))
+            else:
+                Hv = self.prior.copy()
+                Hv[:2, 2] = FRAME_CENTRE + _rot(k) @ motion - A @ FRAME_CENTRE
+                variants.append(Hv)
         return variants
 
     def _score(self, Hv, prev_gray, prev_region, cur_gray, cur_region):
@@ -267,5 +298,6 @@ class Flow:
                            'translation to %d-degree variant (%.3f vs %.3f)',
                            best * 90, scores[best], scores[0])
             self.H = self._variants()[best]
+            self.prior = self.H.copy()
             self._powers.clear()
         return best

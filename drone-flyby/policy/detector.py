@@ -3,7 +3,8 @@
 Env switches read across the policy package: DRONE_WEIGHTS, DRONE_DEVICE,
 DRONE_CONF, DRONE_L0_UPSCALE, DRONE_TTA, DRONE_SWEEP_LEVEL, DRONE_L1_REFRESH,
 DRONE_L2_DIPS,
-DRONE_SECOND_CLASS, DRONE_SECOND_P, DRONE_CONF_TAU, DRONE_NEW_TRACK_CONF,
+DRONE_SECOND_CLASS, DRONE_SECOND_P, DRONE_ALT_K, DRONE_CONF_TAU,
+DRONE_NEW_TRACK_CONF,
 DRONE_MISS_DECAY_L2, DRONE_DROP_BELOW.
 """
 import logging
@@ -14,7 +15,7 @@ import torch
 
 logger = logging.getLogger(__name__)
 
-CONF = float(os.environ.get('DRONE_CONF', '0.10'))
+CONF = float(os.environ.get('DRONE_CONF', '0.05'))
 TTA = os.environ.get('DRONE_TTA', '0') == '1'
 
 

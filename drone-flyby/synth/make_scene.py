@@ -129,6 +129,7 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--density", type=float, default=11.0, help="objects per frame area")
     ap.add_argument("--step-scale", type=float, default=1.0, help="multiply the per-frame ground step")
+    ap.add_argument("--heading-deg", type=float, default=0.0, help="rotate the per-frame ground translation by this angle (deg)")
     args = ap.parse_args()
     rng = np.random.default_rng(args.seed)
     out = ROOT / "src" / args.name
@@ -139,6 +140,9 @@ def main():
 
     G = ground_to_image()
     tx, ty = -CAM["tx_m"] * args.step_scale, -CAM["ty_m"] * args.step_scale  # ground shift per frame
+    ha = math.radians(args.heading_deg)
+    tx, ty = (math.cos(ha) * tx - math.sin(ha) * ty,
+              math.sin(ha) * tx + math.cos(ha) * ty)
     Ginv = np.linalg.inv(G)
     img_corners = np.array([[0, 0], [FW, 0], [FW, FH], [0, FH]], float)
     # Ground extent swept by all frames: frame t sees ground shifted by -t*(tx,ty)
@@ -225,7 +229,8 @@ def main():
     (out / "run_metadata.json").write_text(json.dumps({
         "capture": {"camera_name": "SynthCamera", "altitude_m": CAM["height_m"], "num_frames": args.frames,
                     "step_m": float(math.hypot(tx, ty))},
-        "total_objects": len(objects), "object_totals": dict(sorted(totals.items()))}, indent=2))
+        "total_objects": len(objects), "object_totals": dict(sorted(totals.items())),
+        "heading_deg": args.heading_deg}, indent=2))
     print(f"objects placed {len(objects)}/{n_obj}; per-frame visible mean {np.mean(per_frame):.1f} "
           f"min {min(per_frame)} max {max(per_frame)}")
     print("class totals:", dict(sorted(totals.items())))

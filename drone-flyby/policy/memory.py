@@ -15,7 +15,8 @@ MISS_DECAY = {0: 0.95, 1: 0.8,
               2: float(os.environ.get('DRONE_MISS_DECAY_L2', '0.5'))}
 DROP_BELOW = float(os.environ.get('DRONE_DROP_BELOW', '0.15'))
 TAU = float(os.environ.get('DRONE_CONF_TAU', '1.0'))
-SECOND_P = float(os.environ.get('DRONE_SECOND_P', '0.25'))
+SECOND_P = float(os.environ.get('DRONE_SECOND_P', '0.12'))
+ALT_K = int(os.environ.get('DRONE_ALT_K', '2'))
 NEW_TRACK_CONF = dict(zip(
     (0, 1, 2),
     map(float,
@@ -199,11 +200,11 @@ class Memory:
             out.append((OBJECT_CLASSES[cls], clipped, conf))
             if os.environ.get('DRONE_SECOND_CLASS', '1') != '0':
                 order = np.argsort(t.class_scores)[::-1]
-                if len(order) > 1:
-                    cls2 = int(order[1])
-                    p2 = t.class_scores[cls2] / total
-                    if p2 >= SECOND_P:
-                        conf2 = min(0.99, max(0.01, conf * (p2 / p) * 0.8))
-                        out.append((OBJECT_CLASSES[cls2], clipped, conf2))
+                for cls_k in order[1:1 + ALT_K]:
+                    pk = t.class_scores[int(cls_k)] / total
+                    if pk < SECOND_P:
+                        break
+                    conf_k = min(0.99, max(0.01, conf * (pk / p) * 0.8))
+                    out.append((OBJECT_CLASSES[int(cls_k)], clipped, conf_k))
         out.sort(key=lambda r: -r[2])
         return out[:500]

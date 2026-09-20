@@ -52,8 +52,9 @@ python local_evaluator.py --realtime      # Helsinki; also prints round-trip ms
 Or containerised: `docker build -f Dockerfile.policy -t drone-flyby-policy . && docker run --gpus all -p 9053:9053 drone-flyby-policy`.
 
 Tunables (environment variables, defaults chosen by the ablations below):
-`DRONE_CONF` (0.10 detector threshold), `DRONE_L1_REFRESH` (1),
-`DRONE_SWEEP_LEVEL` (2), `DRONE_SECOND_CLASS` (1) / `DRONE_SECOND_P` (0.25),
+`DRONE_CONF` (0.05 detector threshold), `DRONE_L1_REFRESH` (1),
+`DRONE_SWEEP_LEVEL` (2), `DRONE_SECOND_CLASS` (1) / `DRONE_SECOND_P` (0.12) /
+`DRONE_ALT_K` (2, alternate classes emitted per track),
 `DRONE_CONF_TAU` (1.0), `DRONE_NEW_TRACK_CONF` (no gating), `DRONE_TTA` (0),
 `DRONE_L0_UPSCALE` (1).
 
@@ -135,6 +136,13 @@ training, so optimistic); `synth250`/`synth250b` = 250-frame synthetic flights
 | yolo11s run 1 (24 ep) | L2 sweep + L1 refresh | 0.654 | 0.716 | 0.686 |
 | yolo11s run 1 (24 ep) | L1 sweep (shipped) | 0.847 | 0.735 | 0.699 |
 | **yolo11s run 2 (+10 ep, 2 datasets) — shipped `weights/policy_y11s_run2.pt`** | L1 sweep (shipped) | **0.841** | **0.765** | **0.723** |
+
+Direction robustness: synthetic 120-frame flights (seed 3, same layout)
+rendered heading 0 vs 180 deg scored 0.763 vs 0.547 before the flow fix —
+the old 180-deg hypothesis rotated only the prior's centre translation, so
+fresh tracks near the exit edge drifted for ~4 frames. The camera-model
+variants (`Flow._camera_map`) rebuild the per-frame map for each heading
+from the ground step; the reversed scene now scores **0.763**.
 
 Policy ablations with run-1 weights (synth250 / synth250b): L2 sweep without
 the L1 refresh 0.692 / 0.676; targeted L2 dips from the L1 sweep 0.686 / 0.645

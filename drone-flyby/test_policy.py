@@ -147,14 +147,28 @@ class TestFlowEstimator(unittest.TestCase):
 
 
 class TestHypothesisCheck(unittest.TestCase):
+    PTS = np.array([[1920, 1080], [100, 100], [3740, 100], [100, 2060],
+                    [3740, 2060]], float)
+
+    @staticmethod
+    def apply_h(H, pts):
+        h = np.hstack([pts, np.ones((len(pts), 1))]) @ H.T
+        return h[:, :2] / h[:, 2:3]
+
+    def test_camera_variants_match_prior(self):
+        flow = Flow()
+        np.testing.assert_allclose(
+            self.apply_h(flow._camera_map(0), self.PTS),
+            flow.advance_points(self.PTS, 1), atol=1.5)
+        H_inv = np.linalg.inv(flow.prior)
+        np.testing.assert_allclose(
+            self.apply_h(flow._camera_map(2), self.PTS),
+            self.apply_h(H_inv, self.PTS), atol=1.5)
+
     def test_reversed_flow(self):
-        # true map: prior linear part, translation rotated 180 deg
-        A = H_TRUE[:2, :2]
-        t = H_TRUE[:2, 2]
-        centre = np.array([1920.0, 1080.0])
-        motion = A @ centre + t - centre
-        H_rev = H_TRUE.copy()
-        H_rev[:2, 2] = centre - motion - A @ centre
+        # true map: physically correct reversed flight = inverse of the prior
+        H_rev = np.linalg.inv(H_TRUE)
+        H_rev = H_rev / H_rev[2, 2]
         ground = utils.load_frame(0, 'helsinki')
         f0 = cv2.warpPerspective(ground, np.eye(3),
                                  (IMAGE_WIDTH, IMAGE_HEIGHT))
@@ -164,7 +178,9 @@ class TestHypothesisCheck(unittest.TestCase):
         flow = Flow()
         best = flow.hypothesis_check(g0, r0, g1, r1)
         self.assertEqual(best, 2)
-        np.testing.assert_allclose(flow.H[:2, 2], H_rev[:2, 2], atol=1e-9)
+        np.testing.assert_allclose(
+            flow.advance_points(self.PTS, 1),
+            self.apply_h(H_rev, self.PTS), atol=3.0)
 
 
 class TestMemory(unittest.TestCase):
