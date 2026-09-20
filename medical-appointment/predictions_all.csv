@@ -1,0 +1,391 @@
+sample,question_type,question,said,truth,correct,iou,span_start,span_end,gold_start,gold_end,model_quote,our_evidence_text,gold_text
+sample_4,positive,Did the patient attend for an annual asthma follow-up?,yes,yes,1,0.994,21.59,26.24,21.62,26.24,"So, this is your annual follow -up. It is, for the asthma.","So, this is your annual follow -up. It is, for the asthma.","So, this is your annual follow -up. It is, for the asthma."
+sample_4,positive,Is the heart examination without abnormal findings?,yes,yes,1,0.335,40.62,45.04,43.5,44.98,Your chest and heart both sound normal.,Your chest and heart both sound normal. Nothing abnormal to report.,Nothing abnormal to report.
+sample_4,positive,Was the patient listened to with a stethoscope?,yes,yes,1,0.248,29.07,32.59,28.52,42.72,Let me listen to your chest and your heart and then we will talk.,Let me listen to your chest and your heart and then we will talk.,Let me listen to your chest and your heart and then we will talk. Go ahead. Breathe normally for me. And again. Is it all right? Your chest and heart both sound normal.
+sample_4,positive,Were the lungs found to be normal on auscultation?,yes,yes,1,0.468,40.62,42.72,40.68,44.98,Your chest and heart both sound normal.,Your chest and heart both sound normal.,Your chest and heart both sound normal. Nothing abnormal to report.
+sample_4,positive,Are the patient's asthma findings stable at this visit?,yes,yes,1,0.961,51.47,54.51,51.48,54.4,This is what a stable annual check looks like.,This is what a stable annual check looks like.,This is what a stable annual check looks like.
+sample_4,hard_negative,Should the asthma medication dose be increased?,no,no,1,,,,,,(no),,
+sample_4,positive,Will the current treatment continue unchanged?,yes,yes,1,0.429,55.27,58.37,55.64,61.64,No changes.,So what happens with my treatment? No changes.,what happens with my treatment? No changes. You carry on exactly as you are.
+sample_4,positive,Does the visit concern asthma?,yes,yes,1,0.912,25.0,26.24,24.88,26.24,"It is, for the asthma.","It is, for the asthma.","It is, for the asthma."
+sample_4,off_topic,Is there any discussion about cooking?,no,no,1,,,,,,(no),,
+sample_4,hard_negative,Has an irregular heart rhythm been found?,no,no,1,,,,,,(no),,
+sample_5,positive,Does the patient take pantoprazole for reflux?,yes,yes,1,0.978,47.06,52.95,47.08,52.84,Which is why you are on pantoprazole for that.,And then the anti -inflammatory gave me reflux on top. Which is why you are on pantoprazole for that.,And then the anti -inflammatory gave me reflux on top. Which is why you are on pantoprazole for that.
+sample_5,hard_negative,Did the back pain begin after surgery for a lumbar disc prolapse?,no,no,1,,,,,,(no),,
+sample_5,hard_negative,Have the pains in the hands been attributed to gout?,no,no,1,,,,,,(no),,
+sample_5,positive,Is the patient still in pain despite regular Ibumetin and Panodil?,yes,yes,1,0.804,35.78,42.2,36.42,41.58,"And honestly, the pain has just carried on regardless.","And honestly, the pain has just carried on regardless. Despite taking the ibumetin and the panadil regularly?",the pain has just carried on regardless. Despite taking the ibumetin and the panadil
+sample_5,positive,Will the NSAID treatment be continued under cover of a proton pump inhibitor?,yes,yes,1,0.971,142.57,147.91,142.44,147.88,"For the pain, you continue the anti -inflammatory with the stomach protection alongside it.","For the pain, you continue the anti -inflammatory with the stomach protection alongside it.","For the pain, you continue the anti -inflammatory with the stomach protection alongside it."
+sample_5,positive,Did the patient undergo surgery for a cervical disc prolapse in 2017?,yes,yes,1,0.754,31.16,34.94,32.06,34.98,"That is right, the cervical disc prolapse, operated in 2017.","That is right, the cervical disc prolapse, operated in 2017.","the cervical disc prolapse, operated in 2017."
+sample_5,off_topic,Does the conversation mention the patient owning a digital camera?,no,no,1,,,,,,(no),,
+sample_5,positive,Was muscle tension found in the neck and shoulders?,yes,yes,1,0.957,102.74,105.48,102.68,105.42,I can feel muscle tension in your neck and shoulders.,I can feel muscle tension in your neck and shoulders.,I can feel muscle tension in your neck and shoulders.
+sample_5,positive,Are the menopausal symptoms treated with Activelle?,yes,yes,1,0.977,70.37,73.83,70.44,73.82,"Then the menopausal symptoms, which you are taking Activel for.","Then the menopausal symptoms, which you are taking Activel for.","the menopausal symptoms, which you are taking Activel for."
+sample_5,off_topic,Is the patient discussing owning a cat?,no,no,1,,,,,,(no),,
+sample_6,positive,Was the patient's voice noted to sound congested?,yes,yes,1,0.876,24.6,26.3,24.4,26.34,You do sound congested.,You do sound congested.,You do sound congested.
+sample_6,hard_negative,Should the fungal infection be treated with Brentan gel?,no,no,1,,,,,,(no),,
+sample_6,off_topic,Does the patient talk about needing a new vehicle for their daily commute?,no,no,1,,,,,,(no),,
+sample_6,positive,Are four daily doses of one million IU of penicillin planned?,yes,yes,1,0.974,63.05,69.71,62.9,69.68,"One million international units, four times daily, for seven days.","For the sinuses, penicillin. One million international units, four times daily, for seven days.","For the sinuses, penicillin. One million international units, four times daily, for seven days."
+sample_6,positive,Does the patient also have a fungal infection in the mouth?,yes,yes,1,0.0,12.89,14.97,72.96,77.6,And I have got thrush in my mouth as well.,And I have got thrush in my mouth as well.,"And fluconazole, 50 milligrams, for seven days, for the mouth."
+sample_6,positive,Did the patient ask for penicillin?,yes,yes,1,0.969,17.92,19.2,17.9,19.18,I want penicillin for it.,I want penicillin for it.,I want penicillin for it.
+sample_6,positive,Will the patient take Fluconazole 50 mg?,yes,yes,1,0.911,73.18,77.66,73.52,77.6,"And fluconazole, 50 milligrams, for seven days, for the mouth.","And fluconazole, 50 milligrams, for seven days, for the mouth.","fluconazole, 50 milligrams, for seven days, for the mouth."
+sample_6,hard_negative,Does the patient want to avoid antibiotics?,no,no,1,,,,,,(no),,
+sample_6,positive,Is the patient complaining of sinus symptoms?,yes,yes,1,0.964,8.98,12.32,9.06,12.28,"My sinuses. Blocked, aching, the whole business.","My sinuses. Blocked, aching, the whole business.","My sinuses. Blocked, aching, the whole business."
+sample_6,positive,Has penicillin been prescribed for seven days?,yes,yes,1,0.826,63.05,69.71,64.18,69.68,"One million international units, four times daily, for seven days.","For the sinuses, penicillin. One million international units, four times daily, for seven days.","penicillin. One million international units, four times daily, for seven days."
+sample_10,hard_negative,Has the doctor found the condition to be unstable?,no,no,1,,,,,,(no),,
+sample_10,hard_negative,Did the patient report new breathing symptoms?,no,no,1,,,,,,(no),,
+sample_10,positive,Does the patient need continued treatment?,yes,yes,1,0.66,63.11,65.23,63.18,64.58,You do need to continue the treatment you are on.,You do need to continue the treatment you are on.,You do need to continue the treatment
+sample_10,off_topic,Did the patient mention owning a specific pet?,no,no,1,,,,,,(no),,
+sample_10,off_topic,Was any problem with housing discussed?,no,no,1,,,,,,(no),,
+sample_10,hard_negative,Is the stomach acid medication being discontinued?,no,no,1,,,,,,(no),,
+sample_10,hard_negative,Were abnormal sounds heard over the lungs?,no,no,1,,,,,,(no),,
+sample_10,positive,Were the lungs and heart normal on auscultation?,yes,yes,1,0.979,53.8,57.52,53.76,57.56,"Your lungs and your heart both sound normal, nothing abnormal on listening.","Your lungs and your heart both sound normal, nothing abnormal on listening.","Your lungs and your heart both sound normal, nothing abnormal on listening."
+sample_10,positive,"Are the patient's complaints unchanged, with nothing new reported?",yes,yes,1,0.942,22.27,23.57,22.2,23.56,"No, nothing new.","No, nothing new.","No, nothing new."
+sample_10,hard_negative,Does the plan include a referral to a lung specialist?,no,no,1,,,,,,(no),,
+sample_17,positive,Is the medicine to be taken after a meal?,yes,yes,1,0.945,46.15,47.55,46.1,47.52,You take it after a meal.,You take it after a meal.,You take it after a meal.
+sample_17,hard_negative,Has the patient been told that the condition needs no treatment?,no,no,1,,,,,,(no),,
+sample_17,positive,Should the daily dose be 100 mg?,yes,yes,1,0.594,42.82,45.48,42.84,44.42,100 mg daily for 2 weeks.,100 mg daily for 2 weeks.,100 mg daily for
+sample_17,hard_negative,Were bacteria identified in the sample?,no,no,1,,,,,,(no),,
+sample_17,hard_negative,Did the swab come from the throat?,no,no,1,,,,,,(no),,
+sample_17,hard_negative,Was the prescribed dose 200 mg daily?,no,no,1,,,,,,(no),,
+sample_17,off_topic,Is there any mention of attending a concert?,no,no,1,,,,,,(no),,
+sample_17,hard_negative,"The treatment is planned to run for six weeks, right?",no,no,1,,,,,,(no),,
+sample_17,hard_negative,Should the tablets be taken on an empty stomach?,no,no,1,,,,,,(no),,
+sample_17,positive,Will the treatment last two weeks?,no,yes,0,0.0,,,48.18,50.7,(no),,"After a meal, every day, for 2 weeks."
+sample_18,positive,Should kidney function be monitored?,yes,yes,1,0.915,42.12,45.6,41.82,45.58,we should monitor your blood pressure and your kidney function.,we should monitor your blood pressure and your kidney function.,means we should monitor your blood pressure and your kidney function.
+sample_18,off_topic,Is there any reference to the patient planning a specific fitness challenge?,no,no,1,,,,,,(no),,
+sample_18,positive,Did the patient ask for a renewal of the Ibumetin prescription?,yes,yes,1,0.887,17.12,18.54,17.24,18.5,I need my ibumetin renewed.,I need my ibumetin renewed.,I need my ibumetin renewed.
+sample_18,positive,Has the Ibumetin prescription been issued?,yes,yes,1,0.639,70.27,71.97,69.38,72.04,The prescription is created.,The prescription is created.,Yes. The prescription is created.
+sample_18,positive,Is the patient also taking Pantoprazole?,yes,yes,1,0.982,20.84,26.32,20.92,26.3,"Yes, every day with it.","And you are still taking pantoprazole alongside it? Yes, every day with it.","And you are still taking pantoprazole alongside it? Yes, every day with it."
+sample_18,hard_negative,Were liver values the focus of the planned blood tests?,no,no,1,,,,,,(no),,
+sample_18,hard_negative,Should the blood pressure readings be taken at the clinic instead of at home?,no,no,1,,,,,,(no),,
+sample_18,positive,Will the blood tests include cholesterol and blood sugar?,yes,yes,1,0.988,62.51,65.97,62.5,65.94,"We check kidneys, cholesterol, and blood sugar.","We check kidneys, cholesterol, and blood sugar.","We check kidneys, cholesterol, and blood sugar."
+sample_18,positive,Does the doctor consider the NSAID use long-standing and high?,yes,yes,1,0.986,33.0,38.58,33.0,38.66,You have used anti -inflammatory painkillers heavily and for a long time.,You have used anti -inflammatory painkillers heavily and for a long time.,You have used anti -inflammatory painkillers heavily and for a long time.
+sample_18,positive,Was blood pressure to be measured at home over three days?,yes,yes,1,0.964,50.81,55.19,50.74,55.1,I would like you to measure your blood pressure at home over three days.,I would like you to measure your blood pressure at home over three days.,I would like you to measure your blood pressure at home over three days.
+sample_19,positive,Is the patient still being treated for asthma?,yes,yes,1,0.506,26.38,29.74,26.3,28.12,I am still being treated for asthma and for reflux.,I am still being treated for asthma and for reflux.,I am still being treated for asthma
+sample_19,off_topic,Did the patient discuss baking a cake in the conversation?,no,no,1,,,,,,(no),,
+sample_19,hard_negative,Does the doctor describe the medication as unstable and in need of change?,no,no,1,,,,,,(no),,
+sample_19,hard_negative,"Alongside asthma, is the patient treated for diabetes?",no,no,1,,,,,,(no),,
+sample_19,positive,Were three prescriptions renewed in total?,yes,yes,1,0.977,68.23,71.71,68.24,71.64,All three renewed.,"Activel, Aromir, and Isomeprazole. All three renewed.","Activel, Aromir, and Isomeprazole. All three renewed."
+sample_19,off_topic,Did the conversation mention anything about the patient planning a trip?,no,no,1,,,,,,(no),,
+sample_19,positive,Has Esomeprazole been renewed as well?,yes,yes,1,0.977,68.23,71.71,68.24,71.64,All three renewed.,"Activel, Aromir, and Isomeprazole. All three renewed.","Activel, Aromir, and Isomeprazole. All three renewed."
+sample_19,positive,Is Airomir among the renewed medicines?,yes,yes,1,0.977,68.23,71.71,68.24,71.64,All three renewed.,"Activel, Aromir, and Isomeprazole. All three renewed.","Activel, Aromir, and Isomeprazole. All three renewed."
+sample_19,hard_negative,Were the prescriptions stopped rather than renewed?,no,no,1,,,,,,(no),,
+sample_19,hard_negative,Was Pantoprazole the acid-reducing drug that was renewed?,no,no,1,,,,,,(no),,
+sample_20,hard_negative,Will the patient be referred to a pain clinic?,no,no,1,,,,,,(no),,
+sample_20,off_topic,Was a specific recipe or cooking activity discussed?,no,no,1,,,,,,(no),,
+sample_20,off_topic,At any point does the patient talk about their experiences with a hobby?,no,no,1,,,,,,(no),,
+sample_20,positive,Was Ibumetin renewed as well?,yes,yes,1,0.569,182.6,188.94,182.44,186.3,"I am creating prescriptions for both Pamol and Ibumetin now, and they will be waiting for you at the pharmacy.","I am creating prescriptions for both Pamol and Ibumedin now, and they will be waiting for you at the pharmacy.","I am creating prescriptions for both Pamol and Ibumedin now,"
+sample_20,hard_negative,Did the patient ask for morphine to be renewed?,no,no,1,,,,,,(no),,
+sample_20,hard_negative,Does the pain affect the lower back alone?,no,no,1,,,,,,(no),,
+sample_20,positive,Is Pamol one of the medicines requested?,yes,yes,1,0.0,42.35,43.79,182.44,184.98,Pamol and Ibumetin.,Pamol and Ibumetin.,I am creating prescriptions for both Pamol
+sample_20,positive,Has the pain problem been described as stable?,yes,yes,1,0.515,102.25,107.53,102.3,105.02,Then we are looking at a stable pain problem with a continued need for pain relief.,Then we are looking at a stable pain problem with a continued need for pain relief.,Then we are looking at a stable pain problem
+sample_20,positive,Does the patient still need pain relief?,yes,yes,1,0.0,168.56,173.42,105.56,107.46,That your pain problem is stable and that you still need pain -relieving medication.,That your pain problem is stable and that you still need pain -relieving medication.,a continued need for pain relief.
+sample_20,positive,Were both prescriptions issued?,yes,yes,1,0.292,182.6,188.94,182.44,184.5,"I am creating prescriptions for both Pamol and Ibumetin now, and they will be waiting for you at the pharmacy.","I am creating prescriptions for both Pamol and Ibumedin now, and they will be waiting for you at the pharmacy.",I am creating prescriptions for both Pamol
+sample_23,positive,Was a skin wart found under the right breast?,yes,yes,1,0.649,23.15,26.99,23.12,25.66,the one under your right breast is a skin wart about one centimeter,the one under your right breast is a skin wart about one centimeter,the one under your right breast is a skin wart
+sample_23,positive,Has the patient been informed about the risk of scarring and infection?,yes,yes,1,0.977,75.28,79.46,75.26,79.54,There will be a scar where each one is removed and there is a risk of infection afterwards.,There will be a scar where each one is removed and there is a risk of infection afterwards.,There will be a scar where each one is removed and there is a risk of infection afterwards.
+sample_23,positive,Does the patient want the skin changes removed?,yes,yes,1,0.0,19.94,20.94,85.28,88.5,I want them gone.,I want them gone.,I would still rather have them off than keep catching them.
+sample_23,off_topic,Is there any mention of the patient's pet?,no,no,1,,,,,,(no),,
+sample_23,hard_negative,Has the patient been told that the procedure carries no risk of scarring?,no,no,1,,,,,,(no),,
+sample_23,positive,Is an appointment for the removal going to be arranged?,yes,yes,1,0.0,68.04,69.94,90.2,92.2,I will arrange an appointment for the removal.,I will arrange an appointment for the removal.,Then the appointment for removal is the plan.
+sample_23,positive,Do the changes on the abdomen and lower leg resemble seborrheic keratoses?,yes,yes,1,0.821,43.07,45.5,43.44,45.58,they look like seborrheic keratosis,they look like seborrheic keratosis,look like seborrheic keratosis that
+sample_23,positive,Were the skin changes judged to be benign?,yes,yes,1,0.935,53.16,56.26,53.3,56.2,My assessment is that these are benign skin changes.,My assessment is that these are benign skin changes.,My assessment is that these are benign skin changes.
+sample_23,off_topic,Does the patient talk about needing a new vehicle?,no,no,1,,,,,,(no),,
+sample_23,hard_negative,Are the elements on the abdomen about 2 cm across?,no,no,1,,,,,,(no),,
+sample_33,positive,"The visit is a follow-up on allergic rhinitis, correct?",yes,yes,1,0.718,14.01,16.51,13.94,17.42,This is your follow -up for allergic rhinitis.,This is your follow -up for allergic rhinitis.,This is your follow -up for allergic rhinitis. Yes.
+sample_33,hard_negative,Does the doctor plan to refer the patient to an allergy specialist?,no,no,1,,,,,,(no),,
+sample_33,hard_negative,Were daily doses made mandatory going forward?,no,no,1,,,,,,(no),,
+sample_33,off_topic,Is there any talk about the patient's recent purchase of a vehicle?,no,no,1,,,,,,(no),,
+sample_33,positive,Is the patient free of symptoms at the moment?,yes,yes,1,0.777,27.29,32.44,27.02,31.5,I do not have any symptoms right now.,I do not have any symptoms right now. No symptoms at all at the moment? None.,I do not have any symptoms right now. No symptoms at all at the moment?
+sample_33,positive,Did the antihistamine work well?,yes,yes,1,0.422,58.93,64.49,58.82,61.32,The antihistamine is having a good effect.,The antihistamine is having a good effect. So I feel well because of the antihistamine.,The antihistamine is having a good effect.
+sample_33,positive,Has the medication helped the patient?,yes,yes,1,0.0,24.15,26.61,55.34,58.28,It has helped.,How has the medication been? It has helped.,So the medicine is genuinely working? Yes.
+sample_33,positive,Are the findings unremarkable?,yes,yes,1,0.264,44.77,46.93,44.86,52.62,The examination I have done is normal.,The examination I have done is normal.,The examination I have done is normal. Normal in all of it? Yes. Nothing abnormal was found on examination.
+sample_33,positive,Should the patient carry on with the treatment as needed?,yes,yes,1,0.96,69.0,71.02,69.06,71.0,The plan is to continue it as needed.,The plan is to continue it as needed.,The plan is to continue it as needed.
+sample_33,hard_negative,Was anything abnormal picked up at the examination?,no,no,1,,,,,,(no),,
+sample_37,positive,Is the skin intact?,yes,yes,1,0.679,28.94,30.06,28.5,30.0,The skin is intact.,The skin is intact.,The skin is intact.
+sample_37,hard_negative,Was erythema migrans seen around the bite?,no,no,1,,,,,,(no),,
+sample_37,hard_negative,Is the risk of Borrelia considered high?,no,no,1,,,,,,(no),,
+sample_37,positive,Was erythema migrans absent?,yes,yes,1,0.898,30.62,32.78,30.68,32.62,There is no erythema migraines.,There is no erythema migraines.,There is no erythema migraines.
+sample_37,positive,Are redness and swelling absent?,yes,yes,1,0.987,17.56,22.14,17.58,22.18,No redness at all.,No redness at all. Any swelling? No swelling either.,No redness at all. Any swelling? No swelling either.
+sample_37,positive,"The plan involves no treatment, right?",yes,yes,1,0.985,60.02,61.32,60.02,61.34,No treatment is needed.,No treatment is needed.,No treatment is needed.
+sample_37,off_topic,Does the conversation indicate the patient discussed their employment as a freelancer?,no,no,1,,,,,,(no),,
+sample_37,hard_negative,Has the bite area become red and swollen?,no,no,1,,,,,,(no),,
+sample_37,positive,Did the patient get a tick bite?,yes,yes,1,0.0,7.32,12.22,13.74,14.52,I found a tick attached to my leg.,"I found a tick attached to my leg. I removed it, and I wanted the bite looked at.",A tick bite.
+sample_37,positive,Has the patient been told simply to keep an eye on the area?,yes,yes,1,0.849,56.51,59.33,56.02,59.34,Observation.,Then what is the plan? Observation.,Then what is the plan? Observation.
+sample_39,positive,Does the patient have pain in the lower back?,yes,yes,1,0.841,22.76,24.02,22.64,23.92,Pain in my lower back.,Pain in my lower back.,Pain in my lower back.
+sample_39,hard_negative,Has the patient been referred for surgery?,no,no,1,,,,,,(no),,
+sample_39,off_topic,Is the patient discussing their pet?,no,no,1,,,,,,(no),,
+sample_39,off_topic,At any point does the patient express interest in learning digital photography techniques?,no,no,1,,,,,,(no),,
+sample_39,positive,Was reduced mobility found during the examination?,yes,yes,1,0.635,47.43,51.05,47.34,53.04,Your movement is also reduced when you bend and turn.,Your movement is also reduced when you bend and turn.,"Your movement is also reduced when you bend and turn. Yes, it feels stiff."
+sample_39,positive,Were painkillers part of the treatment plan?,yes,yes,1,0.33,63.69,69.95,63.56,65.8,"For treatment, I recommend pain relief and an exercise program.","For treatment, I recommend pain relief and an exercise program. Painkillers and exercises.","For treatment, I recommend pain relief"
+sample_39,hard_negative,Does the pain radiate down the leg?,no,no,1,,,,,,(no),,
+sample_39,positive,"The pain was assessed as nonspecific musculoskeletal pain, right?",yes,yes,1,0.985,55.3,60.62,55.32,60.68,this is nonspecific muscle and joint pain in the back without radiation.,this is nonspecific muscle and joint pain in the back without radiation.,this is nonspecific muscle and joint pain in the back without radiation.
+sample_39,hard_negative,Did the doctor conclude that the pain came from a herniated disc?,no,no,1,,,,,,(no),,
+sample_39,hard_negative,Was the patient's mobility completely unaffected?,no,no,1,,,,,,(no),,
+sample_42,positive,Was the blood pressure measured at 135/88?,yes,yes,1,0.962,39.28,42.53,39.16,42.54,Your blood pressure is 135 over 88.,Your blood pressure is 135 over 88.,Your blood pressure is 135 over 88.
+sample_42,positive,Did the doctor assess the patient as slightly overweight?,no,yes,0,0.0,,,62.26,65.16,(no),,It puts you in the mildly overweight range.
+sample_42,positive,Were exercise recommendations also part of the plan?,yes,yes,1,0.927,89.82,92.92,89.86,93.12,The plan is advice on diet and on exercise.,The plan is advice on diet and on exercise.,The plan is advice on diet and on exercise.
+sample_42,positive,Does the patient have a BMI of 28?,yes,yes,1,0.91,56.15,58.21,56.18,58.38,Your body mass index is 28.,Your body mass index is 28.,Your body mass index is 28.
+sample_42,positive,Has the patient been given advice about diet?,yes,yes,1,0.613,89.82,92.92,89.86,91.76,The plan is advice on diet and on exercise.,The plan is advice on diet and on exercise.,The plan is advice on diet
+sample_42,hard_negative,Did the doctor consider the patient severely obese?,no,no,1,,,,,,(no),,
+sample_42,positive,Is the patient feeling well?,yes,yes,1,0.946,17.26,18.51,17.22,18.48,I feel perfectly well.,I feel perfectly well.,I feel perfectly well.
+sample_42,positive,"The visit was a preventive health check, correct?",yes,yes,1,0.957,11.84,14.16,11.92,14.14,This is your preventive health check today.,This is your preventive health check today.,This is your preventive health check today.
+sample_42,hard_negative,Was the blood pressure 155/98?,no,no,1,,,,,,(no),,
+sample_42,off_topic,Does the patient talk about wanting to work part-time?,no,no,1,,,,,,(no),,
+sample_43,positive,Does the patient have a sore throat?,yes,yes,1,0.972,4.84,6.26,4.82,6.24,My throat has been really sore.,My throat has been really sore.,My throat has been really sore.
+sample_43,hard_negative,Is the infection thought to be bacterial?,no,no,1,,,,,,(no),,
+sample_43,positive,Did the examination find no pus in the throat?,yes,yes,1,0.961,31.79,34.35,31.76,34.28,"I also looked at your throat, and there was no pus.","I also looked at your throat, and there was no pus.","I also looked at your throat, and there was no pus."
+sample_43,off_topic,Are the speakers discussing the patient's pet?,no,no,1,,,,,,(no),,
+sample_43,positive,Was the strep test negative?,yes,yes,1,0.303,21.4,23.78,23.06,23.78,It was negative.,And what did it say? It was negative.,It was negative.
+sample_43,positive,Is the infection considered to be viral?,yes,yes,1,0.992,44.2,46.78,44.22,46.78,My assessment is that this is a viral infection.,My assessment is that this is a viral infection.,My assessment is that this is a viral infection.
+sample_43,hard_negative,Does the patient describe abdominal pain as the main problem?,no,no,1,,,,,,(no),,
+sample_43,hard_negative,Were the tonsils covered in coatings?,no,no,1,,,,,,(no),,
+sample_43,positive,Has the doctor decided against antibiotics?,yes,yes,1,0.982,59.43,63.87,59.48,63.9,"The plan is no antibiotics, because they do not work against a virus.","The plan is no antibiotics, because they do not work against a virus.","The plan is no antibiotics, because they do not work against a virus."
+sample_43,hard_negative,Did the doctor see pus in the throat?,no,no,1,,,,,,(no),,
+sample_47,positive,Has penicillin treatment been started?,yes,yes,1,0.264,72.09,74.08,71.86,79.4,I am starting you on penicillin treatment.,am starting you on penicillin treatment.,"I am starting you on penicillin treatment. Penicillin. Starting from today? Yes, from today."
+sample_47,hard_negative,Is the patient able to swallow without any discomfort?,no,no,1,,,,,,(no),,
+sample_47,hard_negative,Did the doctor prescribe erythromycin?,no,no,1,,,,,,(no),,
+sample_47,hard_negative,Does the patient complain of hoarseness as the main symptom?,no,no,1,,,,,,(no),,
+sample_47,hard_negative,Was the patient told to manage with symptom relief only?,no,no,1,,,,,,(no),,
+sample_47,off_topic,Does the conversation indicate the patient discussed their desire to learn digital photography techniques?,no,no,1,,,,,,(no),,
+sample_47,positive,Were coatings seen on the tonsils?,yes,yes,1,0.926,25.92,28.68,25.72,28.66,Your tonsils are red and there is coating on them.,Your tonsils are red and there is coating on them.,Your tonsils are red and there is coating on them.
+sample_47,hard_negative,Has the throat problem been assessed as a viral infection?,no,no,1,,,,,,(no),,
+sample_47,positive,Does the patient have a sore throat?,yes,yes,1,0.964,8.43,11.69,8.32,11.7,It is really sore and it hurts when I swallow.,My throat. It is really sore and it hurts when I swallow.,My throat. It is really sore and it hurts when I swallow.
+sample_47,hard_negative,Were the tonsils pale and free of coatings?,no,no,1,,,,,,(no),,
+sample_48,hard_negative,Does the doctor attribute the fatigue to a thyroid disorder?,no,no,1,,,,,,(no),,
+sample_48,off_topic,Does the doctor ask about the patient's experience with specific technology?,no,no,1,,,,,,(no),,
+sample_48,positive,Was the TSH normal?,yes,yes,1,0.145,34.72,35.92,28.34,35.82,It came back normal.,It came back normal.,"The first was your thyroid -stimulating hormone, the thyroid. I had wondered about that one. It came back normal."
+sample_48,positive,Did the glucose test come back normal too?,yes,yes,1,0.949,38.77,43.07,38.96,43.04,That was normal as well.,"Your glucose, which is your blood sugar. That was normal as well.","Your glucose, which is your blood sugar. That was normal as well."
+sample_48,positive,Were both blood tests within normal limits?,yes,yes,1,0.949,41.61,44.35,41.74,44.36,Both normal.,That was normal as well. Both normal.,That was normal as well. Both normal.
+sample_48,hard_negative,Is the tiredness described as brief and occasional?,no,no,1,,,,,,(no),,
+sample_48,positive,Has the patient been left without any specific treatment?,yes,yes,1,0.995,77.42,81.22,77.42,81.2,No specific treatment is needed on the basis of these results.,No specific treatment is needed on the basis of these results.,No specific treatment is needed on the basis of these results.
+sample_48,positive,Is the patient's tiredness persistent?,yes,yes,1,0.388,15.81,18.83,11.18,18.78,Persistent fatigue.,It simply does not lift. Persistent fatigue.,"You came about tiredness. Yes, it has been going on and on. It simply does not lift. Persistent fatigue."
+sample_48,positive,Does the doctor rule out an endocrine cause?,yes,yes,1,0.943,47.88,52.42,48.06,52.34,My assessment is that there is no hormonal cause for the tiredness.,My assessment is that there is no hormonal cause for the tiredness.,My assessment is that there is no hormonal cause for the tiredness.
+sample_48,positive,"The thyroid test gave a normal result, right?",yes,yes,1,0.145,34.72,35.92,28.34,35.82,It came back normal.,It came back normal.,"The first was your thyroid -stimulating hormone, the thyroid. I had wondered about that one. It came back normal."
+sample_50,positive,Are further tests needed before the diagnosis can be settled?,yes,yes,1,0.244,60.35,62.63,60.36,69.66,Further tests have been arranged to settle it.,Further tests have been arranged to settle it.,Further tests have been arranged to settle it. And those will tell us for certain? That is why they are being done. Nothing changes for you until we have them.
+sample_50,hard_negative,Does the fasting blood sugar lie at 5.0 mmol/L?,no,no,1,,,,,,(no),,
+sample_50,off_topic,Are the speakers discussing the patient's recent college experience?,no,no,1,,,,,,(no),,
+sample_50,positive,"The HbA1c came out at 47 mmol/mol, right?",yes,yes,1,0.989,39.67,43.37,39.68,43.4,Your long -term sugar value was 47 millimoles per mole.,Your long -term sugar value was 47 millimoles per mole.,Your long -term sugar value was 47 millimoles per mole.
+sample_50,positive,Was the patient's BMI recorded as 29?,yes,yes,1,0.901,23.73,25.87,23.86,25.96,Your body mass index is 29.,Your body mass index is 29.,Your body mass index is 29.
+sample_50,hard_negative,Has metformin treatment been started at this visit?,no,no,1,,,,,,(no),,
+sample_50,off_topic,Was the patient talking about their recent weekend?,no,no,1,,,,,,(no),,
+sample_50,positive,Is the patient free of any symptoms at this visit?,yes,yes,1,0.539,18.76,23.21,20.38,22.78,"No, nothing at all. I feel completely normal.","No, nothing at all. I feel completely normal. No symptoms, then.","I feel completely normal. No symptoms,"
+sample_50,positive,Does the patient have a fasting blood sugar of 7.0 mmol/L?,yes,yes,1,0.964,35.48,38.97,35.38,39.0,Your fasting blood sugar was 7 .0 millimoles per liter.,Your fasting blood sugar was 7 .0 millimoles per liter.,Your fasting blood sugar was 7 .0 millimoles per liter.
+sample_50,hard_negative,Were the results enough to confirm type 2 diabetes already?,no,no,1,,,,,,(no),,
+sample_52,positive,Did the doctor plan continued follow-up?,yes,yes,1,0.886,83.06,86.38,83.42,86.4,The plan is continued support and follow -up.,The plan is continued support and follow -up.,The plan is continued support and follow -up.
+sample_52,hard_negative,Has the patient been discharged from any further follow-up?,no,no,1,,,,,,(no),,
+sample_52,positive,Was the patient seen as engaged during the consultation?,yes,yes,1,0.968,58.96,62.68,59.06,62.7,"From what you describe, you seem engaged and motivated.","From what you describe, you seem engaged and motivated.","From what you describe, you seem engaged and motivated."
+sample_52,hard_negative,Does the plan involve starting insulin?,no,no,1,,,,,,(no),,
+sample_52,hard_negative,Is the patient's grasp of the treatment considered inadequate?,no,no,1,,,,,,(no),,
+sample_52,hard_negative,Was the patient found to be poorly motivated?,no,no,1,,,,,,(no),,
+sample_52,positive,"The patient understands the treatment well, right?",yes,yes,1,0.948,69.98,75.32,70.22,75.36,My assessment is that you have a good understanding of your illness and your treatment.,My assessment is that you have a good understanding of your illness and your treatment.,My assessment is that you have a good understanding of your illness and your treatment.
+sample_52,hard_negative,Were the classes the patient attended about hypertension?,no,no,1,,,,,,(no),,
+sample_52,off_topic,Does the doctor ask about the patient's plans for the holidays?,no,no,1,,,,,,(no),,
+sample_52,hard_negative,Did the patient skip the diabetes education?,no,no,1,,,,,,(no),,
+sample_54,hard_negative,Is the blood pressure elevated?,no,no,1,,,,,,(no),,
+sample_54,positive,Was the foot examination normal?,yes,yes,1,0.274,50.91,52.63,51.62,54.6,Your feet are normal.,Thank you. Your feet are normal.,Your feet are normal. The examination is fine.
+sample_54,off_topic,Does the patient discuss their job?,no,no,1,,,,,,(no),,
+sample_54,hard_negative,Was the patient given a pneumococcal vaccination?,no,no,1,,,,,,(no),,
+sample_54,hard_negative,Has the diabetes become unstable?,no,no,1,,,,,,(no),,
+sample_54,positive,Has the patient received a flu vaccination?,yes,yes,1,0.716,14.35,15.74,13.82,15.76,I have had my flu vaccination.,I have had my flu vaccination.,"Well, I have had my flu vaccination."
+sample_54,positive,Did the plan include continued monitoring?,yes,yes,1,0.453,80.35,84.37,80.38,82.2,"The plan is continued monitoring, with your annual check as usual.","The plan is continued monitoring, with your annual check as usual.","The plan is continued monitoring,"
+sample_54,hard_negative,Does the plan involve a check-up only every second year?,no,no,1,,,,,,(no),,
+sample_54,off_topic,Was the doctor concerned that the patient's symptoms might be related to exposure to the dark side of the Force?,no,no,1,,,,,,(no),,
+sample_54,positive,Does the doctor regard the diabetes as stable?,yes,yes,1,0.929,68.89,70.99,68.74,70.98,"Overall, your diabetes looks stable.","Overall, your diabetes looks stable.","Overall, your diabetes looks stable."
+sample_55,positive,Does the plan include routine follow-up?,yes,yes,1,0.859,79.62,80.84,79.42,80.84,Routine follow -up as usual.,Routine follow -up as usual.,Routine follow -up as usual.
+sample_55,hard_negative,Does the plan include an urgent referral to a kidney specialist?,no,no,1,,,,,,(no),,
+sample_55,off_topic,Does the conversation indicate the patient was thinking about joining a hiking club?,no,no,1,,,,,,(no),,
+sample_55,positive,Will the current treatment be continued?,yes,yes,1,0.994,71.12,74.2,71.12,74.22,Continue your current treatment exactly as it is.,Continue your current treatment exactly as it is.,Continue your current treatment exactly as it is.
+sample_55,positive,Did the HbA1c come out at 43 mmol/mol?,yes,yes,1,0.981,32.6,36.68,32.56,36.72,Your long -term sugar value is 43 millimoles per mole.,Your long -term sugar value is 43 millimoles per mole.,Your long -term sugar value is 43 millimoles per mole.
+sample_55,hard_negative,Did the tests show albuminuria?,no,no,1,,,,,,(no),,
+sample_55,hard_negative,Is the HbA1c reported as 53 mmol/mol?,no,no,1,,,,,,(no),,
+sample_55,hard_negative,Was the creatinine found to be raised?,no,no,1,,,,,,(no),,
+sample_55,hard_negative,Has the patient reported tiredness and thirst?,no,no,1,,,,,,(no),,
+sample_55,off_topic,Does the patient mention having a preference for tea?,no,no,1,,,,,,(no),,
+sample_56,positive,Has the cause of the tiredness remained unexplained?,yes,yes,1,0.932,61.54,64.14,61.66,64.2,We have not identified a specific cause.,We have not identified a specific cause.,We have not identified a specific cause.
+sample_56,off_topic,Was the doctor asking about the patient's upcoming movie night?,no,no,1,,,,,,(no),,
+sample_56,hard_negative,Has iron treatment been started for the tiredness?,no,no,1,,,,,,(no),,
+sample_56,positive,Did the COVID-19 test come back negative?,yes,yes,1,0.882,48.62,50.78,48.84,50.82,And your coronavirus test was negative.,And your coronavirus test was negative.,your coronavirus test was negative.
+sample_56,hard_negative,Was the patient's thyroid function found to be reduced?,no,no,1,,,,,,(no),,
+sample_56,positive,"The patient's thyroid function was checked, wasn't it?",yes,yes,1,0.895,44.78,46.46,44.92,46.5,Your thyroid tests are normal.,Your thyroid tests are normal.,Your thyroid tests are normal.
+sample_56,hard_negative,Is the patient complaining mainly of chest pain?,no,no,1,,,,,,(no),,
+sample_56,hard_negative,Will treatment for the fatigue begin straight away?,no,no,1,,,,,,(no),,
+sample_56,positive,Will further measures be held off for the time being?,yes,yes,1,0.979,81.86,85.64,81.92,85.66,"For the moment, we observe.","For the moment, we observe. I am not starting anything further today.","For the moment, we observe. I am not starting anything further today."
+sample_56,off_topic,Are the speakers discussing the weather?,no,no,1,,,,,,(no),,
+sample_57,positive,Will the patient continue on the current medication?,yes,yes,1,0.976,117.49,122.53,117.6,122.54,"You continue your lifestyle exactly as you are, and you continue your current medication.","You continue your lifestyle exactly as you are, and you continue your current medication.","You continue your lifestyle exactly as you are, and you continue your current medication."
+sample_57,positive,Is the diabetes considered stable?,yes,yes,1,0.596,97.55,101.65,97.54,100.0,My assessment is that your diabetes is stable and that no changes are needed.,My assessment is that your diabetes is stable and that no changes are needed.,My assessment is that your diabetes is stable
+sample_57,positive,Has the patient kept up the lifestyle changes?,yes,yes,1,0.949,59.85,62.11,59.74,62.1,I have kept it up. I really have.,I have kept it up. I really have.,I have kept it up. I really have.
+sample_57,positive,Was it concluded that no changes to treatment are needed?,yes,yes,1,0.0,97.55,101.65,117.6,122.54,My assessment is that your diabetes is stable and that no changes are needed.,My assessment is that your diabetes is stable and that no changes are needed.,"You continue your lifestyle exactly as you are, and you continue your current medication."
+sample_57,positive,Does the patient feel stable?,yes,yes,1,0.838,29.36,33.78,30.06,33.8,"Honestly, stable.","First, how have you been feeling? Honestly, stable.","how have you been feeling? Honestly, stable."
+sample_57,off_topic,Does the doctor ask about the patient's job responsibilities?,no,no,1,,,,,,(no),,
+sample_57,positive,Should the patient carry on with the same lifestyle?,yes,yes,1,0.94,117.49,120.15,117.6,120.1,You continue your lifestyle exactly as you are,"You continue your lifestyle exactly as you are,","You continue your lifestyle exactly as you are,"
+sample_57,hard_negative,Was the patient advised to stop the current medication?,no,no,1,,,,,,(no),,
+sample_57,hard_negative,Will the diabetes now be treated with insulin?,no,no,1,,,,,,(no),,
+sample_57,positive,"The patient stays on the medicine already in use, correct?",yes,yes,1,0.959,120.84,122.53,120.9,122.54,you continue your current medication.,you continue your current medication.,continue your current medication.
+sample_63,hard_negative,Have complications of the diabetes been identified?,no,no,1,,,,,,(no),,
+sample_63,hard_negative,Did the patient describe new episodes of dizziness?,no,no,1,,,,,,(no),,
+sample_63,hard_negative,Is the treatment being changed to a new medication?,no,no,1,,,,,,(no),,
+sample_63,off_topic,Was the patient's condition described as being caused by a mysterious disturbance in the Force?,no,no,1,,,,,,(no),,
+sample_63,hard_negative,Did the blood tests show impaired kidney function?,no,no,1,,,,,,(no),,
+sample_63,positive,Was the diabetes control judged to be good?,yes,yes,1,0.992,57.17,61.91,57.2,61.92,My assessment is good diabetes control with no complications.,My assessment is good diabetes control with no complications.,My assessment is good diabetes control with no complications.
+sample_63,positive,"The lipid profile came back normal, didn't it?",yes,yes,1,0.0,50.59,52.86,0.0,0.26,your lipid profile is normal as well.,your lipid profile is normal as well.,Good
+sample_63,positive,Was the HbA1c measured at 41 mmol/mol?,yes,yes,1,0.973,36.84,41.94,36.72,41.92,Your hemoglobin A1c is 41 millimoles per mole.,Your hemoglobin A1c is 41 millimoles per mole.,Your hemoglobin A1c is 41 millimoles per mole.
+sample_63,positive,Are annual check-ups planned to continue?,yes,yes,1,0.971,64.68,70.08,64.76,70.16,see you again for the yearly check.,So the plan is to continue your current treatment and see you again for the yearly check.,So the plan is to continue your current treatment and see you again for the yearly check.
+sample_63,positive,Did the patient report no new symptoms?,yes,yes,1,0.974,24.48,27.52,24.46,27.46,"No, I am not sure there is anything.","No, I am not sure there is anything. No new symptoms.","No, I am not sure there is anything. No new symptoms."
+sample_64,positive,Is dry skin the reason for this consultation?,yes,yes,1,0.268,39.65,46.85,39.42,41.64,The skin on them has become very dry and it has bothered me enough that I decided to have it looked at properly rather than guessing.,The skin on them has become very dry and it has bothered me enough that I decided to have it looked at properly rather than guessing.,The skin on them has become very dry
+sample_64,positive,Was the condition assessed as xerosis?,yes,yes,1,0.908,72.41,73.99,72.26,73.98,The condition is called xerosis.,The condition is called xerosis.,The condition is called xerosis.
+sample_64,hard_negative,Did the doctor prescribe an antifungal cream?,no,no,1,,,,,,(no),,
+sample_64,positive,"A moisturizing cream was prescribed, wasn't it?",yes,yes,1,0.899,87.77,91.14,88.04,91.22,I will prescribe a moisturizing cream for you.,I will prescribe a moisturizing cream for you.,I will prescribe a moisturizing cream for you.
+sample_64,hard_negative,Were open sores found on the feet?,no,no,1,,,,,,(no),,
+sample_64,hard_negative,Was intense itching the main complaint?,no,no,1,,,,,,(no),,
+sample_64,hard_negative,Does the patient complain of dryness on the hands?,no,no,1,,,,,,(no),,
+sample_64,hard_negative,Was the skin problem assessed as eczema?,no,no,1,,,,,,(no),,
+sample_64,positive,Did the examination rule out any wounds?,yes,yes,1,0.0,63.19,64.45,0.0,0.16,There are no sores.,There are no sores.,Good
+sample_64,off_topic,Does the patient express a desire to change their employment status?,no,no,1,,,,,,(no),,
+sample_66,hard_negative,Was the patient given a pneumococcal vaccination?,no,no,1,,,,,,(no),,
+sample_66,positive,Was the vaccination given as part of diabetes care?,yes,yes,1,0.995,31.34,35.2,31.34,35.18,I am here for the influenza vaccination as part of my diabetes care.,I am here for the influenza vaccination as part of my diabetes care.,I am here for the influenza vaccination as part of my diabetes care.
+sample_66,hard_negative,Did a local reaction develop at the injection site?,no,no,1,,,,,,(no),,
+sample_66,positive,"The diabetes status was described as stable, wasn't it?",yes,yes,1,0.983,113.06,114.87,113.08,114.86,Your diabetes status is stable.,Your diabetes status is stable.,Your diabetes status is stable.
+sample_66,hard_negative,Was the patient's diabetes found to be unstable?,no,no,1,,,,,,(no),,
+sample_66,off_topic,Is there any reference to the patient planning to watch a specific movie?,no,no,1,,,,,,(no),,
+sample_66,hard_negative,Has follow-up been discontinued going forward?,no,no,1,,,,,,(no),,
+sample_66,hard_negative,Did the doctor decide to adjust the diabetes medication?,no,no,1,,,,,,(no),,
+sample_66,positive,Is the patient free of any reaction after the injection?,yes,yes,1,0.0,97.28,99.5,93.14,96.36,And I can see no reaction at all.,And I can see no reaction at all.,Perfectly fine. Thank you. Nothing out of the ordinary.
+sample_66,positive,Will the treatment continue without changes?,yes,yes,1,0.314,121.05,122.93,116.96,122.94,There are no changes to make today.,There are no changes to make today.,So I take it there is nothing that needs adjusting. Nothing at all. There are no changes to make today.
+sample_67,hard_negative,Has the patient been referred to a dietitian?,no,no,1,,,,,,(no),,
+sample_67,positive,"The doctor described the diabetes as stable, right?",yes,yes,1,0.471,70.48,74.44,70.32,72.42,"Taken together, your diabetes is stable, with good self -care on your part.","Taken together, your diabetes is stable, with good self -care on your part.","Taken together, your diabetes is stable,"
+sample_67,positive,Will the treatment be continued unchanged?,yes,yes,1,0.478,89.13,92.99,89.12,90.98,"We continue your treatment unchanged, and keep to the regular checkups.","We continue your treatment unchanged, and keep to the regular checkups.","We continue your treatment unchanged, and"
+sample_67,off_topic,Was the patient planning to cook a specific dish for dinner mentioned?,no,no,1,,,,,,(no),,
+sample_67,positive,Is the patient's self-care considered good?,yes,yes,1,0.419,70.48,74.44,72.78,74.44,"Taken together, your diabetes is stable, with good self -care on your part.","Taken together, your diabetes is stable, with good self -care on your part.",with good self -care on your part.
+sample_67,hard_negative,Is the diabetes described as poorly controlled?,no,no,1,,,,,,(no),,
+sample_67,positive,Does the patient say they are doing well?,yes,yes,1,0.867,22.14,24.66,21.8,24.62,I feel well.,"Good, honestly. I feel well.","Good, honestly. I feel well."
+sample_67,positive,Is the patient sticking to the diet and lifestyle advice?,yes,yes,1,0.967,25.4,27.76,25.36,27.72,I have kept to the diet and the lifestyle side of things.,I have kept to the diet and the lifestyle side of things.,I have kept to the diet and the lifestyle side of things.
+sample_67,positive,Has the weight remained stable?,yes,yes,1,0.26,36.79,40.48,39.48,40.44,Your weight is stable.,"A good deal, and we can see it today. Your weight is stable.",Your weight is stable.
+sample_67,positive,Was the HbA1c 43 mmol/mol?,yes,yes,1,0.969,51.78,55.52,51.68,55.5,Your hemoglobin A1c is 43 millimoles per mole.,Your hemoglobin A1c is 43 millimoles per mole.,Your hemoglobin A1c is 43 millimoles per mole.
+sample_69,positive,Does the patient feel well?,yes,yes,1,0.982,30.88,33.08,30.92,33.08,"Well, actually, I feel fine.","Well, actually, I feel fine.","Well, actually, I feel fine."
+sample_69,positive,Was the blood pressure normal?,yes,yes,1,0.95,42.54,43.7,42.5,43.68,Your blood pressure is normal,"Your blood pressure is normal,","Your blood pressure is normal,"
+sample_69,positive,Is the foot status normal?,yes,yes,1,0.895,44.35,45.46,44.22,45.46,your foot status is normal.,your foot status is normal.,your foot status is normal.
+sample_69,positive,Will the regular check-ups be continued?,yes,yes,1,0.904,68.12,70.0,68.26,69.96,The plan is to continue your checkups,The plan is to continue your checkups,The plan is to continue your checkups
+sample_69,positive,"The diabetes was judged to be stable, right?",yes,yes,1,0.678,57.12,58.92,57.68,58.9,"Overall, your diabetes is stable","Overall, your diabetes is stable",your diabetes is stable
+sample_69,positive,Are there no signs of complications?,yes,yes,1,0.849,59.1,60.56,59.28,60.52,with no signs of complications.,with no signs of complications.,no signs of complications.
+sample_69,hard_negative,Were wounds discovered on the feet?,no,no,1,,,,,,(no),,
+sample_69,off_topic,Does the patient express interest in changing their work schedule?,no,no,1,,,,,,(no),,
+sample_69,hard_negative,Is blood pressure medication being started?,no,no,1,,,,,,(no),,
+sample_69,hard_negative,Have early complications of the diabetes been detected?,no,no,1,,,,,,(no),,
+sample_70,positive,"The vaccination went as planned, didn't it?",yes,yes,1,0.0,54.72,58.62,80.46,83.34,Exactly as planned for this season.,That is the vaccination given. Exactly as planned for this season.,Then I can say that there were no side effects today.
+sample_70,positive,Was the vaccine actually given?,yes,yes,1,0.888,54.72,56.3,54.54,56.32,That is the vaccination given.,That is the vaccination given.,That is the vaccination given.
+sample_70,hard_negative,Was blood taken during the same visit?,no,no,1,,,,,,(no),,
+sample_70,positive,Were no further measures decided on?,yes,yes,1,0.335,113.27,118.87,116.98,118.92,"As for what comes next, nothing further is needed.","As for what comes next, nothing further is needed. No extra measures from my side.",No extra measures from my side.
+sample_70,positive,Is this vaccination something the patient receives annually?,yes,yes,1,0.981,19.4,25.58,19.48,25.54,"Yes, the annual one.","You are here for your yearly influenza vaccination, is that correct? Yes, the annual one.","You are here for your yearly influenza vaccination, is that correct? Yes, the annual one."
+sample_70,hard_negative,Was the vaccination postponed to a later date?,no,no,1,,,,,,(no),,
+sample_70,positive,Can the patient leave without any additional treatment?,yes,yes,1,0.337,119.37,121.96,116.98,124.66,Exactly.,So I just go home? Exactly.,No extra measures from my side. So I just go home? Exactly. Nothing more follows from today's visit.
+sample_70,off_topic,Did the patient discuss their college courses online?,no,no,1,,,,,,(no),,
+sample_70,positive,Is the patient free of side effects after the vaccine?,yes,yes,1,0.875,80.81,83.33,80.46,83.34,Then I can say that there were no side effects today.,Then I can say that there were no side effects today.,Then I can say that there were no side effects today.
+sample_70,hard_negative,Is the patient asked to come back in a week for a second dose?,no,no,1,,,,,,(no),,
+sample_71,hard_negative,Has the patient been troubled by increased thirst?,no,no,1,,,,,,(no),,
+sample_71,off_topic,Was the patient discussing their pet?,no,no,1,,,,,,(no),,
+sample_71,positive,Did the creatinine come back normal?,yes,yes,1,0.919,78.73,80.45,78.86,80.46,Your creatinine is normal.,Your creatinine is normal.,Your creatinine is normal.
+sample_71,hard_negative,Is the LDL cholesterol 4.2 mmol/L?,no,no,1,,,,,,(no),,
+sample_71,positive,Was the HbA1c 42 mmol/mol?,yes,yes,1,0.986,53.68,57.82,53.7,57.78,Your hemoglobin A1c is 42 millimoles per mole.,Your hemoglobin A1c is 42 millimoles per mole.,Your hemoglobin A1c is 42 millimoles per mole.
+sample_71,hard_negative,Did the creatinine turn out to be elevated?,no,no,1,,,,,,(no),,
+sample_71,off_topic,"According to the conversation, was a specific type of sport played by the patient discussed?",no,no,1,,,,,,(no),,
+sample_71,positive,Are there no signs of complications?,yes,yes,1,0.91,89.63,91.67,89.46,91.64,there are no signs of complications.,there are no signs of complications.,there are no signs of complications.
+sample_71,positive,Is the LDL cholesterol 2.2 mmol/L?,yes,yes,1,0.96,70.46,74.28,70.34,74.32,Your LDL cholesterol is 2 .2 millimoles per liter.,Your LDL cholesterol is 2 .2 millimoles per liter.,Your LDL cholesterol is 2 .2 millimoles per liter.
+sample_71,positive,"The diabetes was described as stable, right?",yes,yes,1,0.416,87.56,88.95,85.68,88.92,your diabetes is stable,your diabetes is stable,"So, my assessment is that your diabetes is stable"
+sample_75,off_topic,Does the conversation indicate the patient uses specific software?,no,no,1,,,,,,(no),,
+sample_75,positive,Does the patient deny any known exposure to COVID-19?,yes,yes,1,0.873,45.18,46.42,45.06,46.48,"No, none that I know of.","No, none that I know of.","No, none that I know of."
+sample_75,positive,Is the patient also feeling tired?,yes,yes,1,0.381,29.69,31.95,31.08,31.94,"A sore throat, and I have been tired.","A sore throat, and I have been tired.",I have been tired.
+sample_75,hard_negative,Is a bacterial infection thought to be the most likely cause?,no,no,1,,,,,,(no),,
+sample_75,positive,Were rest and fluids recommended?,yes,yes,1,0.848,81.64,83.71,81.4,83.6,The plan is rest and plenty of fluids.,The plan is rest and plenty of fluids.,The plan is rest and plenty of fluids.
+sample_75,hard_negative,Did the patient report a known exposure to COVID-19?,no,no,1,,,,,,(no),,
+sample_75,hard_negative,Will the patient be starting a course of antibiotics?,no,no,1,,,,,,(no),,
+sample_75,positive,Has the patient had a sore throat for a few days?,yes,yes,1,0.541,29.69,33.09,29.62,35.9,"A sore throat, and I have been tired. A few days now.","A sore throat, and I have been tired. A few days now.","A sore throat, and I have been tired. A few days now. A few days of sore throat and tiredness."
+sample_75,hard_negative,Was the patient found to have a fever?,no,no,1,,,,,,(no),,
+sample_75,hard_negative,Did the throat examination reveal pronounced swelling with pus?,no,no,1,,,,,,(no),,
+sample_77,positive,Did the patient receive a tetanus vaccination?,yes,yes,1,0.95,77.62,80.4,77.72,80.36,I have also given you a tetanus vaccination today.,I have also given you a tetanus vaccination today.,I have also given you a tetanus vaccination today.
+sample_77,hard_negative,Did the infection appear only two days after the injury?,no,no,1,,,,,,(no),,
+sample_77,off_topic,Does the patient talk about using a digital device for online shopping?,no,no,1,,,,,,(no),,
+sample_77,positive,Was the infection judged to follow a penetrating trauma?,yes,yes,1,0.0,46.47,48.99,49.56,52.96,It is an infection following the penetrating injury.,It is an infection following the penetrating injury.,"The thorn broke the skin, and the infection came after that."
+sample_77,positive,Have about two weeks passed since the injury?,yes,yes,1,0.37,15.14,17.3,16.5,17.3,I pricked it on a thorn about two weeks ago,"I pricked it on a thorn about two weeks ago,","about two weeks ago,"
+sample_77,positive,Did the trouble start after the patient pricked themselves on a thorn?,yes,yes,1,0.995,15.14,19.32,15.14,19.3,"I pricked it on a thorn about two weeks ago, and now I think it has become infected.","I pricked it on a thorn about two weeks ago, and now I think it has become infected.","I pricked it on a thorn about two weeks ago, and now I think it has become infected."
+sample_77,hard_negative,Was a foreign body found in the toe?,no,no,1,,,,,,(no),,
+sample_77,positive,"The patient was treated with penicillin, correct?",yes,yes,1,0.944,67.78,69.52,67.84,69.56,We are treating it with penicillin.,We are treating it with penicillin.,We are treating it with penicillin.
+sample_77,positive,Is a foreign body ruled out?,yes,yes,1,0.938,32.8,34.94,32.7,34.9,There is no foreign body left in the tow.,There is no foreign body left in the tow.,There is no foreign body left in the tow.
+sample_77,positive,Does the patient have an infection in the big toe?,yes,yes,1,0.0,46.47,48.99,49.56,52.96,It is an infection following the penetrating injury.,It is an infection following the penetrating injury.,"The thorn broke the skin, and the infection came after that."
+sample_79,positive,Is chondromalacia patellae suspected on clinical grounds?,yes,yes,1,0.656,81.41,86.89,82.96,87.4,"From what you describe, I suspect a condition called chondromalacia patelli.","From what you describe, I suspect a condition called chondromalacia patelli.",I suspect a condition called chondromalacia patelli.
+sample_79,hard_negative,Has the patient been referred to a physiotherapist instead of further procedures?,no,no,1,,,,,,(no),,
+sample_79,off_topic,Does the patient express interest in learning Spanish?,no,no,1,,,,,,(no),,
+sample_79,positive,Do the pains come and go rather than being constant?,yes,yes,1,0.0,39.1,41.59,24.72,28.16,It comes and goes.,"Yes, exactly. It comes and goes.","I keep getting pain behind my right kneecap, and it keeps coming back."
+sample_79,hard_negative,Does the pain sit on the back of the thigh?,no,no,1,,,,,,(no),,
+sample_79,positive,Does the patient have pain behind the kneecap?,yes,yes,1,0.6,24.77,28.27,24.72,26.9,"I keep getting pain behind my right kneecap, and it keeps coming back.","I keep getting pain behind my right kneecap, and it keeps coming back.","I keep getting pain behind my right kneecap,"
+sample_79,positive,Did the patient show up in person for the consultation?,yes,yes,1,0.429,0.18,1.38,0.0,2.8,"Louise, come in.","Louise, come in.","Louise, come in. Good to see you."
+sample_79,hard_negative,Was the diagnosis of chondromalacia patellae confirmed by an MRI scan?,no,no,1,,,,,,(no),,
+sample_79,hard_negative,Are the knee pains constant throughout the day?,no,no,1,,,,,,(no),,
+sample_79,positive,Was the suspicion reached without imaging?,yes,yes,1,0.84,81.41,86.89,80.88,87.4,"From what you describe, I suspect a condition called chondromalacia patelli.","From what you describe, I suspect a condition called chondromalacia patelli.","there? From what you describe, I suspect a condition called chondromalacia patelli."
+sample_81,positive,Is a viral cause thought to be the most likely explanation?,yes,yes,1,0.995,63.9,68.32,63.88,68.32,My assessment is that this is most likely a viral gastroenteritis.,My assessment is that this is most likely a viral gastroenteritis.,My assessment is that this is most likely a viral gastroenteritis.
+sample_81,hard_negative,Has the patient been given antibiotics for the illness?,no,no,1,,,,,,(no),,
+sample_81,hard_negative,Is admission to hospital part of the plan?,no,no,1,,,,,,(no),,
+sample_81,positive,Did the patient receive advice about fluid intake?,yes,yes,1,0.611,86.47,90.99,86.58,89.34,What I want to give you instead is advice on fluid intake and on treating the symptoms.,What I want to give you instead is advice on fluid intake and on treating the symptoms.,I want to give you instead is advice on fluid intake
+sample_81,hard_negative,Is the patient complaining of chest symptoms?,no,no,1,,,,,,(no),,
+sample_81,positive,Does the patient describe symptoms of gastroenteritis?,yes,yes,1,0.0,18.51,19.75,12.62,14.64,"It is the classic picture, really.","It is the classic picture, really.",All the usual gastroenteritis symptoms.
+sample_81,positive,Was gastroenteritis the diagnosis arrived at?,yes,yes,1,0.995,63.9,68.32,63.88,68.32,My assessment is that this is most likely a viral gastroenteritis.,My assessment is that this is most likely a viral gastroenteritis.,My assessment is that this is most likely a viral gastroenteritis.
+sample_81,off_topic,Does the conversation indicate the patient discussed their recent purchase of groceries?,no,no,1,,,,,,(no),,
+sample_81,hard_negative,Was the patient told to restrict fluid intake?,no,no,1,,,,,,(no),,
+sample_81,hard_negative,Was a bacterial cause considered the most likely one?,no,no,1,,,,,,(no),,
+sample_82,hard_negative,Was the growth suspected to be a basal cell carcinoma?,no,no,1,,,,,,(no),,
+sample_82,hard_negative,Were seven small lesions counted in the area?,no,no,1,,,,,,(no),,
+sample_82,off_topic,Does the patient express interest in using a particular software?,no,no,1,,,,,,(no),,
+sample_82,hard_negative,Has a cream been prescribed as the treatment?,no,no,1,,,,,,(no),,
+sample_82,off_topic,Did they talk about the weather being unusually hot?,no,no,1,,,,,,(no),,
+sample_82,hard_negative,Will the lesions be removed surgically?,no,no,1,,,,,,(no),,
+sample_82,positive,"The lesions will be treated with freezing, right?",yes,yes,1,0.906,66.05,67.45,65.96,67.4,I will treat them with freezing.,I will treat them with freezing.,I will treat them with freezing.
+sample_82,positive,Do the elements resemble molluscs?,no,yes,0,0.0,,,52.66,55.56,(no),,My suspicion is molluscum contagiosum.
+sample_82,positive,Has the patient noticed a wart-like growth?,yes,yes,1,0.338,24.64,28.49,27.16,28.46,It looks a bit like a wart.,I have a growth in the middle of my chest. It looks a bit like a wart.,It looks a bit like a wart.
+sample_82,positive,Were three small lesions seen in the same area of the thorax?,yes,yes,1,0.971,40.35,45.4,40.24,45.36,"I can see three small lesions, all in the same area on the chest wall.","I can see three small lesions, all in the same area on the chest wall.","I can see three small lesions, all in the same area on the chest wall."
+sample_84,hard_negative,Is the check-up being done because the patient has symptoms from the heart?,no,no,1,,,,,,(no),,
+sample_84,hard_negative,Does the patient say that exercise is something they rarely do?,no,no,1,,,,,,(no),,
+sample_84,off_topic,Was the patient referred to Doctor Strange for magical treatment?,no,no,1,,,,,,(no),,
+sample_84,positive,Was it the patient's grandfather who died of a heart attack?,yes,yes,1,0.609,20.31,25.41,20.3,23.42,"My grandfather on my father's side died of a heart attack, and he was only 52.","My grandfather on my father's side died of a heart attack, and he was only 52.","My grandfather on my father's side died of a heart attack,"
+sample_84,positive,Does the patient exercise regularly?,yes,yes,1,0.432,76.79,79.46,78.28,79.52,I train regularly.,And exercise? I train regularly.,I train regularly.
+sample_84,positive,Will both blood tests and an ECG be carried out?,yes,yes,1,0.987,193.62,201.22,193.64,201.3,"I will take blood samples, and I will record an electrocardiogram, which is a tracing of the heart's electrical activity.","I will take blood samples, and I will record an electrocardiogram, which is a tracing of the heart's electrical activity.","I will take blood samples, and I will record an electrocardiogram, which is a tracing of the heart's electrical activity."
+sample_84,positive,Was the blood pressure measured at 138 over 83?,yes,yes,1,0.664,118.44,122.92,119.92,122.96,I have measured it at 138 over 83.,Your blood pressure. I have measured it at 138 over 83.,I have measured it at 138 over 83.
+sample_84,positive,Does the patient report cardiovascular disease in the family?,yes,yes,1,0.962,27.85,31.82,27.86,31.68,Yes.,"So, there is cardiovascular disease in your family? Yes.","So, there is cardiovascular disease in your family? Yes."
+sample_84,positive,Did that grandfather die at the age of 52?,yes,yes,1,0.992,20.31,25.41,20.3,25.38,"My grandfather on my father's side died of a heart attack, and he was only 52.","My grandfather on my father's side died of a heart attack, and he was only 52.","My grandfather on my father's side died of a heart attack, and he was only 52."
+sample_84,positive,Is the patient otherwise healthy and living a healthy life?,yes,yes,1,0.176,69.74,71.46,69.72,79.52,"I am healthy, as far as I know.","I am healthy, as far as I know.","I am healthy, as far as I know. No illnesses at all. I eat well and I look after myself. And exercise? I train regularly."
+sample_86,off_topic,Does the conversation mention a specific dish the patient plans to cook for dinner?,no,no,1,,,,,,(no),,
+sample_86,positive,Is the patient free of fever?,yes,yes,1,0.201,32.78,35.76,35.14,35.74,No fever.,Have you had any fever with it? No fever.,No fever.
+sample_86,hard_negative,Is the tenderness in the area described as severe?,no,no,1,,,,,,(no),,
+sample_86,hard_negative,Has surgery been scheduled to remove the swelling?,no,no,1,,,,,,(no),,
+sample_86,hard_negative,Were both testicles found to be enlarged and abnormal?,no,no,1,,,,,,(no),,
+sample_86,hard_negative,Did the patient have a fever when he came in?,no,no,1,,,,,,(no),,
+sample_86,positive,"Both testicles felt normal at the examination, correct?",yes,yes,1,0.977,66.57,69.93,66.5,69.94,The testicles themselves feel normal to me on both sides.,The testicles themselves feel normal to me on both sides.,The testicles themselves feel normal to me on both sides.
+sample_86,hard_negative,Does the doctor suspect a testicular torsion?,no,no,1,,,,,,(no),,
+sample_86,hard_negative,Was the swelling located on the left side of the scrotum?,no,no,1,,,,,,(no),,
+sample_86,positive,Was a small swelling found around the epididymis?,yes,yes,1,0.864,51.14,54.78,50.66,54.7,I can feel a small swelling around the epididymis on the right,"I can feel a small swelling around the epididymis on the right,","I can feel a small swelling around the epididymis on the right,"
+sample_90,positive,Does the doctor consider the change harmless?,yes,yes,1,0.563,27.06,28.92,27.84,28.98,"From the picture, the change looks harmless.","From the picture, the change looks harmless.",the change looks harmless.
+sample_90,hard_negative,Did the doctor find the change suspicious?,no,no,1,,,,,,(no),,
+sample_90,off_topic,Does the patient talk about their job responsibilities?,no,no,1,,,,,,(no),,
+sample_90,positive,Did the patient notice a new mole?,yes,yes,1,0.545,14.6,17.8,14.46,16.42,"I have got a new mole on my thigh, and it is quite large.","I have got a new mole on my thigh, and it is quite large.","I have got a new mole on my thigh,"
+sample_90,hard_negative,Is the new mole sitting on the back?,no,no,1,,,,,,(no),,
+sample_90,positive,Was a photo sent in for assessment?,yes,yes,1,0.0,18.76,19.84,10.46,12.1,Thank you for sending it.,Thank you for sending it.,"You sent a photograph through to us,"
+sample_90,positive,Has the doctor reviewed the photograph?,yes,yes,1,0.935,20.18,21.9,20.08,21.92,I have looked at the photograph carefully.,I have looked at the photograph carefully.,I have looked at the photograph carefully.
+sample_90,off_topic,Does the patient mention owning a cat?,no,no,1,,,,,,(no),,
+sample_90,hard_negative,Does the patient describe the mole as small and unchanged?,no,no,1,,,,,,(no),,
+sample_90,positive,Is the mole located on the thigh?,yes,yes,1,0.545,14.6,17.8,14.46,16.42,"I have got a new mole on my thigh, and it is quite large.","I have got a new mole on my thigh, and it is quite large.","I have got a new mole on my thigh,"
+sample_92,off_topic,At any point does the patient talk about their pet?,no,no,1,,,,,,(no),,
+sample_92,hard_negative,Has the result of the urine analysis already come back?,no,no,1,,,,,,(no),,
+sample_92,hard_negative,Is the pulse recorded as 92?,no,no,1,,,,,,(no),,
+sample_92,positive,Has a urine sample been sent off for albumin/creatinine ratio analysis?,yes,yes,1,0.992,108.61,110.99,108.62,110.98,I'm sending a urine sample for analysis.,I'm sending a urine sample for analysis.,I'm sending a urine sample for analysis.
+sample_92,positive,Does the patient work as a staff manager in a retail chain?,yes,yes,1,0.75,74.09,79.21,74.38,78.22,"And work is still the staff manager role in the retail chain? Yes, still that.","And work is still the staff manager role in the retail chain? Yes, still that.","work is still the staff manager role in the retail chain? Yes,"
+sample_92,hard_negative,Are the patient's exercise habits limited to less than an hour a week?,no,no,1,,,,,,(no),,
+sample_92,positive,Did the patient ask to have his cholesterol level checked?,yes,yes,1,0.975,23.22,26.32,23.24,26.38,I would like the level checked.,"My cholesterol, I think. I would like the level checked.","My cholesterol, I think. I would like the level checked."
+sample_92,off_topic,Is there any reference to the patient using specific software for work?,no,no,1,,,,,,(no),,
+sample_92,positive,Was the previous LDL value 3.9?,yes,yes,1,1.0,30.92,33.0,30.92,33.0,My LDL was 3 .9.,My LDL was 3 .9.,My LDL was 3 .9.
+sample_92,hard_negative,Was the blood pressure measured at 160/95?,no,no,1,,,,,,(no),,
+sample_95,hard_negative,Does the plan involve a check every third month from now on?,no,no,1,,,,,,(no),,
+sample_95,hard_negative,Have the results of the blood tests already been gone through?,no,no,1,,,,,,(no),,
+sample_95,positive,Were blood tests taken at this visit?,yes,yes,1,0.53,38.89,41.91,38.92,40.52,We have taken your blood test today as part of the follow -up.,We have taken your blood test today as part of the follow -up.,We have taken your blood test today
+sample_95,positive,Has the patient been free of side effects?,yes,yes,1,0.882,25.27,27.81,25.52,27.76,None.,And any side effects at all? None.,any side effects at all? None.
+sample_95,off_topic,Does the patient talk about having a pet hamster?,no,no,1,,,,,,(no),,
+sample_95,hard_negative,Was the follow-up handled by telephone?,no,no,1,,,,,,(no),,
+sample_95,positive,"The treatment is considered well tolerated, right?",yes,yes,1,0.884,32.01,34.21,32.22,34.26,So we can say the treatment is well tolerated.,So we can say the treatment is well tolerated.,we can say the treatment is well tolerated.
+sample_95,hard_negative,Is the treatment being stopped because it is poorly tolerated?,no,no,1,,,,,,(no),,
+sample_95,hard_negative,Did the patient report muscle pain as a side effect?,no,no,1,,,,,,(no),,
+sample_95,hard_negative,Has the dose been increased at this consultation?,no,no,1,,,,,,(no),,

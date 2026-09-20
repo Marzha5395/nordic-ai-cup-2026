@@ -6,5 +6,6 @@
   "camera_policy": "adaptive",
   "tta": "none",
   "runtime_external_api_calls": false,
-  "weights_sha256": "1e4c35ac11e0aed96f82c2231177348e57be256849f98514e3640d6f51652af7"
+  "weights_sha256": "1e4c35ac11e0aed96f82c2231177348e57be256849f98514e3640d6f51652af7",
+  "lag": "none"
 }

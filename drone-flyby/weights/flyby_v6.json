@@ -87,7 +87,8 @@
     "confidence": 0.05,
     "camera_policy": "adaptive",
     "tta": "none",
-    "runtime_external_api_calls": false
+    "runtime_external_api_calls": false,
+    "lag": "none"
   },
   "selection": "v5 recipe plus cast shadows (one random sun per image) and city/port/industrial training terrain, both motivated by the recorded validation views (sunny city: objects cast shadows; v5 raised false alarms on buildings and roofs). Adopted over v5 on held-out data only: equal on plain and re-lit views, better on held-out cities (level 0 mAP 0.738 -> 0.765, worst class 0.10 -> 0.32, urban false alarms 0.33 -> 0.27 per view at level 0 and 0.17 -> 0.07 at level 1); held-out flights within noise.",
   "measurements": {
@@ -690,6 +691,40 @@
       "camera_policy": "adaptive",
       "lag_handling": "resend",
       "note": "recorded: 17 frames skipped (network), 108 views still at the old position; resending made the camera wait a frame each time"
+    },
+    {
+      "model": "flyby_v6",
+      "score": 0.36,
+      "camera_policy": "adaptive",
+      "lag_handling": "ahead",
+      "note": "recorded: 11 frames lost, 9 level-2 views"
+    },
+    {
+      "model": "flyby_v6",
+      "score": 0.334,
+      "camera_policy": "adaptive",
+      "lag_handling": "ahead",
+      "note": "recorded: 21 frames lost, 13 level-2 views"
+    },
+    {
+      "model": "flyby_v6",
+      "score": 0.35,
+      "camera_policy": "adaptive",
+      "lag_handling": "ahead"
+    },
+    {
+      "model": "flyby_v6",
+      "score": 0.32,
+      "camera_policy": "adaptive",
+      "lag_handling": "ahead"
+    },
+    {
+      "model": "flyby_v6",
+      "attempt": "b75b29f5e1bb4bc18ff18f8f8bd638b7",
+      "score": 0.3896159831261151,
+      "camera_policy": "adaptive",
+      "lag_handling": "none",
+      "note": "recorded: 1 frame lost, 24 level-2 views, 15 rejected moves"
     }
   ],
   "interpretation": [
@@ -697,5 +732,5 @@
     "The recorded validation views were only looked at to identify domain differences; they are not used for training or scoring.",
     "Helsinki is training data; its score is a sanity check only."
   ],
-  "camera_policy_choice": "adaptive, chosen by validation (0.412 vs 0.34 for full with the same weights). Late commands: the service applies about 44% of commands one frame late. lag=\"ahead\" (default) plans the next move from the pending command and sends it only if it is also legal from the current view. lag_replay.py, 8 held-out flights, 44% late: none 0.6245 (23 rejected), resend 0.6327 (0), ahead 0.6408 (0); no lag: 0.6225 for all."
+  "camera_policy_choice": "adaptive, chosen by validation (0.412 vs 0.34 for full with the same weights). Late commands: the service applies about 44% of commands one frame late. lag=\"ahead\" (default) plans the next move from the pending command and sends it only if it is also legal from the current view. lag_replay.py, 8 held-out flights, 44% late: none 0.6245 (23 rejected), resend 0.6327 (0), ahead 0.6408 (0); no lag: 0.6225 for all. UPDATE: lag handling is back to none, Astra's original behaviour. Both none runs (0.412, 0.390) beat all four ahead/resend runs (0.36, 0.35, 0.334, 0.326). Part of that is network luck (none lost 1-2 frames, the others 11-21), but the recordings also show ahead taking only 9-13 level-2 views against 23-24 for none: planning from the pending camera position disrupts the zoom sequence that finds the small classes. Rejected moves cost only the move, which is cheaper than losing the zooms. DRONE_LAG selects none, resend or ahead."
 }

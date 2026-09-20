@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent
 
 
 class FlybyPredictor(Predictor):
-    def __init__(self, detector, policy='full', max_sequences=8, lag='ahead'):
+    def __init__(self, detector, policy='full', max_sequences=8, lag='none'):
         if policy not in ('full', 'overview', 'adaptive'):
             raise ValueError('Camera policy must be full, overview, or adaptive')
         if lag not in ('none', 'resend', 'ahead'):
@@ -80,7 +80,7 @@ class FlybyPredictor(Predictor):
         return super().select_view(request, state, motion_ok)
 
 
-def create_predictor(weights, device='cuda:0', width=1920, threshold=0.05, tta='none', policy='full', canonical=True):
+def create_predictor(weights, device='cuda:0', width=1920, threshold=0.05, tta='none', policy='full', canonical=True, lag='none'):
     from gpu_detector import FlipDetector, TorchDetector
 
     if tta not in ('none', 'flip'):
@@ -88,7 +88,7 @@ def create_predictor(weights, device='cuda:0', width=1920, threshold=0.05, tta='
     detector = TorchDetector(weights, device=device, width=width, threshold=threshold, canonical=canonical)
     if tta == 'flip':
         detector = FlipDetector(detector)
-    return FlybyPredictor(detector, policy=policy)
+    return FlybyPredictor(detector, policy=policy, lag=lag)
 
 
 _predictor = None
@@ -118,6 +118,8 @@ def initialize():
                 policy=os.environ.get('DRONE_CAMERA_POLICY', settings.get('camera_policy', 'full')),
                 # V2 resizes every view to one physical scale; the terrain-trained models run each view at native size.
                 canonical=bool(settings.get('canonical', True)),
+                # How to handle a camera command the service has not applied yet: ahead, resend or none.
+                lag=os.environ.get('DRONE_LAG', settings.get('lag', 'none')),
             )
     return _predictor
 

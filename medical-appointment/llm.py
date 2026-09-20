@@ -114,8 +114,6 @@ The quote may cross consecutive lines. Never quote a question alone instead of i
 Prefer the FIRST explicit statement establishing the fact, not later summaries or repetitions.
 For reported symptoms or history, use the patient's original specific report. For an agreed plan,
 diagnosis, or examination finding, use the doctor's first definitive statement, not a tentative suggestion.
-When a topic is mentioned more than once, prefer the doctor's confirming or diagnostic statement over
-the patient's initial complaint, unless the question is specifically about what the patient reported.
 Do not include unrelated explanations, the next question, greetings, or the patient's reaction.
 For a dose, quote the prescription clause with the dose. For a duration, quote the duration clause.
 For a request, quote the request itself. A short explicit confirmation may be enough in context.
