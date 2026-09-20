@@ -150,12 +150,14 @@ def parse_ranges(text, count):
     """Like parse_evidence, but every entry is [yes, first_line, last_line]."""
     values = []
     for item in parse_json_entries(text, count):
-        if isinstance(item, list) and len(item) == 3 and type(item[0]) is bool:
+        if isinstance(item, list) and len(item) in (3, 4) and type(item[0]) is bool:
             if not item[0]:
                 values.append(None)
                 continue
-            first, last = item[1], item[2]
-            values.append([first, last] if type(first) is int and type(last) is int and 0 <= first <= last else 'missing')
+            # [yes, first, last] or [yes, anchor, first, last]
+            anchor, first, last = (item[1], item[1], item[2]) if len(item) == 3 else (item[1], item[2], item[3])
+            ok = all(type(v) is int for v in (anchor, first, last)) and 0 <= first <= last
+            values.append([first, last, min(max(anchor, first), last)] if ok else 'missing')
         else:
             values.append('missing')
     return (values + ['missing'] * count)[:count]
